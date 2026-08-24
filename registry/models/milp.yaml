@@ -1,0 +1,12 @@
+id: milp
+name: MILP
+name_zh: 混合整数线性规划
+category: { task: [optimization] }
+family: [operations-research]
+learning_type: [exact-optimization]
+difficulty: intermediate
+summary: 在 LP 基础上引入整数/0-1 变量，适合选址、路径的精确建模。
+demo_priority: 21
+use_when: [线性结构且含整数决策]
+avoid_when: [规模过大导致不可解且无分解策略]
+alternatives: [lp, ga]

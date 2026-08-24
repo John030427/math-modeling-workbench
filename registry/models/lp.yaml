@@ -1,0 +1,12 @@
+id: lp
+name: Linear Programming
+name_zh: 线性规划
+category: { task: [optimization] }
+family: [operations-research]
+learning_type: [exact-optimization]
+difficulty: beginner
+summary: 线性目标与线性约束的精确优化基线；能用 LP 时不要默认元启发式。
+demo_priority: 20
+use_when: [线性目标与约束, 需要最优性保证]
+avoid_when: [强非线性黑箱]
+alternatives: [milp, nlp]

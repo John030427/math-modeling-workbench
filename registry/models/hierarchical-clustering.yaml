@@ -1,0 +1,12 @@
+id: hierarchical-clustering
+name: Hierarchical Clustering
+name_zh: 层次聚类
+category: { task: [clustering] }
+family: [machine-learning]
+learning_type: [unsupervised-learning]
+difficulty: intermediate
+summary: 通过凝聚/分裂层次结构探索簇，样本不大时便于可视化树状图。
+demo_priority: 22
+use_when: [需要层次结构, 样本量不大]
+avoid_when: [超大数据集]
+alternatives: [kmeans, dbscan]

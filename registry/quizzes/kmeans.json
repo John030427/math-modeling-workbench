@@ -1,0 +1,80 @@
+{
+  "model_id": "kmeans",
+  "questions": [
+    {
+      "id": "q1",
+      "level": 1,
+      "knowledge_unit": "centroid",
+      "prompt": "K-Means 中的 centroid（质心）指的是？",
+      "options": {
+        "A": "簇中距离最大的点",
+        "B": "簇内样本的均值中心",
+        "C": "整个数据集的中位数",
+        "D": "随机噪声点"
+      },
+      "answer": "B",
+      "explanation": "质心是簇内点的均值，算法迭代更新它。",
+      "distractor_source": "common_misconception"
+    },
+    {
+      "id": "q2",
+      "level": 2,
+      "knowledge_unit": "feature-scaling",
+      "prompt": "为何在 K-Means 前常需要标准化？",
+      "options": {
+        "A": "为了让损失函数一定凸",
+        "B": "因为欧氏距离受量纲影响，大范围特征会主导",
+        "C": "标准化能自动确定 K",
+        "D": "只有分类问题才需要标准化"
+      },
+      "answer": "B",
+      "explanation": "距离型算法对量纲敏感。",
+      "distractor_source": "common_mistakes.not_scaling_features"
+    },
+    {
+      "id": "q3",
+      "level": 3,
+      "knowledge_unit": "kmeans-vs-dbscan",
+      "prompt": "客户分布呈月牙形且有明显噪声点，更应优先考虑？",
+      "options": {
+        "A": "不标准化的 K-Means",
+        "B": "DBSCAN（并调参/标准化）",
+        "C": "直接 PSO",
+        "D": "AHP"
+      },
+      "answer": "B",
+      "explanation": "非球形簇+噪声更适合密度聚类。",
+      "distractor_source": "model_confusion"
+    },
+    {
+      "id": "q4",
+      "level": 4,
+      "knowledge_unit": "k-selection",
+      "prompt": "选 K 时较合理的做法是？",
+      "options": {
+        "A": "永远取 K=3",
+        "B": "只看训练 SSE 最小的极大 K",
+        "C": "结合肘部法则、轮廓系数与业务可解释性",
+        "D": "K 越大越好"
+      },
+      "answer": "C",
+      "explanation": "SSE 随 K 单调不增，需综合指标与业务。",
+      "distractor_source": "common_mistakes.blindly_selecting_k"
+    },
+    {
+      "id": "q5",
+      "level": 5,
+      "knowledge_unit": "outlier-sensitivity",
+      "prompt": "下列哪项是对 K-Means 实验报告的错误做法？",
+      "options": {
+        "A": "报告多种初始化/随机种子结果",
+        "B": "只展示跑得最好的一次 SSE 并声称稳定最优",
+        "C": "说明是否做了标准化",
+        "D": "讨论异常值影响"
+      },
+      "answer": "B",
+      "explanation": "禁止只挑最好一次；需多 seed 与稳健性说明。",
+      "distractor_source": "reviewer_deduction"
+    }
+  ]
+}

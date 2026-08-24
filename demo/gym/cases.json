@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "id": "delivery-vrp",
+      "title": "城市末端配送路径",
+      "difficulty": 2,
+      "tags": ["optimization", "routing"],
+      "scenario": "某电商仓向 12 个社区配送点送货。每辆车容量有限，部分点有时间窗，目标是在完成配送的前提下尽量降低总行驶距离。",
+      "raw_fields": ["站点坐标", "需求量", "时间窗", "车辆数", "车容量"],
+      "coach_steps": {
+        "variables": "提示：决策变量通常是『哪辆车按什么顺序访问哪些点』，而不是『把坐标再聚类一次就结束』。",
+        "objective": "提示：目标更像最小化总路程/时间/成本。先写清目标，再谈算法。",
+        "constraints": "提示：容量、时间窗、车辆数是硬约束。忽略它们会得到不可行方案。",
+        "problem_type": "提示：这是带约束的路径优化（VRP 家族），不是默认上 PSO 的理由。能建模成整数规划时先考虑精确/成熟求解思路与基线。",
+        "model_candidates": "提示：基线可以是最近邻/节约算法；主模型可考虑 MILP 或成熟启发式；元启发式仅作对照且需多 seed。"
+      },
+      "levels": [
+        {"level": 1, "task": "识别决策变量"},
+        {"level": 2, "task": "识别目标"},
+        {"level": 3, "task": "列出约束"},
+        {"level": 4, "task": "选择模型族"},
+        {"level": 5, "task": "给出完整建模提纲"}
+      ],
+      "solution": {
+        "type": "VRP",
+        "baseline": "nearest-neighbor",
+        "main": "MILP or savings heuristic",
+        "avoid_default": "PSO without formulation"
+      }
+    }
+  ]
+}

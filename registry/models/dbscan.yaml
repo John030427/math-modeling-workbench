@@ -1,0 +1,27 @@
+id: dbscan
+name: DBSCAN
+name_zh: DBSCAN 密度聚类
+category:
+  task: [clustering]
+family: [machine-learning]
+learning_type: [unsupervised-learning]
+difficulty: intermediate
+data_requirements:
+  numeric: true
+prerequisites: [distance, feature-scaling, density]
+core_concepts: [eps, min_samples, core-point, border-point, noise]
+knowledge_units: [density, eps, noise-points, kmeans-vs-dbscan]
+use_when:
+  - 簇形状不规则
+  - 需要自动发现噪声点
+  - 不知道准确簇数
+avoid_when:
+  - 密度差异极大
+  - 高维稀疏空间
+advantages: [发现任意形状簇, 识别噪声]
+limitations: [参数敏感, 变密度困难]
+common_mistakes: [poor_eps_choice, not_scaling]
+validation: [silhouette-score, stability]
+alternatives: [kmeans, hierarchical-clustering, gmm]
+summary: 基于密度连通性聚类，可识别噪声与非球形簇。
+demo_priority: 2

@@ -1,0 +1,27 @@
+id: random-forest
+name: Random Forest
+name_zh: 随机森林
+category:
+  task: [classification, regression, prediction]
+family: [machine-learning]
+learning_type: [supervised-learning]
+difficulty: intermediate
+data_requirements:
+  numeric: true
+  mixed_ok: true
+prerequisites: [decision-tree, bagging]
+core_concepts: [ensemble, feature-importance, oob]
+knowledge_units: [ensemble, feature-importance, overfitting]
+use_when:
+  - 非线性关系
+  - 需要较稳健的 baseline+
+avoid_when:
+  - 必须强可解释线性系数
+  - 极小样本
+advantages: [稳健, 特征重要性]
+limitations: [外推弱, 解释性弱于线性模型]
+common_mistakes: [no_baseline, leakage_via_features]
+validation: [cv, oob, holdout]
+alternatives: [xgboost, linear-regression, svm]
+summary: 多棵决策树 bagging 集成，适合非线性表格数据。
+demo_priority: 6

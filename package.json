@@ -1,0 +1,10 @@
+﻿{
+  "name": "math-modeling-workbench",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:api": "cd apps/api && python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+    "test:api": "cd apps/api && set PYTHONPATH=.&& python -m pytest tests -q",
+    "build:web": "npm --prefix apps/web run build"
+  }
+}

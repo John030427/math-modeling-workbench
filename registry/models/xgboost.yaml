@@ -1,0 +1,12 @@
+id: xgboost
+name: XGBoost
+name_zh: XGBoost
+category: { task: [classification, regression, prediction] }
+family: [machine-learning]
+learning_type: [supervised-learning]
+difficulty: intermediate
+summary: 梯度提升树；应在线性/森林基线之后作为对照，注意泄漏与调参。
+demo_priority: 24
+use_when: [表格非线性且已有基线]
+avoid_when: [极小样本且无验证]
+alternatives: [random-forest, linear-regression]

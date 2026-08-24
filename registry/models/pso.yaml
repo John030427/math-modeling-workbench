@@ -1,0 +1,26 @@
+id: pso
+name: PSO
+name_zh: 粒子群优化
+category:
+  task: [optimization]
+family: [intelligent-optimization]
+learning_type: [metaheuristic]
+difficulty: intermediate
+data_requirements:
+  numeric: true
+prerequisites: [objective-function, search-space]
+core_concepts: [particle, velocity, inertia, global-best]
+knowledge_units: [metaheuristic, local-optimum, baseline-vs-exact]
+use_when:
+  - 目标非凸、难求导
+  - 精确算法不可行且需启发式
+avoid_when:
+  - 问题是线性/凸可用 LP/凸优化
+  - 需要全局最优保证
+advantages: [实现简单, 黑箱友好]
+limitations: [无最优保证, 参数敏感]
+common_mistakes: [using_pso_when_lp_suffices, no_multi_seed]
+validation: [multi-seed, sensitivity, compare-baseline]
+alternatives: [ga, sa, differential-evolution, lp]
+summary: 群体启发式搜索；能用精确优化时不要默认上 PSO。
+demo_priority: 8

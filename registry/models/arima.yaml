@@ -1,0 +1,27 @@
+id: arima
+name: ARIMA
+name_zh: ARIMA
+category:
+  task: [time-series, prediction]
+family: [statistics]
+learning_type: [time-series]
+difficulty: intermediate
+data_requirements:
+  numeric: true
+  temporal: true
+prerequisites: [stationarity, acf-pacf]
+core_concepts: [ar, i, ma, stationarity, aic]
+knowledge_units: [stationarity, differencing, acf-pacf, residual-white-noise]
+use_when:
+  - 单变量时间序列
+  - 短期预测且结构相对稳定
+avoid_when:
+  - 强外生驱动未建模
+  - 样本极短
+advantages: [经典可解释]
+limitations: [需平稳化, 多变量弱]
+common_mistakes: [no_stationarity_check, overfit_orders]
+validation: [aic, residual-ljung-box, rolling-forecast]
+alternatives: [gm11, random-forest, xgboost]
+summary: 自回归积分滑动平均模型，时间序列经典方法。
+demo_priority: 7

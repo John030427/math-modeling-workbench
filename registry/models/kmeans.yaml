@@ -1,0 +1,64 @@
+id: kmeans
+name: K-Means
+name_zh: K-Means 聚类
+category:
+  task:
+    - clustering
+family:
+  - machine-learning
+learning_type:
+  - unsupervised-learning
+difficulty: beginner
+data_requirements:
+  numeric: true
+prerequisites:
+  - distance
+  - feature-scaling
+core_concepts:
+  - centroid
+  - euclidean-distance
+  - SSE
+  - iteration
+  - convergence
+knowledge_units:
+  - clustering-basic
+  - distance
+  - feature-scaling
+  - centroid
+  - iteration
+  - k-selection
+  - sse
+  - silhouette
+  - initialization
+  - local-optimum
+  - outlier-sensitivity
+  - kmeans-vs-dbscan
+use_when:
+  - 需要把样本分成大致球形的簇
+  - 事先大致知道簇数 K
+  - 特征已数值化且可比较
+avoid_when:
+  - 簇形状非凸 / 密度差异大
+  - 存在严重异常值且未处理
+  - 特征量纲差异巨大且未标准化
+advantages:
+  - 直观、速度快、易解释
+  - 中心点有业务含义
+limitations:
+  - 对初始化敏感
+  - 假设簇近似球形
+  - 需指定 K
+common_mistakes:
+  - not_scaling_features
+  - blindly_selecting_k
+  - ignoring_outliers
+  - using_on_non_spherical_clusters
+validation:
+  - elbow
+  - silhouette-score
+alternatives:
+  - dbscan
+  - hierarchical-clustering
+  - gmm
+summary: 通过迭代更新簇中心，把样本划分到最近中心，最小化簇内平方误差（SSE）。
+demo_priority: 1

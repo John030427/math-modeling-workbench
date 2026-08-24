@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+apps/api/data/
+node_modules/
+.next/
+.DS_Store
+*.db
+workspace/*/
+!workspace/.gitkeep
+.env

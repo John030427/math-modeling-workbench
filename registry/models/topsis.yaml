@@ -1,0 +1,26 @@
+id: topsis
+name: TOPSIS
+name_zh: TOPSIS
+category:
+  task: [evaluation]
+family: [operations-research, statistics]
+learning_type: [multi-criteria]
+difficulty: beginner
+data_requirements:
+  numeric: true
+prerequisites: [normalization, ideal-solution]
+core_concepts: [positive-ideal, negative-ideal, relative-closeness]
+knowledge_units: [normalization, ideal-solution, closeness]
+use_when:
+  - 多指标综合评价
+  - 已有权重或可与熵权/AHP 组合
+avoid_when:
+  - 指标强相关未处理
+  - 量纲/方向未正确处理
+advantages: [几何直观, 易实现]
+limitations: [对权重敏感, 秩逆转风险]
+common_mistakes: [wrong_benefit_cost_direction, unnormalized]
+validation: [sensitivity, rank-stability]
+alternatives: [ahp, entropy-weight, pca]
+summary: 计算方案到正负理想解的距离，用相对贴近度排序。
+demo_priority: 4

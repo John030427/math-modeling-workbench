@@ -1,0 +1,26 @@
+id: linear-regression
+name: Linear Regression
+name_zh: 线性回归
+category:
+  task: [regression, prediction]
+family: [statistics, machine-learning]
+learning_type: [supervised-learning]
+difficulty: beginner
+data_requirements:
+  numeric: true
+prerequisites: [correlation, residual]
+core_concepts: [ols, residual, r2, assumption]
+knowledge_units: [ols, residual-analysis, multicollinearity]
+use_when:
+  - 关系近似线性
+  - 需要可解释系数
+avoid_when:
+  - 强非线性
+  - 严重异方差未处理
+advantages: [可解释, 基线强]
+limitations: [线性假设]
+common_mistakes: [skip_residual_check, data_leakage]
+validation: [r2, residual-plot, cross-validation]
+alternatives: [polynomial-regression, random-forest, xgboost]
+summary: 用线性函数拟合目标，是预测任务的重要 baseline。
+demo_priority: 5

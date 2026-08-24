@@ -1,0 +1,12 @@
+id: entropy-weight
+name: Entropy Weight
+name_zh: 熵权法
+category: { task: [evaluation] }
+family: [statistics]
+learning_type: [multi-criteria]
+difficulty: beginner
+summary: 用信息熵客观赋权，常与 TOPSIS 组合。
+demo_priority: 23
+use_when: [需要客观权重]
+avoid_when: [指标信息量极低或强主观偏好必须专家定权]
+alternatives: [ahp, critic]
