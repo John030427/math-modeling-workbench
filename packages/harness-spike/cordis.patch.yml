@@ -1,0 +1,7 @@
+# Disables shipped ui-layout and inserts MathModel harness layout (experiment only).
+- id: ui-layout
+  disabled: true
+
+- insert:
+    - id: mathmodel-harness-layout
+      name: '@math-modeling/harness-spike'

@@ -1,0 +1,4 @@
+# @math-modeling/dsh-mathmodeling — inserts host + client halves into web profile.
+- insert:
+    - id: dsh-mathmodeling
+      name: '@math-modeling/dsh-mathmodeling'

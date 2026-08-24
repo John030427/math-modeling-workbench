@@ -1,0 +1,21 @@
+{
+  "name": "@math-modeling/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  },
+  "exports": {
+    "./context": "./dist/context/types.js",
+    "./srs": "./dist/srs/index.js",
+    "./mastery": "./dist/mastery/index.js",
+    "./quiz": "./dist/quiz/index.js",
+    "./tutor": "./dist/tutor/index.js",
+    "./algorithm-provider": "./dist/algorithm-provider/types.js"
+  }
+}

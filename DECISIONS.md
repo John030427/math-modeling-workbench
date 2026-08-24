@@ -31,3 +31,22 @@ MVP runs clustering / simple sklearn-style logic inside FastAPI with size limits
 ## D8 — Single local user
 
 SQLite user `demo` with seed mastery state; “Reset Demo” restores seed.
+
+## D11 — DSH plugin as final delivery (2026-08-24)
+
+Phase 2+ targets `@math-modeling/dsh-mathmodeling` Profile Bundle.  
+`apps/web + apps/api` remain MVP prototype for extraction only.  
+Agent UX uses DSH native session + `modeling-tutor` skill — no standalone AI chat in plugin.
+
+## D12 — DSH UI contracts only (2026-08-25)
+
+Do not assume third-party global page or sidebar primary navigation.  
+Primary: `sidebar.footer.action` → `conversation.view`「数模工作台」.  
+Fallback: `shell.overlay` drawer.  
+See `research/DSH_UI_CAPABILITY_MATRIX.md`.
+
+## D10 — Algorithm Provider abstraction
+
+No direct dependency on chengziyue1222 internal APIs.  
+Providers: `local-provider`, `czy-provider` (pinned), `future-provider`.  
+See `THIRD_PARTY.md`.

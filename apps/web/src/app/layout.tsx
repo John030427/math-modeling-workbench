@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@math-modeling/ui/styles.css";
 import { AppShell } from "@/components/AppShell";
 
 export const metadata: Metadata = {

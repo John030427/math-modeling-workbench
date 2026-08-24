@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-08-24T19:18:46.607Z",
+  "models": [
+    {
+      "id": "kmeans",
+      "name": "K-Means",
+      "name_zh": "K-Means 聚类",
+      "difficulty": "beginner",
+      "demo_priority": 1,
+      "summary": "通过迭代更新簇中心，把样本划分到最近中心，最小化簇内平方误差（SSE）。"
+    },
+    {
+      "id": "dbscan",
+      "name": "DBSCAN",
+      "name_zh": "DBSCAN 密度聚类",
+      "difficulty": "intermediate",
+      "demo_priority": 2,
+      "summary": "基于密度连通性聚类，可识别噪声与非球形簇。"
+    },
+    {
+      "id": "ahp",
+      "name": "AHP",
+      "name_zh": "层次分析法",
+      "difficulty": "beginner",
+      "demo_priority": 3,
+      "summary": "通过两两比较构建判断矩阵，求权重并做一致性检验。"
+    },
+    {
+      "id": "topsis",
+      "name": "TOPSIS",
+      "name_zh": "TOPSIS",
+      "difficulty": "beginner",
+      "demo_priority": 4,
+      "summary": "计算方案到正负理想解的距离，用相对贴近度排序。"
+    },
+    {
+      "id": "linear-regression",
+      "name": "Linear Regression",
+      "name_zh": "线性回归",
+      "difficulty": "beginner",
+      "demo_priority": 5,
+      "summary": "用线性函数拟合目标，是预测任务的重要 baseline。"
+    },
+    {
+      "id": "random-forest",
+      "name": "Random Forest",
+      "name_zh": "随机森林",
+      "difficulty": "intermediate",
+      "demo_priority": 6,
+      "summary": "多棵决策树 bagging 集成，适合非线性表格数据。"
+    },
+    {
+      "id": "arima",
+      "name": "ARIMA",
+      "name_zh": "ARIMA",
+      "difficulty": "intermediate",
+      "demo_priority": 7,
+      "summary": "自回归积分滑动平均模型，时间序列经典方法。"
+    },
+    {
+      "id": "pso",
+      "name": "PSO",
+      "name_zh": "粒子群优化",
+      "difficulty": "intermediate",
+      "demo_priority": 8,
+      "summary": "群体启发式搜索；能用精确优化时不要默认上 PSO。"
+    },
+    {
+      "id": "lp",
+      "name": "Linear Programming",
+      "name_zh": "线性规划",
+      "difficulty": "beginner",
+      "demo_priority": 20,
+      "summary": "线性目标与线性约束的精确优化基线；能用 LP 时不要默认元启发式。"
+    },
+    {
+      "id": "milp",
+      "name": "MILP",
+      "name_zh": "混合整数线性规划",
+      "difficulty": "intermediate",
+      "demo_priority": 21,
+      "summary": "在 LP 基础上引入整数/0-1 变量，适合选址、路径的精确建模。"
+    },
+    {
+      "id": "hierarchical-clustering",
+      "name": "Hierarchical Clustering",
+      "name_zh": "层次聚类",
+      "difficulty": "intermediate",
+      "demo_priority": 22,
+      "summary": "通过凝聚/分裂层次结构探索簇，样本不大时便于可视化树状图。"
+    },
+    {
+      "id": "entropy-weight",
+      "name": "Entropy Weight",
+      "name_zh": "熵权法",
+      "difficulty": "beginner",
+      "demo_priority": 23,
+      "summary": "用信息熵客观赋权，常与 TOPSIS 组合。"
+    },
+    {
+      "id": "xgboost",
+      "name": "XGBoost",
+      "name_zh": "XGBoost",
+      "difficulty": "intermediate",
+      "demo_priority": 24,
+      "summary": "梯度提升树；应在线性/森林基线之后作为对照，注意泄漏与调参。"
+    }
+  ]
+}

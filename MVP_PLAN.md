@@ -1,5 +1,8 @@
 # MVP Plan
 
+> **Note (Phase 2):** MVP delivered via `apps/web + apps/api` for demo/share.  
+> **Final product shape** = DSH plugin — see `PHASE2_PLAN.md`. Do not expand standalone apps; extract & migrate.
+
 Goal: Stable live-demo workbench for a math-modeling experience talk.
 
 ## Vertical slices

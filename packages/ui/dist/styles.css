@@ -1,0 +1,60 @@
+.mm-root {
+  --mm-line: rgba(128, 128, 128, 0.25);
+  --mm-accent: #c45c26;
+  --mm-accent-2: #1f7a6c;
+  --mm-muted: rgba(255, 255, 255, 0.65);
+  font-family: system-ui, sans-serif;
+  color: inherit;
+}
+.mm-root .mm-muted { color: var(--mm-muted); font-size: 0.875rem; }
+.mm-root .mm-panel {
+  border: 1px solid var(--mm-line);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.mm-root .mm-btn {
+  border: 1px solid var(--mm-line);
+  background: rgba(96, 165, 250, 0.15);
+  color: inherit;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+}
+.mm-root .mm-btn:hover { background: rgba(96, 165, 250, 0.25); }
+.mm-root .mm-btn.ghost { background: transparent; }
+.mm-root .mm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.mm-root .mm-chip {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.2);
+  margin-right: 6px;
+}
+.mm-root .mm-chip.active { background: rgba(96, 165, 250, 0.35); }
+.mm-root .mm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.mm-root .mm-card {
+  border: 1px solid var(--mm-line);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.mm-root .mm-card:hover { border-color: rgba(96, 165, 250, 0.6); }
+.mm-root .mm-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 8px; }
+.mm-root .mm-steps { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.mm-root pre.mm-code {
+  margin-top: 12px;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 12px;
+  font-size: 0.75rem;
+  border-radius: 8px;
+}
