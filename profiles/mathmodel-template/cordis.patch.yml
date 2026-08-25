@@ -1,0 +1,4 @@
+# MathModel product profile — composition is owned by @math-modeling/mathmodel-suite
+# (its bundle patch disables ui-layout and orders shell before dsh-mathmodeling).
+# Keep this profile layer minimal; product intent lives in the suite.
+[]

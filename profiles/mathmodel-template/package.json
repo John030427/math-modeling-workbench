@@ -1,0 +1,16 @@
+{
+  "name": "dsh-profile-mathmodel",
+  "private": true,
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "@math-modeling/mathmodel-suite"
+      ]
+    }
+  },
+  "dependencies": {
+    "@math-modeling/mathmodel-suite": "link:__MM_REPO__/packages/mathmodel-suite"
+  }
+}
