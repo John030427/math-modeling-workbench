@@ -63,11 +63,11 @@ if ($needUiLayout -or $needCounter) {
   Write-Host "[shell-v2-enable] profile patch updated (ui-layout/thinking-counter)"
 }
 
-# Re-enable dsh-mathmodeling if a stale disabled marker exists
+# Re-enable dsh-mathmodeling and clear any stale shell-v2 disabled marker
 $patchLines = Get-Content $ProfilePatchPath
 $filtered = New-Object System.Collections.Generic.List[string]
 for ($i = 0; $i -lt $patchLines.Count; $i++) {
-  if ($patchLines[$i] -match '^- id: dsh-mathmodeling\s*$' -and ($i + 1) -lt $patchLines.Count -and $patchLines[$i + 1] -match 'disabled:\s*true') {
+  if (($patchLines[$i] -match '^- id: (dsh-mathmodeling|shell-v2)\s*$') -and ($i + 1) -lt $patchLines.Count -and $patchLines[$i + 1] -match 'disabled:\s*true') {
     $i++
     continue
   }
@@ -75,7 +75,7 @@ for ($i = 0; $i -lt $patchLines.Count; $i++) {
 }
 if ($filtered.Count -ne $patchLines.Count) {
   $filtered | Set-Content -Path $ProfilePatchPath -Encoding utf8
-  Write-Host "[shell-v2-enable] re-enabled dsh-mathmodeling in profile patch"
+  Write-Host "[shell-v2-enable] cleared stale disabled markers (dsh-mathmodeling/shell-v2)"
 }
 
 Write-Host "[shell-v2-enable] Added $PkgName to profile bundles. Restart DSH web profile (or hot-assemble via super-injector) to activate."

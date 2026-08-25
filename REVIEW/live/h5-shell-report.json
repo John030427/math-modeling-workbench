@@ -1,0 +1,12 @@
+{
+  "mode": "shell",
+  "checks": {
+    "shellMounted": true,
+    "composerPresent": true,
+    "sidebarVisible": true,
+    "navTabs": 8
+  },
+  "pass": true,
+  "consoleErrors": [],
+  "pageErrors": []
+}

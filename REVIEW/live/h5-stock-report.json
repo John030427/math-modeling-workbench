@@ -1,0 +1,11 @@
+{
+  "mode": "stock",
+  "checks": {
+    "shellMounted": false,
+    "composerPresent": true,
+    "sidebarVisible": true
+  },
+  "pass": true,
+  "consoleErrors": [],
+  "pageErrors": []
+}

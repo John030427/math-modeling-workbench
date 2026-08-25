@@ -32,3 +32,15 @@ R1 UX gate: **conditional pass** — U1 resolved; U2 must be fixed before final 
 1. Fix U2 (header collision).
 2. Dark-theme spot check (toggle theme, re-screenshot).
 3. Workbench column content check with ModelingWorkbench visible (screenshot `h3-workbench.png` review after U2 fix).
+
+---
+
+# Round 2 outcomes (2026-08-25)
+
+| Finding | Resolution |
+|---|---|
+| U2 header collision | **FIXED** — `paddingRight: 96` on chat header; verified in R2/R3 screenshots |
+| U6 dark-theme contrast | **VERIFIED** — forced-dark body override → frame palette followed (`scripts/dark-check.mjs`, `adapted: true`); badge colors readable on dark |
+| A2 palette divergence risk | **MITIGATED** — MutationObserver on body/html class+style re-derives palette; adaptation mechanism proven |
+
+R2 verdict: **pass** — no open Critical/Major UX findings. U3 remains a low-priority density note for when the registry grows.

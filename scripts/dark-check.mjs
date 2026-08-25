@@ -1,0 +1,11 @@
+import { chromium } from 'playwright-core'
+const browser = await chromium.launch({ channel: 'msedge', headless: true })
+const page = await browser.newPage({ viewport: { width: 1680, height: 950 } })
+await page.goto('http://127.0.0.1:3080', { waitUntil: 'domcontentloaded' })
+await page.waitForSelector('[data-mm-shell="v2"]', { timeout: 25000 })
+const before = await page.evaluate(() => getComputedStyle(document.querySelector('[data-mm-shell="v2"]')).backgroundColor)
+await page.evaluate(() => { document.body.style.backgroundColor = 'rgb(20, 22, 30)'; document.body.style.color = 'rgb(230, 233, 240)' })
+await page.waitForTimeout(800)
+const after = await page.evaluate(() => getComputedStyle(document.querySelector('[data-mm-shell="v2"]')).backgroundColor)
+console.log(JSON.stringify({ before, after, adapted: before !== after }))
+await browser.close()
