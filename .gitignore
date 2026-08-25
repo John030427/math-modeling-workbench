@@ -11,3 +11,5 @@ workspace/*/
 .env
 
 .playwright-cli/
+
+_session-view/
