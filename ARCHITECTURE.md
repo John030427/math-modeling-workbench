@@ -9,22 +9,23 @@ The product ships as a **dedicated DSH profile** (`mathmodel`) assembled from st
 ```text
 ~/.dsh/profiles/web       → stock DSH + user's own plugins (product never injects here)
 ~/.dsh/profiles/mathmodel → dsh-base + dsh-web-app
-                            + @math-modeling/dsh-mathmodeling
-                            + @math-modeling/shell-v2   (owns root; ui-layout patched off)
+                            + @math-modeling/mathmodel-suite   ← single product bundle
+                                (composes mathmodel-shell + dsh-mathmodeling;
+                                 bundle patch: ui-layout off, shell owns root)
 run: dsh --profile mathmodel --port 3100 --no-open
 ```
 
-Mechanism + CLI evidence: `research/DSH_PROFILE_DISTRIBUTION_RESEARCH.md`.
-Gate: `PRODUCT_UI_GATE_REPORT.md` (G1–G7 PASS).
+Mechanism + CLI evidence: `research/DSH_PROFILE_DISTRIBUTION_RESEARCH.md`, `research/MATHMODEL_PROFILE_BOOTSTRAP.md`.
+Gates: `SHELL_V2_GATE_REPORT.md` = technical (historical) → `REVIEW/PRODUCT_UI_REVIEW.md` = product UI gate (authoritative).
 
-## UI principles (Shell V2 — product chrome)
+## UI principles (MathModel Shell — product chrome)
 
 ```text
-mathmodel profile boots Shell V2 (three columns):
-  nav (仪表盘 · 建模工作台 · 训练 · 竞赛 · 习题 · 案例 · 论文 · 画像 + official sidebar seat)
-  │ workbench (Dashboard cards → ModelingWorkbench via mathmodel.workbench slot)
-  │ native Agent conversation (right column, /modeling-tutor)
-theme-adaptive palette; placeholders for not-yet-built sections; no dead clicks.
+mathmodel profile boots MathModel Shell (232px | flexible | 400px):
+  single MathModel sidebar (概览/学习/训练/竞赛/论文/个人 — no official sidebar embedded)
+  │ dominant workbench (产品 Dashboard · 模型地图 Task×Family×Algorithm · K-Means 课程)
+  │ narrow native Agent column (≤1180px collapses to drawer + FAB)
+theme-adaptive palette; honest placeholders; no duplicate 数模工作台 tab (compat-gated).
 ```
 
 Legacy plugin-path UI (still shipped inside dsh-mathmodeling, used when running under stock web profile):
@@ -117,24 +118,28 @@ Lite MathMN patterns under `workspace/<projectId>/`:
 
 ```text
 packages/
-  dsh-mathmodeling/     # DSH bundle (domain: APIs, skill, workbench provider)
-  shell-v2/             # MathModel Shell V2 (product chrome, owns root in mathmodel profile)
-  harness-spike/        # frozen Live-Gate prototype (reference only)
+  mathmodel-suite/      # THE product bundle (composition: shell + domain; patch owns ui-layout off)
+  mathmodel-shell/      # presentation-only product chrome (nav | workbench | narrow Agent)
+  dsh-mathmodeling/     # domain: APIs, modeling-tutor skill, workbench provider (compat-gated client)
+  shell-v2/             # FROZEN technical proof (historical)
+  harness-spike/        # FROZEN Live-Gate prototype (historical)
   core/                 # shared TS logic (extracted from apps/api)
   ui/                   # ModelingWorkbench shared UI
 apps/                   # MVP prototype (frozen feature expansion)
+profiles/mathmodel-template/  # profile bootstrap template (init materializes from here)
 registry/               # YAML models, quizzes (→ migrate to core)
 skills/                 # skill contracts (mirror in plugin bundle)
 research/               # DSH profile/UI research, GitHub benchmark docs
-scripts/                # profile install/start, dsh-install/uninstall, gate drivers
+scripts/                # profile init/verify/start/remove, gate drivers
 ```
 
-## Install / run / remove (product)
+## Install / run / verify / remove (product)
 
 ```powershell
-scripts/mathmodel-profile-install.ps1   # create/refresh mathmodel profile (idempotent)
-scripts/mathmodel-profile-start.ps1     # launch on :3100 (auto-finds dsh bin)
-# remove product entirely: delete ~/.dsh/profiles/mathmodel (web profile never touched)
+scripts/mathmodel-profile-init.ps1      # create/refresh mathmodel profile from template (idempotent)
+scripts/mathmodel-start.ps1             # launch on :3100 (auto-finds dsh bin)
+scripts/mathmodel-profile-verify.ps1    # dump-config composition + optional live health (-LivePort 3100)
+scripts/mathmodel-remove.ps1            # stop instance + delete profile dir (web untouched)
 ```
 
 Plugin dev iteration (legacy path, web profile): `scripts/dsh-install.ps1` → `dev_install_package`; uninstall via `scripts/dsh-uninstall.ps1`. Must not break DSH when plugin absent.

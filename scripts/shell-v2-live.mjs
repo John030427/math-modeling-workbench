@@ -70,11 +70,11 @@ async function visibleSection(page, id, timeout = 5000) {
   )
 }
 
-const navLabel = (label) => `[data-mm-shell="v2"] nav div[role="tab"]:has-text("${label}")`
+const navLabel = (label) => `[data-mm-shell] nav div[role="tab"]:has-text("${label}")`
 
 /** Send composer text: Escape (dismiss command palette) → Enter → geometric send-button fallback. */
 async function sendComposer(page, text) {
-  const composer = page.locator('[data-mm-shell="v2"] section textarea').first()
+  const composer = page.locator('[data-mm-agent] textarea, [data-mm-agent] [role="textbox"], [data-mm-shell] section textarea').first()
   await composer.waitFor({ timeout: 20000 })
   await composer.click()
   await composer.fill(text)
@@ -94,7 +94,7 @@ async function sendComposer(page, text) {
     // geometric fallback: any enabled button inside the chat column near/below the composer
     const box = await composer.boundingBox()
     if (box) {
-      const btns = await page.locator('[data-mm-shell="v2"] section button').all()
+      const btns = await page.locator('[data-mm-shell] section button').all()
       for (const b of btns) {
         const bb = await b.boundingBox().catch(() => null)
         if (!bb) continue
@@ -124,10 +124,10 @@ async function h3() {
   const result = { gate: 'H3', steps: [] }
   try {
     await page.goto(BASE, { waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('[data-mm-shell="v2"]', { timeout: 25000 })
+    await page.waitForSelector('[data-mm-shell]', { timeout: 25000 })
     result.steps.push('shell frame mounted')
 
-    const navCount = await page.locator('[data-mm-shell="v2"] nav div[role="tab"]').count()
+    const navCount = await page.locator('[data-mm-shell] nav div[role="tab"]').count()
     assert(navCount === 8, `nav tabs = ${navCount}, want 8`)
     result.steps.push(`nav tabs: ${navCount}`)
 
@@ -167,7 +167,7 @@ async function h3() {
 
     // three columns sanity
     const cols = await page.evaluate(() => {
-      const f = document.querySelector('[data-mm-shell="v2"]')
+      const f = document.querySelector('[data-mm-shell]')
       return f ? getComputedStyle(f).gridTemplateColumns.split(' ').length : 0
     })
     assert(cols === 3, `grid columns = ${cols}`)
@@ -200,7 +200,7 @@ async function h1() {
   const result = { gate: 'H1', steps: [] }
   try {
     await page.goto(BASE, { waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('[data-mm-shell="v2"]', { timeout: 25000 })
+    await page.waitForSelector('[data-mm-shell]', { timeout: 25000 })
 
     // composer lives in right column; type and send
     const ok = await sendComposer(page, '请原样回复四个字符：OK-H1')
@@ -264,10 +264,10 @@ async function h2() {
 
     // UI-level: shell up → new session → reload → shell still up (restore)
     await page.goto(B, { waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('[data-mm-shell="v2"]', { timeout: 25000 })
+    await page.waitForSelector('[data-mm-shell]', { timeout: 25000 })
     await shot(page, 'h2-before-reload')
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('[data-mm-shell="v2"]', { timeout: 25000 })
+    await page.waitForSelector('[data-mm-shell]', { timeout: 25000 })
     result.steps.push('reload restored shell UI')
     await shot(page, 'h2-after-reload')
 
@@ -314,7 +314,7 @@ async function h4() {
     result.steps.push('offline tutor answered')
 
     await page.goto(BASE, { waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('[data-mm-shell="v2"]', { timeout: 25000 })
+    await page.waitForSelector('[data-mm-shell]', { timeout: 25000 })
     // slash-commands may render as chips (no raw-text echo) — ignore echo, judge by reply
     await sendComposer(page, '/modeling-tutor 当前模型是K-Means，它的核心思想是什么？')
     result.steps.push('/modeling-tutor dispatched')
@@ -350,3 +350,5 @@ for (const g of which) {
   console.log(`\n===== RUN ${g.toUpperCase()} =====`)
   await runners[g]()
 }
+
+
