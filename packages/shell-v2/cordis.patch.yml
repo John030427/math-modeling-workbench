@@ -1,0 +1,6 @@
+# Package-level patch: insert self only (same discipline as harness-spike).
+# ui-layout / dsh-thinking-counter quarantine is managed by PROFILE
+# cordis.patch.yml via scripts/shell-v2-enable.ps1|disable.ps1.
+- insert:
+    - id: mathmodel-shell-v2
+      name: '@math-modeling/shell-v2'
