@@ -9,3 +9,5 @@ node_modules/
 workspace/*/
 !workspace/.gitkeep
 .env
+
+.playwright-cli/

@@ -7,7 +7,8 @@
   "main": "./lib/index.js",
   "exports": {
     ".": { "default": "./lib/index.js" },
-    "./client": { "default": "./lib/client.js" }
+    "./client": { "default": "./lib/client.js" },
+    "./package.json": "./package.json"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": ">=4.0.0-rc <5",
@@ -30,8 +31,11 @@
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },
     "client": {
-      "inject": ["@deepseek-ai/dsh-client-runtime"],
-      "platform": "web"
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ],
+      "platform": "web",
+      "immediately": true
     }
   }
 }

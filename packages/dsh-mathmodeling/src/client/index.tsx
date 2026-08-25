@@ -292,24 +292,24 @@ export function apply(ctx: ClientContext): void {
     }
   })
 
-  ctx.effect(
-    () =>
-      ctx.slots.register(
-        {
-          name: 'sidebar.footer.action',
-          id: 'dsh-mathmodeling',
-          order: 100,
-          inject: () => {
-            const current = ctx.sessions.list.getSnapshot?.()?.current
-            const helpers = current ? getSessionHelpers(ctx, current) : {}
-            return {
-              setView: helpers.setView,
-              openOverlay: () => document.dispatchEvent(new CustomEvent('dsh-mathmodeling:request-overlay')),
-            }
-          },
+  // Must inject (not bare register): under harness-spike, sidebar.footer.action
+  // is declared by ui-sidebar only after ctx.layout is provided — race otherwise.
+  ctx.slots.inject('sidebar.footer.action', () =>
+    ctx.slots.register(
+      {
+        name: 'sidebar.footer.action',
+        id: 'dsh-mathmodeling',
+        order: 100,
+        inject: () => {
+          const current = ctx.sessions.list.getSnapshot?.()?.current
+          const helpers = current ? getSessionHelpers(ctx, current) : {}
+          return {
+            setView: helpers.setView,
+            openOverlay: () => document.dispatchEvent(new CustomEvent('dsh-mathmodeling:request-overlay')),
+          }
         },
-        MathModelingFooter,
-      ),
-    'dsh-mathmodeling: footer',
+      },
+      MathModelingFooter,
+    ),
   )
 }

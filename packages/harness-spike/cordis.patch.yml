@@ -1,7 +1,5 @@
-# Disables shipped ui-layout and inserts MathModel harness layout (experiment only).
-- id: ui-layout
-  disabled: true
-
+# Package-level patch: insert self only (like dsh-mathmodeling).
+# Disable ui-layout via PROFILE cordis.patch.yml for Live Gate control.
 - insert:
     - id: mathmodel-harness-layout
       name: '@math-modeling/harness-spike'

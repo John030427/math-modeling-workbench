@@ -786,7 +786,8 @@ function apply(ctx) {
       unregister();
     };
   });
-  ctx.effect(
+  ctx.slots.inject(
+    "sidebar.footer.action",
     () => ctx.slots.register(
       {
         name: "sidebar.footer.action",
@@ -802,8 +803,7 @@ function apply(ctx) {
         }
       },
       MathModelingFooter
-    ),
-    "dsh-mathmodeling: footer"
+    )
   );
 }
 

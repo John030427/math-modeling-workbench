@@ -26,13 +26,38 @@ if ($profilePkg.dependencies.$PkgName) {
 if ($profilePkg.dsh.profile.bundles -notcontains $PkgName) {
   $profilePkg.dsh.profile.bundles += $PkgName
 }
-($profilePkg | ConvertTo-Json -Depth 20) + "`n" | Set-Content -Path $ProfilePkgPath -Encoding utf8
+$json = ($profilePkg | ConvertTo-Json -Depth 20) + "`n"
+[System.IO.File]::WriteAllText($ProfilePkgPath, $json, [System.Text.UTF8Encoding]::new($false))
 
 $scopeDir = Join-Path $ProfileDir "node_modules\@math-modeling"
 $linkPath = Join-Path $scopeDir "harness-spike"
 New-Item -ItemType Directory -Force -Path $scopeDir | Out-Null
 if (-not (Test-Path $linkPath)) {
   cmd /c mklink /J "$linkPath" "$HarnessDir" | Out-Null
+}
+
+# Ensure profile patch disables ui-layout (bundle inserts harness-spike)
+$patchText = if (Test-Path $ProfilePatchPath) { Get-Content $ProfilePatchPath -Raw } else { "" }
+if ($patchText -notmatch '(?m)^- id: ui-layout\s*$') {
+  $append = @"
+
+# ── MathModel Harness Spike (Live Gate) ──
+- id: ui-layout
+  disabled: true
+# thinking-counter registers sidebar.footer.action without slots.inject;
+# under custom root it races and aborts the whole client boot.
+- id: dsh-thinking-counter
+  disabled: true
+"@
+  Add-Content -Path $ProfilePatchPath -Value $append -Encoding utf8
+  Write-Host "[harness-enable] profile patch: disabled ui-layout + dsh-thinking-counter"
+} else {
+  if ($patchText -notmatch 'dsh-thinking-counter') {
+    Add-Content -Path $ProfilePatchPath -Value "`n- id: dsh-thinking-counter`n  disabled: true`n" -Encoding utf8
+    Write-Host "[harness-enable] also disabled dsh-thinking-counter for boot safety"
+  } else {
+    Write-Host "[harness-enable] profile patch already disables ui-layout"
+  }
 }
 
 # Re-enable mathmodeling plugin if profile disabled it
@@ -51,4 +76,3 @@ if ($filtered.Count -ne $patchLines.Count) {
 }
 
 Write-Host "[harness-enable] Added $PkgName to profile bundles. Restart DSH web profile to load layout."
-Write-Host "[harness-enable] ui-layout will be disabled via harness-spike bundle patch."
