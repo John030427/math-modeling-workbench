@@ -1,26 +1,38 @@
 # Architecture
 
-**Last updated:** 2026-08-25 (DSH UI capability correction)
+**Last updated:** 2026-08-25 (Phase 3 — dedicated mathmodel profile distribution)
 
 ## Target delivery shape
 
-The product ships as a **DSH Profile Bundle plugin**, not a standalone web app.
+The product ships as a **dedicated DSH profile** (`mathmodel`) assembled from standard bundles — the user's normal `web` profile stays **stock DSH**, untouched.
 
-## UI principles (DSH-native — official contracts only)
+```text
+~/.dsh/profiles/web       → stock DSH + user's own plugins (product never injects here)
+~/.dsh/profiles/mathmodel → dsh-base + dsh-web-app
+                            + @math-modeling/dsh-mathmodeling
+                            + @math-modeling/shell-v2   (owns root; ui-layout patched off)
+run: dsh --profile mathmodel --port 3100 --no-open
+```
 
-See **`research/DSH_UI_CAPABILITY_MATRIX.md`** for what is / is not supported.
+Mechanism + CLI evidence: `research/DSH_PROFILE_DISTRIBUTION_RESEARCH.md`.
+Gate: `PRODUCT_UI_GATE_REPORT.md` (G1–G7 PASS).
+
+## UI principles (Shell V2 — product chrome)
+
+```text
+mathmodel profile boots Shell V2 (three columns):
+  nav (仪表盘 · 建模工作台 · 训练 · 竞赛 · 习题 · 案例 · 论文 · 画像 + official sidebar seat)
+  │ workbench (Dashboard cards → ModelingWorkbench via mathmodel.workbench slot)
+  │ native Agent conversation (right column, /modeling-tutor)
+theme-adaptive palette; placeholders for not-yet-built sections; no dead clicks.
+```
+
+Legacy plugin-path UI (still shipped inside dsh-mathmodeling, used when running under stock web profile):
 
 ```text
 sidebar.footer.action 「📐 数模工作台」
-  → current / dedicated math-modeling Session
   → conversation.view tab「数模工作台」
-  → Session tabs: [对话] [数模工作台] [轨迹]
-
-conversation.view 内部导航:
-  Dashboard · 模型地图 · K-Means · Gym · 比赛工作台 · 题库 · 案例 · 论文评审 · 能力画像
-
-shell.overlay: fallback drawer（非主路径）
-Tutor: DSH Chat + /modeling-tutor — 无第四栏 Chat
+shell.overlay: fallback drawer
 ```
 
 **Do not:** patch DSH Core; assume global page / sidebar primary nav / right plugin panel APIs.
@@ -105,20 +117,27 @@ Lite MathMN patterns under `workspace/<projectId>/`:
 
 ```text
 packages/
-  dsh-mathmodeling/     # DSH bundle (delivery)
+  dsh-mathmodeling/     # DSH bundle (domain: APIs, skill, workbench provider)
+  shell-v2/             # MathModel Shell V2 (product chrome, owns root in mathmodel profile)
+  harness-spike/        # frozen Live-Gate prototype (reference only)
   core/                 # shared TS logic (extracted from apps/api)
+  ui/                   # ModelingWorkbench shared UI
 apps/                   # MVP prototype (frozen feature expansion)
 registry/               # YAML models, quizzes (→ migrate to core)
 skills/                 # skill contracts (mirror in plugin bundle)
-research/               # GitHub benchmark docs
-scripts/                # dsh-install, dsh-uninstall, dev helpers
+research/               # DSH profile/UI research, GitHub benchmark docs
+scripts/                # profile install/start, dsh-install/uninstall, gate drivers
 ```
 
-## Install / uninstall
+## Install / run / remove (product)
 
-- Install: `scripts/dsh-install.ps1` → `dev_install_package` (super-injector), link in `~/.dsh/profiles/web/package.json`.
-- Uninstall: `scripts/dsh-uninstall.ps1` → `dev_uninject_plugin`.
-- Must not break DSH when plugin absent.
+```powershell
+scripts/mathmodel-profile-install.ps1   # create/refresh mathmodel profile (idempotent)
+scripts/mathmodel-profile-start.ps1     # launch on :3100 (auto-finds dsh bin)
+# remove product entirely: delete ~/.dsh/profiles/mathmodel (web profile never touched)
+```
+
+Plugin dev iteration (legacy path, web profile): `scripts/dsh-install.ps1` → `dev_install_package`; uninstall via `scripts/dsh-uninstall.ps1`. Must not break DSH when plugin absent.
 
 ## References
 

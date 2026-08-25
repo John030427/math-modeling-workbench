@@ -3,7 +3,7 @@
   "steps": [
     "shell frame mounted",
     "nav tabs: 8",
-    "dashboard cards matched: 9",
+    "dashboard cards matched: 17",
     "nav → workbench OK",
     "placeholder section OK",
     "card click → workbench, context POST = true",
