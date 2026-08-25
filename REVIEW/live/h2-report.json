@@ -1,0 +1,10 @@
+{
+  "gate": "H2",
+  "steps": [
+    "context isolation A=kmeans, B=topsis",
+    "reload restored shell UI"
+  ],
+  "ctxA": "kmeans",
+  "ctxB": "topsis",
+  "pass": true
+}

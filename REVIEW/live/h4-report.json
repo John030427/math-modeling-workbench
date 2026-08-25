@@ -1,0 +1,39 @@
+{
+  "gate": "H4",
+  "steps": [
+    "offline tutor answered",
+    "/modeling-tutor dispatched",
+    "tutor replied with kmeans pedagogy"
+  ],
+  "offline": {
+    "ok": true,
+    "context": {
+      "module": "mathmodeling",
+      "page": "atlas",
+      "model_id": "kmeans",
+      "knowledge_unit": null,
+      "lesson_step": null,
+      "problem_id": null,
+      "case_id": null,
+      "project_id": null,
+      "dataset_id": null,
+      "experiment_id": null,
+      "session_id": "gateTutor",
+      "user_id": "demo",
+      "route": "/mathmodeling",
+      "seed_prompt": null,
+      "updated_at": 1787650812903
+    },
+    "reply": {
+      "skill": "01-tutor",
+      "mode": "copilot",
+      "answer": "因为 K-Means 用欧氏距离。若收入是 3000–100000、年龄是 18–65，收入会主导距离，年龄几乎不起作用。标准化让各维可比。DBSCAN 同样基于距离/密度，通常也需要先处理量纲。",
+      "related_ku": [
+        "feature-scaling",
+        "distance"
+      ],
+      "offline": true
+    }
+  },
+  "pass": true
+}

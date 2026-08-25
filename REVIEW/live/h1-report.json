@@ -1,0 +1,10 @@
+{
+  "gate": "H1",
+  "steps": [
+    "message sent",
+    "agent replied OK-H1"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "pass": true
+}

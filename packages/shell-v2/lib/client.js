@@ -53,102 +53,148 @@ var SECTION_META = {
   paper: { title: "\u8BBA\u6587", sub: "\u8BBA\u6587\u7CBE\u8BFB\u4E0E\u5DEE\u8DDD\u5206\u6790" },
   profile: { title: "\u753B\u50CF", sub: "\u4E2A\u4EBA\u638C\u63E1\u5EA6\u753B\u50CF" }
 };
-var S = {
-  frame: {
-    display: "grid",
-    gridTemplateColumns: "236px minmax(0, 1.15fr) minmax(380px, 1fr)",
-    height: "100%",
-    width: "100%",
-    background: "var(--dsh-bg, #141414)",
-    color: "inherit",
-    overflow: "hidden"
-  },
-  nav: {
-    display: "flex",
-    flexDirection: "column",
-    minWidth: 0,
-    borderRight: "1px solid rgba(128,128,128,0.25)",
-    overflow: "hidden"
-  },
-  brand: {
-    padding: "14px 16px 12px",
-    borderBottom: "1px solid rgba(128,128,128,0.22)"
-  },
-  brandTitle: {
-    fontWeight: 700,
-    fontSize: 15,
-    letterSpacing: 0.2
-  },
-  brandSub: {
-    fontSize: 11,
-    opacity: 0.55,
-    marginTop: 3
-  },
-  navList: {
-    padding: "8px 8px",
-    display: "flex",
-    flexDirection: "column",
-    gap: 2
-  },
-  navItem: (active) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: 9,
-    padding: "7px 10px",
-    borderRadius: 8,
-    fontSize: 13,
-    cursor: "pointer",
-    userSelect: "none",
-    background: active ? "rgba(91,140,255,0.16)" : "transparent",
-    boxShadow: active ? "inset 2px 0 0 var(--mm-accent, #5b8cff)" : "none",
-    opacity: active ? 1 : 0.78,
-    transition: "background 120ms ease, opacity 120ms ease"
-  }),
-  navSeat: {
-    flex: 1,
-    minHeight: 0,
-    overflow: "auto",
-    borderTop: "1px solid rgba(128,128,128,0.18)"
-  },
-  main: {
-    minWidth: 0,
-    display: "flex",
-    flexDirection: "column",
-    borderRight: "1px solid rgba(128,128,128,0.25)",
-    overflow: "hidden"
-  },
-  mainHeader: {
-    padding: "10px 16px",
-    borderBottom: "1px solid rgba(128,128,128,0.2)",
-    display: "flex",
-    alignItems: "baseline",
-    gap: 10
-  },
-  mainTitle: { fontSize: 14, fontWeight: 600 },
-  mainSub: { fontSize: 12, opacity: 0.55 },
-  mainBody: { flex: 1, minHeight: 0, position: "relative" },
-  sectionPane: (visible) => ({
-    position: "absolute",
-    inset: 0,
-    overflow: "auto",
-    display: visible ? "block" : "none"
-  }),
-  chat: {
-    minWidth: 0,
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden"
-  },
-  chatHeader: {
-    padding: "9px 14px",
-    borderBottom: "1px solid rgba(128,128,128,0.2)",
-    fontSize: 12,
-    opacity: 0.65,
-    display: "flex",
-    justifyContent: "space-between"
-  },
-  chatBody: { flex: 1, minHeight: 0 }
-};
+function parseRgb(color) {
+  const m = color.match(/rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+  if (m) return [Number(m[1]), Number(m[2]), Number(m[3])];
+  const hex = color.replace("#", "");
+  if (hex.length >= 6) return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
+  return [255, 255, 255];
+}
+var lum = ([r, g, b]) => (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+var rgba = ([r, g, b], a) => `rgba(${r},${g},${b},${a})`;
+function derivePalette() {
+  const cs = getComputedStyle(document.body);
+  const bg = cs.backgroundColor || "rgb(255,255,255)";
+  const fg = cs.color || "rgb(15,17,21)";
+  const bgC = parseRgb(bg);
+  const fgC = parseRgb(fg);
+  const light = lum(bgC) > 0.5;
+  return {
+    bg,
+    fg,
+    border: rgba(fgC, light ? 0.14 : 0.16),
+    subtle: rgba(fgC, light ? 0.05 : 0.06),
+    cardBg: light ? "rgba(255,255,255,0.85)" : rgba(fgC, 0.05),
+    muted: rgba(fgC, 0.58),
+    accent: light ? "#3f66f0" : "#7c9cff",
+    accentSoft: rgba(light ? [63, 102, 240] : [124, 156, 255], 0.14)
+  };
+}
+function useThemePalette() {
+  const [pal, setPal] = (0, import_react.useState)(derivePalette);
+  (0, import_react.useEffect)(() => {
+    const recompute = () => setPal(derivePalette());
+    const obs = new MutationObserver(recompute);
+    obs.observe(document.body, { attributes: true, attributeFilter: ["class", "style"] });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style"] });
+    return () => obs.disconnect();
+  }, []);
+  return pal;
+}
+function styles(pal) {
+  return {
+    frame: {
+      display: "grid",
+      gridTemplateColumns: "236px minmax(0, 1.15fr) minmax(380px, 1fr)",
+      height: "100%",
+      width: "100%",
+      background: pal.bg,
+      color: pal.fg,
+      overflow: "hidden"
+    },
+    nav: {
+      display: "flex",
+      flexDirection: "column",
+      minWidth: 0,
+      borderRight: `1px solid ${pal.border}`,
+      overflow: "hidden"
+    },
+    brand: {
+      padding: "14px 16px 12px",
+      borderBottom: `1px solid ${pal.border}`
+    },
+    brandTitle: { fontWeight: 700, fontSize: 15, letterSpacing: 0.2 },
+    brandSub: { fontSize: 11, color: pal.muted, marginTop: 3 },
+    navList: { padding: "8px 8px", display: "flex", flexDirection: "column", gap: 2 },
+    navItem: (active) => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 9,
+      padding: "7px 10px",
+      borderRadius: 8,
+      fontSize: 13,
+      cursor: "pointer",
+      userSelect: "none",
+      color: active ? pal.accent : pal.fg,
+      background: active ? pal.accentSoft : "transparent",
+      fontWeight: active ? 600 : 400,
+      opacity: active ? 1 : 0.82,
+      transition: "background 120ms ease, opacity 120ms ease"
+    }),
+    navSeat: {
+      flex: 1,
+      minHeight: 0,
+      overflow: "auto",
+      borderTop: `1px solid ${pal.border}`
+    },
+    main: {
+      minWidth: 0,
+      display: "flex",
+      flexDirection: "column",
+      borderRight: `1px solid ${pal.border}`,
+      overflow: "hidden"
+    },
+    mainHeader: {
+      padding: "10px 16px",
+      borderBottom: `1px solid ${pal.border}`,
+      display: "flex",
+      alignItems: "baseline",
+      gap: 10
+    },
+    mainTitle: { fontSize: 14, fontWeight: 600 },
+    mainSub: { fontSize: 12, color: pal.muted },
+    mainBody: { flex: 1, minHeight: 0, position: "relative" },
+    sectionPane: (visible) => ({
+      position: "absolute",
+      inset: 0,
+      overflow: "auto",
+      display: visible ? "block" : "none"
+    }),
+    chat: { minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" },
+    chatHeader: {
+      padding: "9px 14px",
+      paddingRight: 96,
+      borderBottom: `1px solid ${pal.border}`,
+      fontSize: 12,
+      color: pal.muted,
+      display: "flex",
+      justifyContent: "space-between"
+    },
+    chatBody: { flex: 1, minHeight: 0 },
+    card: {
+      border: `1px solid ${pal.border}`,
+      borderRadius: 10,
+      padding: "14px 16px",
+      cursor: "pointer",
+      background: pal.cardBg,
+      transition: "border-color 120ms ease, transform 120ms ease"
+    },
+    badge: (color) => ({
+      fontSize: 10,
+      padding: "2px 8px",
+      borderRadius: 999,
+      color: "#fff",
+      background: color
+    }),
+    placeholder: {
+      margin: 24,
+      border: `1px dashed ${rgba(parseRgb(pal.fg), 0.3)}`,
+      borderRadius: 12,
+      padding: "48px 32px",
+      textAlign: "center"
+    }
+  };
+}
 function loadNav() {
   try {
     const v = sessionStorage.getItem(NAV_KEY);
@@ -164,11 +210,11 @@ function saveNav(id) {
   }
 }
 var DIFFICULTY_COLOR = {
-  beginner: "#3fb26f",
-  intermediate: "#d9913b",
-  advanced: "#e05656"
+  beginner: "#2e9e5b",
+  intermediate: "#c77c1d",
+  advanced: "#cc4b4b"
 };
-function Dashboard({ onSelect }) {
+function Dashboard({ pal, onSelect }) {
   const [models, setModels] = (0, import_react.useState)(null);
   const [error, setError] = (0, import_react.useState)(null);
   (0, import_react.useEffect)(() => {
@@ -183,13 +229,21 @@ function Dashboard({ onSelect }) {
     };
   }, []);
   if (error)
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { padding: 24, fontSize: 13, opacity: 0.7 }, children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { padding: 24, fontSize: 13, color: pal.muted }, children: [
       "\u6CE8\u518C\u8868\u52A0\u8F7D\u5931\u8D25\uFF1A",
       error,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "mm-btn ghost", style: { marginLeft: 12 }, onClick: () => location.reload(), children: "\u91CD\u8BD5" })
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        "button",
+        {
+          type: "button",
+          style: { marginLeft: 12, cursor: "pointer", color: pal.accent, border: "none", background: "none" },
+          onClick: () => location.reload(),
+          children: "\u91CD\u8BD5"
+        }
+      )
     ] });
   if (!models)
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { padding: 24, fontSize: 13, opacity: 0.55 }, children: "\u52A0\u8F7D\u6CE8\u518C\u8868\u2026" });
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { padding: 24, fontSize: 13, color: pal.muted }, children: "\u52A0\u8F7D\u6CE8\u518C\u8868\u2026" });
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
     "div",
     {
@@ -203,41 +257,23 @@ function Dashboard({ onSelect }) {
       children: models.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
         "div",
         {
+          "data-mm-card": m.id,
           onClick: () => onSelect(m.id),
           title: "\u70B9\u51FB\u8FDB\u5165\u5EFA\u6A21\u5DE5\u4F5C\u53F0",
-          style: {
-            border: "1px solid rgba(128,128,128,0.28)",
-            borderRadius: 10,
-            padding: "14px 16px",
-            cursor: "pointer",
-            background: "rgba(128,128,128,0.06)",
-            transition: "border-color 120ms ease, background 120ms ease"
-          },
+          style: styles(pal).card,
           onMouseEnter: (e) => {
-            e.currentTarget.style.borderColor = "var(--mm-accent, #5b8cff)";
+            e.currentTarget.style.borderColor = pal.accent;
           },
           onMouseLeave: (e) => {
-            e.currentTarget.style.borderColor = "rgba(128,128,128,0.28)";
+            e.currentTarget.style.borderColor = pal.border;
           },
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }, children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { style: { fontSize: 14 }, children: m.name_zh || m.name }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                "span",
-                {
-                  style: {
-                    fontSize: 10,
-                    padding: "2px 8px",
-                    borderRadius: 999,
-                    color: "#fff",
-                    background: DIFFICULTY_COLOR[m.difficulty ?? ""] ?? "rgba(128,128,128,0.6)"
-                  },
-                  children: m.difficulty ?? "\u2014"
-                }
-              )
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: styles(pal).badge(DIFFICULTY_COLOR[m.difficulty ?? ""] ?? pal.muted), children: m.difficulty ?? "\u2014" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 11, opacity: 0.5, marginTop: 2 }, children: m.name }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { style: { fontSize: 12, opacity: 0.75, marginTop: 8, lineHeight: 1.5 }, children: m.summary ?? "" })
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 11, color: pal.muted, marginTop: 2 }, children: m.name }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { style: { fontSize: 12, opacity: 0.8, marginTop: 8, lineHeight: 1.55 }, children: m.summary ?? "" })
           ]
         },
         m.id
@@ -245,31 +281,21 @@ function Dashboard({ onSelect }) {
     }
   );
 }
-function Placeholder({ section }) {
+function Placeholder({ pal, section }) {
   const meta = SECTION_META[section];
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-    "div",
-    {
-      style: {
-        margin: 24,
-        border: "1px dashed rgba(128,128,128,0.35)",
-        borderRadius: 12,
-        padding: "48px 32px",
-        textAlign: "center"
-      },
-      children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 34 }, children: NAV.find((n) => n.id === section)?.icon }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 15, fontWeight: 600, marginTop: 10 }, children: meta.title }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { style: { fontSize: 12, opacity: 0.6, marginTop: 6 }, children: [
-          "\u89C4\u5212\u4E2D \u2014 \u5C06\u5728 Shell V2 \u95E8\u7981 H1\u2013H5 \u5168\u90E8\u901A\u8FC7\u540E\u542F\u52A8",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("br", {}),
-          "\uFF08\u89C1 MATHMODEL_HARNESS_SHELL_V2_PLAN.md \xA73\uFF09"
-        ] })
-      ]
-    }
-  );
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: styles(pal).placeholder, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 34 }, children: NAV.find((n) => n.id === section)?.icon }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 15, fontWeight: 600, marginTop: 10 }, children: meta.title }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { style: { fontSize: 12, color: pal.muted, marginTop: 6 }, children: [
+      "\u89C4\u5212\u4E2D \u2014 \u5C06\u5728 Shell V2 \u95E8\u7981 H1\u2013H5 \u5168\u90E8\u901A\u8FC7\u540E\u542F\u52A8",
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("br", {}),
+      "\uFF08\u89C1 MATHMODEL_HARNESS_SHELL_V2_PLAN.md \xA73\uFF09"
+    ] })
+  ] });
 }
 function ShellFrame({ renderSlot }) {
+  const pal = useThemePalette();
+  const S = styles(pal);
   const [active, setActive] = (0, import_react.useState)(loadNav);
   const navigate = (id) => {
     setActive(id);
@@ -309,14 +335,14 @@ function ShellFrame({ renderSlot }) {
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { style: S.main, children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: S.mainHeader, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: S.mainTitle, children: SECTION_META[active].title }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: S.mainTitle, "data-mm-title": true, children: SECTION_META[active].title }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: S.mainSub, children: SECTION_META[active].sub })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: S.mainBody, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.sectionPane(active === "dashboard"), children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dashboard, { onSelect: selectModel }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.sectionPane(active === "workbench"), children: renderSlot("mathmodel.workbench", {}) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.sectionPane(active === "dashboard"), "data-mm-section": "dashboard", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dashboard, { pal, onSelect: selectModel }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.sectionPane(active === "workbench"), "data-mm-section": "workbench", children: renderSlot("mathmodel.workbench", {}) }),
         ["training", "competition", "problems", "cases", "paper", "profile"].map(
-          (id) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.sectionPane(active === id), children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Placeholder, { section: id }) }, id)
+          (id) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.sectionPane(active === id), "data-mm-section": id, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Placeholder, { pal, section: id }) }, id)
         )
       ] })
     ] }),
