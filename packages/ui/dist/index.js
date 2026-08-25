@@ -673,6 +673,9 @@ function ModelingWorkbench({ api, sessionId, onAskTutor, initialSection = "atlas
 		api.fetchRegistry().then((r) => setModels(r.models)).catch(() => setModels([])).finally(() => setLoading(false));
 	}, [api]);
 	useEffect(() => {
+		if (initialSection === "lesson") api.fetchModel("kmeans").then((m) => setLessonModel(m)).catch(() => setLessonModel(null));
+	}, []);
+	useEffect(() => {
 		api.patchContext({
 			page: {
 				dashboard: "dashboard",

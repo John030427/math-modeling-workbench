@@ -59,6 +59,18 @@ export function ModelingWorkbench({
       .finally(() => setLoading(false))
   }, [api])
 
+  // Deep-link support: landing directly on the lesson (dedicated shell) must
+  // hydrate the reference lesson model instead of showing an empty pane.
+  useEffect(() => {
+    if (initialSection === 'lesson') {
+      api.fetchModel('kmeans')
+        .then((m) => setLessonModel(m))
+        .catch(() => setLessonModel(null))
+    }
+    // run once on mount; openModel() handles later transitions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     const pageMap: Record<string, string> = {
       dashboard: 'dashboard',

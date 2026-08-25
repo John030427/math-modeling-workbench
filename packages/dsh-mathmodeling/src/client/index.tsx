@@ -80,6 +80,7 @@ function MathModelingView({ sessionId, setDraft }: ViewProps) {
     <ModelingWorkbench
       sessionId={sessionId}
       api={api}
+      initialSection={isShellHost() ? 'lesson' : 'atlas'}
       onAskTutor={({ seedPrompt }) => {
         const text = `/modeling-tutor ${seedPrompt}`
         if (setDraft) setDraft(text)
@@ -237,26 +238,88 @@ function getSessionHelpers(ctx: ClientContext, sessionId: string | undefined) {
 export const inject = ['slots', 'sessions']
 
 /**
+ * Compat mode = running under the STOCK web profile (no dedicated shell).
+ * The MathModel Shell sets window.__MM_SHELL_HOST__ at module-evaluation time
+ * (suite patch orders it before this entry). In dedicated-shell mode we must
+ * NOT register conversation.view「数模工作台」/ footer / overlay (U4: no
+ * duplicate workbench tab); only the `mathmodel.workbench` seat is provided.
+ */
+function isShellHost(): boolean {
+  try {
+    return (window as unknown as Record<string, unknown>).__MM_SHELL_HOST__ === true
+  } catch {
+    return false
+  }
+}
+
+/**
  * DSH UI (official contracts only):
  * - Primary: sidebar.footer.action → conversation.view「数模工作台」
  * - Fallback: shell.overlay drawer
  * - Tutor: DSH Chat + /modeling-tutor (no fourth column)
  */
 export function apply(ctx: ClientContext): void {
-  ctx.slots.inject('conversation.view', () =>
-    ctx.slots.register(
-      {
-        name: 'conversation.view',
-        id: 'mathmodeling',
-        order: 50,
-        label: () => '数模工作台',
-        inject: (sessionId: string) => getSessionHelpers(ctx, sessionId),
-      },
-      MathModelingView,
-    ),
-  )
+  if (!isShellHost()) {
+    ctx.slots.inject('conversation.view', () =>
+      ctx.slots.register(
+        {
+          name: 'conversation.view',
+          id: 'mathmodeling',
+          order: 50,
+          label: () => '数模工作台',
+          inject: (sessionId: string) => getSessionHelpers(ctx, sessionId),
+        },
+        MathModelingView,
+      ),
+    )
 
-  // Harness spike: workbench column when custom layout replaces ui-layout
+    // Fallback overlay — binds to active session when opened
+    ctx.slots.inject('shell.overlay', () => {
+      const unregister = ctx.slots.register(
+        {
+          name: 'shell.overlay',
+          id: 'dsh-mathmodeling-overlay',
+          order: 100,
+          inject: () => getSessionHelpers(ctx, overlaySessionId),
+        },
+        OverlayHost,
+      )
+      const onOverlay = () => {
+        const current = ctx.sessions.list.getSnapshot?.()?.current
+        if (current) overlaySessionId = current
+        document.dispatchEvent(new CustomEvent(OVERLAY_EVENT))
+      }
+      document.addEventListener('dsh-mathmodeling:request-overlay', onOverlay)
+      return () => {
+        document.removeEventListener('dsh-mathmodeling:request-overlay', onOverlay)
+        unregister()
+      }
+    })
+
+    // Must inject (not bare register): under a custom shell, sidebar.footer.action
+    // is declared by ui-sidebar only after ctx.layout is provided — race otherwise.
+    ctx.slots.inject('sidebar.footer.action', () =>
+      ctx.slots.register(
+        {
+          name: 'sidebar.footer.action',
+          id: 'dsh-mathmodeling',
+          order: 100,
+          inject: () => {
+            const current = ctx.sessions.list.getSnapshot?.()?.current
+            const helpers = current ? getSessionHelpers(ctx, current) : {}
+            return {
+              setView: helpers.setView,
+              openOverlay: () =>
+                document.dispatchEvent(new CustomEvent('dsh-mathmodeling:request-overlay')),
+            }
+          },
+        },
+        MathModelingFooter,
+      ),
+    )
+  }
+
+  // Dedicated-shell workbench pane / lesson surface. Registered in BOTH modes.
   ctx.slots.inject('mathmodel.workbench', () =>
     ctx.slots.register(
       {
@@ -266,50 +329,6 @@ export function apply(ctx: ClientContext): void {
         inject: (sessionId: string) => getSessionHelpers(ctx, sessionId),
       },
       MathModelingView,
-    ),
-  )
-
-  // Fallback overlay — binds to active session when opened
-  ctx.slots.inject('shell.overlay', () => {
-    const unregister = ctx.slots.register(
-      {
-        name: 'shell.overlay',
-        id: 'dsh-mathmodeling-overlay',
-        order: 100,
-        inject: () => getSessionHelpers(ctx, overlaySessionId),
-      },
-      OverlayHost,
-    )
-    const onOverlay = () => {
-      const current = ctx.sessions.list.getSnapshot?.()?.current
-      if (current) overlaySessionId = current
-      document.dispatchEvent(new CustomEvent(OVERLAY_EVENT))
-    }
-    document.addEventListener('dsh-mathmodeling:request-overlay', onOverlay)
-    return () => {
-      document.removeEventListener('dsh-mathmodeling:request-overlay', onOverlay)
-      unregister()
-    }
-  })
-
-  // Must inject (not bare register): under harness-spike, sidebar.footer.action
-  // is declared by ui-sidebar only after ctx.layout is provided — race otherwise.
-  ctx.slots.inject('sidebar.footer.action', () =>
-    ctx.slots.register(
-      {
-        name: 'sidebar.footer.action',
-        id: 'dsh-mathmodeling',
-        order: 100,
-        inject: () => {
-          const current = ctx.sessions.list.getSnapshot?.()?.current
-          const helpers = current ? getSessionHelpers(ctx, current) : {}
-          return {
-            setView: helpers.setView,
-            openOverlay: () => document.dispatchEvent(new CustomEvent('dsh-mathmodeling:request-overlay')),
-          }
-        },
-      },
-      MathModelingFooter,
     ),
   )
 }

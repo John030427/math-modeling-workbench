@@ -1,0 +1,17 @@
+# MathModel Suite — the single product bundle for the mathmodel profile.
+#
+# Composition contract (MATHMODEL_PROFILE_PHASE3_PLAN.md P4/P6):
+# - ui-layout disabled: MathModel Shell owns `root`.
+# - shell entry inserted BEFORE dsh-mathmodeling: the shell module sets
+#   window.__MM_SHELL_HOST__ at evaluation time; dsh-mathmodeling reads it at
+#   apply() to skip compat registrations (no duplicate「数模工作台」tab, U4).
+# Product profile bundles: @deepseek-ai/dsh-base, @deepseek-ai/dsh-web-app,
+# @math-modeling/mathmodel-suite. The web profile must NEVER take this bundle.
+- insert:
+    - id: mathmodel-shell
+      name: '@math-modeling/mathmodel-shell'
+    - id: dsh-mathmodeling
+      name: '@math-modeling/dsh-mathmodeling'
+
+- id: ui-layout
+  disabled: true

@@ -1,0 +1,28 @@
+{
+  "name": "@math-modeling/mathmodel-suite",
+  "version": "0.1.0",
+  "description": "MathModel Harness product bundle — composes shell + domain + skills for the dedicated mathmodel profile",
+  "private": true,
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@math-modeling/dsh-mathmodeling": "link:../dsh-mathmodeling",
+    "@math-modeling/mathmodel-shell": "link:../mathmodel-shell"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.0.0-rc <5"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": { "optional": true }
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" }
+  }
+}

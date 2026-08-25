@@ -457,6 +457,11 @@ function ModelingWorkbench({
     api.fetchRegistry().then((r) => setModels(r.models)).catch(() => setModels([])).finally(() => setLoading(false));
   }, [api]);
   (0, import_react3.useEffect)(() => {
+    if (initialSection === "lesson") {
+      api.fetchModel("kmeans").then((m) => setLessonModel(m)).catch(() => setLessonModel(null));
+    }
+  }, []);
+  (0, import_react3.useEffect)(() => {
     const pageMap = {
       dashboard: "dashboard",
       atlas: "atlas",
@@ -603,6 +608,7 @@ function MathModelingView({ sessionId, setDraft }) {
     {
       sessionId,
       api,
+      initialSection: isShellHost() ? "lesson" : "atlas",
       onAskTutor: ({ seedPrompt }) => {
         const text = `/modeling-tutor ${seedPrompt}`;
         if (setDraft) setDraft(text);
@@ -739,20 +745,69 @@ function getSessionHelpers(ctx, sessionId) {
   };
 }
 var inject = ["slots", "sessions"];
+function isShellHost() {
+  try {
+    return window.__MM_SHELL_HOST__ === true;
+  } catch {
+    return false;
+  }
+}
 function apply(ctx) {
-  ctx.slots.inject(
-    "conversation.view",
-    () => ctx.slots.register(
-      {
-        name: "conversation.view",
-        id: "mathmodeling",
-        order: 50,
-        label: () => "\u6570\u6A21\u5DE5\u4F5C\u53F0",
-        inject: (sessionId) => getSessionHelpers(ctx, sessionId)
-      },
-      MathModelingView
-    )
-  );
+  if (!isShellHost()) {
+    ctx.slots.inject(
+      "conversation.view",
+      () => ctx.slots.register(
+        {
+          name: "conversation.view",
+          id: "mathmodeling",
+          order: 50,
+          label: () => "\u6570\u6A21\u5DE5\u4F5C\u53F0",
+          inject: (sessionId) => getSessionHelpers(ctx, sessionId)
+        },
+        MathModelingView
+      )
+    );
+    ctx.slots.inject("shell.overlay", () => {
+      const unregister = ctx.slots.register(
+        {
+          name: "shell.overlay",
+          id: "dsh-mathmodeling-overlay",
+          order: 100,
+          inject: () => getSessionHelpers(ctx, overlaySessionId)
+        },
+        OverlayHost
+      );
+      const onOverlay = () => {
+        const current = ctx.sessions.list.getSnapshot?.()?.current;
+        if (current) overlaySessionId = current;
+        document.dispatchEvent(new CustomEvent(OVERLAY_EVENT));
+      };
+      document.addEventListener("dsh-mathmodeling:request-overlay", onOverlay);
+      return () => {
+        document.removeEventListener("dsh-mathmodeling:request-overlay", onOverlay);
+        unregister();
+      };
+    });
+    ctx.slots.inject(
+      "sidebar.footer.action",
+      () => ctx.slots.register(
+        {
+          name: "sidebar.footer.action",
+          id: "dsh-mathmodeling",
+          order: 100,
+          inject: () => {
+            const current = ctx.sessions.list.getSnapshot?.()?.current;
+            const helpers = current ? getSessionHelpers(ctx, current) : {};
+            return {
+              setView: helpers.setView,
+              openOverlay: () => document.dispatchEvent(new CustomEvent("dsh-mathmodeling:request-overlay"))
+            };
+          }
+        },
+        MathModelingFooter
+      )
+    );
+  }
   ctx.slots.inject(
     "mathmodel.workbench",
     () => ctx.slots.register(
@@ -763,46 +818,6 @@ function apply(ctx) {
         inject: (sessionId) => getSessionHelpers(ctx, sessionId)
       },
       MathModelingView
-    )
-  );
-  ctx.slots.inject("shell.overlay", () => {
-    const unregister = ctx.slots.register(
-      {
-        name: "shell.overlay",
-        id: "dsh-mathmodeling-overlay",
-        order: 100,
-        inject: () => getSessionHelpers(ctx, overlaySessionId)
-      },
-      OverlayHost
-    );
-    const onOverlay = () => {
-      const current = ctx.sessions.list.getSnapshot?.()?.current;
-      if (current) overlaySessionId = current;
-      document.dispatchEvent(new CustomEvent(OVERLAY_EVENT));
-    };
-    document.addEventListener("dsh-mathmodeling:request-overlay", onOverlay);
-    return () => {
-      document.removeEventListener("dsh-mathmodeling:request-overlay", onOverlay);
-      unregister();
-    };
-  });
-  ctx.slots.inject(
-    "sidebar.footer.action",
-    () => ctx.slots.register(
-      {
-        name: "sidebar.footer.action",
-        id: "dsh-mathmodeling",
-        order: 100,
-        inject: () => {
-          const current = ctx.sessions.list.getSnapshot?.()?.current;
-          const helpers = current ? getSessionHelpers(ctx, current) : {};
-          return {
-            setView: helpers.setView,
-            openOverlay: () => document.dispatchEvent(new CustomEvent("dsh-mathmodeling:request-overlay"))
-          };
-        }
-      },
-      MathModelingFooter
     )
   );
 }
