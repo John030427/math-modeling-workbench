@@ -267,12 +267,18 @@ function selectorCards(modelId) {
   const main = all.find((m) => m.id === modelId)
   if (!main) return null
   const yaml = loadModelYaml(modelId)
-  const alternativesList = yaml ? (yaml.match(/^alternatives:\s*$/m) ? blockAfter(yaml, 'alternatives') : []) : []
+  const alternativesList = yaml ? [...blockAfter(yaml, 'alternatives'), ...flowListTop(yaml, 'alternatives')] : []
   const byId = (id) => all.find((m) => m.id === id)
-  const baseline =
-    byId('linear-regression') ??
-    all.filter((m) => m.difficulty === 'beginner').sort((a, b) => a.demo_priority - b.demo_priority)[0]
-  const alternative = alternativesList.map(byId).find((m) => m && m.id !== baseline?.id) ?? null
+  let baseline = byId('linear-regression')
+  if (!baseline || baseline.id === modelId) {
+    baseline =
+      all.filter((m) => m.difficulty === 'beginner' && m.id !== modelId).sort((a, b) => a.demo_priority - b.demo_priority)[0] ??
+      all.find((m) => m.id !== modelId)
+  }
+  const alternative =
+    alternativesList.map(byId).find((m) => m && m.id !== modelId && m.id !== baseline?.id) ??
+    all.find((m) => m.task === main.task && m.id !== modelId && m.id !== baseline?.id) ??
+    null
   const card = (m, role, extra = {}) =>
     m && {
       role,
@@ -290,6 +296,15 @@ function selectorCards(modelId) {
     main: card(main, 'main', extraFor(main.id)),
     alternative: card(alternative, 'alternative', extraFor(alternative?.id)),
   }
+}
+
+function flowListTop(yaml, key) {
+  const m = yaml.match(new RegExp(`^${key}:\\s*\\[([^\\]]*)\\]`, 'm'))
+  if (!m) return []
+  return m[1]
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
 }
 
 function blockAfter(yaml, key) {
@@ -890,5 +905,6 @@ function readdirSafe(dir) {
     return []
   }
 }
+
 
 
