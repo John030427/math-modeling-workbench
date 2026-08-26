@@ -330,6 +330,9 @@ function extraFor(modelId) {
   }
 }
 
+/* ---------------- exported for tests ---------------- */
+export { buildReviewQueue, selectorCards, diagnose, runWithManifest };
+
 /* ---------------- routes ---------------- */
 
 export function makeProductRoutes() {
@@ -905,6 +908,7 @@ function readdirSafe(dir) {
     return []
   }
 }
+
 
 
 

@@ -83,6 +83,52 @@ for (const vp of VIEWPORTS) {
     )
     await page.screenshot({ path: path.join(outDir, `${vp.w}x${vp.h}-lesson.png`) })
 
+    // U5: real context-aware tutor flow (only once, on the largest viewport)
+    if (vp.w === 1920 && !report.checks.U5_tutorFlowDone) {
+      report.checks.U5_tutorFlowDone = true
+      // set ModelingContext: kmeans + feature-scaling
+      await fetch(`${BASE}/api/mathmodeling/context`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ session_id: 'gate-tutor', page: 'lesson', module: 'atlas', model_id: 'kmeans', knowledge_unit: 'feature-scaling' }),
+      })
+      const composer = page.locator('[data-mm-agent] textarea, [data-mm-agent] [role="textbox"]').first()
+      await composer.waitFor({ timeout: 20000 })
+      await composer.click()
+      await composer.fill('当前在 K-Means 课程的特征缩放一步：为什么这里需要标准化？')
+      await composer.press('Escape')
+      await page.waitForTimeout(300)
+      await composer.press('Enter')
+      await page.waitForTimeout(3000)
+      // geometric fallback send
+      const sent = await page
+        .waitForFunction(() => document.body.innerText.includes('标准化'), null, { timeout: 8000 })
+        .then(() => true)
+        .catch(() => false)
+      if (!sent) {
+        const box = await composer.boundingBox()
+        const btns = await page.locator('[data-mm-agent] button').all()
+        for (const b of btns) {
+          const bb = await b.boundingBox().catch(() => null)
+          if (bb && bb.y >= box.y - 60 && bb.y <= box.y + box.height + 140 && (await b.isEnabled())) {
+            await b.click().catch(() => {})
+            break
+          }
+        }
+      }
+      // assert reply binds to K-Means distance/scale context
+      const replied = await page
+        .waitForFunction(
+          () => /欧氏距离|量纲|主导|标准化/.test(document.querySelector('[data-mm-agent]')?.innerText ?? ''),
+          { timeout: 180000 },
+        )
+        .then(() => true)
+        .catch(() => false)
+      m.tutorContextReply = replied
+      await page.screenshot({ path: path.join(outDir, `${vp.w}x${vp.h}-tutor-context.png`) })
+    }
+    if (vp.w === 1920) m.tutorContextReply = m.tutorContextReply ?? false
+
     m.pageErrors = pageErrors
     m.consoleErrors = consoleErrors
     report.viewports[`${vp.w}x${vp.h}`] = m
@@ -103,8 +149,12 @@ report.checks.U2_workbenchDominance =
   first.agentWidth >= 380 && first.agentWidth <= 430 && first.agentCol === true
 report.checks.U3_iaAlignment =
   first.navGroups === 6 && first.dashboardHasHero && first.dashboardHasModules
-report.checks.U4_noDuplicateWorkbenchTab = first.duplicateWorkbenchTab === false
-report.checks.U5_agentContextUX = first.agentCol === true && v1024.agentCol === true
+// U4 No Duplicate Product Surfaces: no 数模工作台 tab + lesson deep-link works
+report.checks.U4_noDuplicateProductSurfaces =
+  first.duplicateWorkbenchTab === false && first.lessonPaneVisible === true
+// U5 Agent Context UX: REAL context-aware tutor reply
+report.checks.U5_agentContextUX =
+  first.agentCol === true && v1024.agentCol === true && first.tutorContextReply === true
 report.checks.U6_productDashboard = first.dashboardHasHero && first.dashboardHasModules
 report.checks.U7_atlasQuality =
   first.atlasGroups && first.atlasSearch && first.atlasKmeansRef

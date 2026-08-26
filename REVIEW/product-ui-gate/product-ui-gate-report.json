@@ -15,6 +15,7 @@
       "atlasSearch": true,
       "atlasKmeansRef": true,
       "lessonPaneVisible": true,
+      "tutorContextReply": true,
       "pageErrors": [],
       "consoleErrors": []
     },
@@ -70,10 +71,11 @@
     }
   },
   "checks": {
+    "U5_tutorFlowDone": true,
     "U1_singleSidebar": true,
     "U2_workbenchDominance": true,
     "U3_iaAlignment": true,
-    "U4_noDuplicateWorkbenchTab": true,
+    "U4_noDuplicateProductSurfaces": true,
     "U5_agentContextUX": true,
     "U6_productDashboard": true,
     "U7_atlasQuality": true,

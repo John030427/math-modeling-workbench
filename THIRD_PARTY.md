@@ -1,58 +1,33 @@
 # Third-Party Dependencies
 
-Pinned third-party code used by Math Modeling Workbench.  
+Pinned third-party code used by MathModel Harness.
 **Rule:** Application code must not import third-party internal paths directly — only through `AlgorithmProvider` adapters.
 
 ---
 
-## Planned: chengziyue1222/math-model-agent (czy-provider)
+## chengziyue1222/math-model-agent (execution source — adapter reserved)
 
 | Field | Value |
 |-------|--------|
 | Repository | https://github.com/chengziyue1222/math-model-agent |
 | Purpose | Optional algorithm execution adapter (`czy-provider`) |
-| Pin | **TBD** — lock to commit SHA before enabling in production |
-| License | **Verify before enable** — read `LICENSE` at pinned commit |
-| Integration | `packages/core/algorithm-provider/czy-provider/` wraps public `algorithms` exports only |
-| Status | **Not linked in P0** — interface + stub only |
+| Pin | `33cb044009d2dc12e7fa86e4ded6138ddb790d9a` (re-verify before enable — see `research/UPSTREAM_SOURCE_LOCK.md`) |
+| License | MIT (verify again at pinned commit before first enable) |
+| Integration | `packages/algorithm-provider-czy/` wraps public `algorithms` exports only |
+| Status | **Reserved, not vendored.** Tonight's executions use the `local` provider (our own dependency-free implementations in `packages/dsh-mathmodeling/lib/algorithms.js`). |
 
-### License check (pending)
+## ShuoSachiko/MathMN — pattern source ONLY
 
-- [ ] Read LICENSE at pinned commit
-- [ ] Confirm compatible with our repo license and DSH plugin distribution
-- [ ] Record attribution in plugin `THIRD_PARTY_NOTICES.md`
+PolyForm Noncommercial. **No code or assets copied into this repo.** Independently reimplemented patterns: Problem Contract/ReqID, stage STALE propagation, run manifest fields, claim ledger, human checkpoints, multi-seed aggregation.
 
----
+## Barson0588/math-modeling-assistant — pattern source ONLY
 
-## DSH ecosystem (runtime peers)
+Problems IA / model-catalog organization / Guide-Role ideas adopted as design references. No code copied. No generator-first UX.
 
-| Package | Purpose | Notes |
-|---------|---------|--------|
-| `@deepseek-ai/cordis` | Plugin host/client runtime | Peer dependency |
-| `@deepseek-ai/dsh-host-webserver` | HTTP routes | Peer |
-| `@deepseek-ai/dsh-client-runtime` | Browser plugin loader | Peer |
-| `@deepseek-ai/dsh-client-ui-slots` | UI extension points | Peer |
-| `@deepseek-ai/dsh-super-injector` | Hot install/uninstall | Dev/install tool |
+## zhanwen/MathModel — index only
 
----
+Excellent-paper/problem discovery via external links in `registry/resources/resources.json`. No PDFs redistributed.
 
-## Reference / benchmark repos (not vendored)
+## Gunp-666/MCM-AI-Starter-Kit — pattern source ONLY
 
-| Repo | Use |
-|------|-----|
-| ShuoSachiko/MathMN | Integrity patterns (PolyForm NC — no code copy) |
-| Barson0588/math-modeling-assistant | Problems IA reference (MIT) |
-| zhanwen/MathModel | External links only |
-| Gunp-666/MCM-AI-Starter-Kit | Figure rules reference |
-
-See `research/GITHUB_BENCHMARK.md`.
-
----
-
-## Update policy
-
-When pinning or upgrading a third-party dependency:
-
-1. Update this file (commit SHA, license, date).
-2. Run adapter test suite.
-3. Update `packages/dsh-mathmodeling/THIRD_PARTY_NOTICES.md` if shipping their code/assets.
+Figure standards / output conventions / writing rules referenced by the visualization + paper skills. No code copied tonight.

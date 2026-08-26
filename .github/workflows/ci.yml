@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [experiment/mathmodel-harness, master]
+  pull_request:
+
+jobs:
+  product-checks:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Build core (shared domain logic)
+        run: npm run build
+        working-directory: packages/core
+
+      - name: Core unit tests (mastery / quiz / srs / tutor)
+        run: npm test
+        working-directory: packages/core
+
+      - name: Build UI (ModelingWorkbench)
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+        working-directory: packages/ui
+
+      - name: Build + test mathmodeling (routes, algorithms, data doctor, skills, provider fixtures)
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+          npm test
+        working-directory: packages/dsh-mathmodeling
+
+      - name: Build + test mathmodel-shell
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+          npm test
+        working-directory: packages/mathmodel-shell
+
+      - name: Registry schema validation
+        shell: pwsh
+        run: |
+          $models = Get-ChildItem registry/models/*.yaml
+          if ($models.Count -lt 13) { throw "expected >= 13 model yamls, got $($models.Count)" }
+          foreach ($f in $models) {
+            $text = Get-Content $f -Raw
+            if ($text -notmatch '^id:') { throw "$($f.Name) missing id" }
+            if ($text -notmatch 'knowledge_units') { throw "$($f.Name) missing knowledge_units" }
+          }
+          if (-not (Test-Path registry/gym/cases.json)) { throw "missing gym cases" }
+          if (-not (Test-Path registry/resources/resources.json)) { throw "missing resources registry" }
+          if (-not (Test-Path registry/cases/cases.json)) { throw "missing cases registry" }
+          $res = (Get-Content registry/resources/resources.json -Raw | ConvertFrom-Json).resources
+          if ($res.Count -lt 5) { throw "expected >= 5 resources, got $($res.Count)" }
+          $cases = (Get-Content registry/cases/cases.json -Raw | ConvertFrom-Json).cases
+          if ($cases.Count -lt 3) { throw "expected >= 3 distilled cases, got $($cases.Count)" }
+          Write-Host "registry OK: $($models.Count) models, $($res.Count) resources, $($cases.Count) cases"
+
+      - name: Provider fixture tests (no network, no fabricated success)
+        shell: pwsh
+        run: |
+          node --input-type=module -e "
+            const { kmeans, linearRegression, pso } = await import('./packages/dsh-mathmodeling/lib/algorithms.js').catch(() => import('file://' + process.cwd().replace(/\\\\/g,'/') + '/packages/dsh-mathmodeling/lib/algorithms.js'));
+            const bad = kmeans([[1,2]], 5, [1]);
+            if (!bad.error || Object.keys(bad.metrics).length > 0) throw new Error('fabricated success on failure');
+            console.log('provider fixtures OK (no fabricated success on failure)');
+          "
+
+  # Live browser E2E (overnight-e2e.mjs + product-ui-gate.mjs) remains a LOCAL
+  # release gate: it needs a booted mathmodel profile instance + LLM credentials.
+  # Documented honestly in OVERNIGHT_FINAL_REPORT.md.
