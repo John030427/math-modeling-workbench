@@ -17,7 +17,7 @@
 | G4 Evidence/Paper | **PASS** | run manifest（run_id/input_hash/seeds/多 seed 聚合）；claim ledger 反虚构（无支撑声明被标记 unsupported=1）；Reviewer 12 维；Gap→Profile→Daily Review |
 | G5 Resources | **PASS** | registry/resources 8 条（外链+许可说明）；registry/cases 3 条蒸馏（评价/预测/优化）；zhanwen 仅索引 |
 | G6 Testing | **PASS** | mathmodeling 17 测试（datadoctor 泄漏 fixture / 算法多 seed 聚合 / 技能契约 12 节 / B-M-A baseline 存在 / 会话隔离）+ core 4 + shell；E2E 18/18；PRODUCT_UI_GATE U1–U7 四视口 |
-| G7 Repo Health | **PASS** | 树干净；小步 commit 持续推送；CI（.github/workflows/ci.yml：core/ui/shell 构建+测试、registry schema、provider 反虚构 fixture）；README/DEMO/ARCHITECTURE/PRODUCT/THIRD_PARTY 更新 |
+| G7 Repo Health | **PASS** | 树干净；小步 commit 持续推送；CI 绿（.github/workflows/ci.yml run 32938970719 ✓：core/ui/shell 构建+测试、registry schema、provider 反虚构 fixture）；README/DEMO/ARCHITECTURE/PRODUCT/THIRD_PARTY 更新 |
 
 ## Summary lines (plan §20 format)
 
@@ -30,7 +30,7 @@ Algorithm Execution: PASS (local provider — real seeded execution)
 Reviewer/Evidence:   PASS
 Problem/Case Library:PASS (8 resources / 3 distilled cases)
 Tests:               PASS (21 unit/integration + 18 E2E + UI gate)
-CI:                  PARTIAL (deterministic checks live on GitHub Actions; live-browser E2E stays a local release gate)
+CI:                  PASS (GitHub Actions product-checks green — run 32938970719; live-browser E2E stays a local release gate)
 Public Distribution: PARTIAL (profile bootstrap scripts ready; no installer/packaging release yet)
 PRODUCT_MVP = PASS（§21 场景 API 层 18/18；浏览器层由 PRODUCT_UI_GATE + 截图目检覆盖）
 ```
@@ -77,3 +77,4 @@ MathMN（契约/STALE/manifest/claim 模式，独立重实现）· Barson（Prob
 3. Competition 导入真实赛题 PDF → problem-reader 全自动契约
 4. 可视化落地为项目 artifacts（散点/预测/收敛 + figure 记录 UI）
 5. mathmodel profile 打包发布（installer + DSH 版本守卫自动化）
+
