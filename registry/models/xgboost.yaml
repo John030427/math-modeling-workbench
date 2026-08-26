@@ -10,3 +10,4 @@ demo_priority: 24
 use_when: [表格非线性且已有基线]
 avoid_when: [极小样本且无验证]
 alternatives: [random-forest, linear-regression]
+knowledge_units: [boosting, regularization, learning-rate, overfitting]

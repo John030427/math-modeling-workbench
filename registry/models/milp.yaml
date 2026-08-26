@@ -10,3 +10,4 @@ demo_priority: 21
 use_when: [线性结构且含整数决策]
 avoid_when: [规模过大导致不可解且无分解策略]
 alternatives: [lp, ga]
+knowledge_units: [integer-variables, branch-and-bound, relaxation, feasibility]

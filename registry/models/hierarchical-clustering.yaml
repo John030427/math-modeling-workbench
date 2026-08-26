@@ -10,3 +10,4 @@ demo_priority: 22
 use_when: [需要层次结构, 样本量不大]
 avoid_when: [超大数据集]
 alternatives: [kmeans, dbscan]
+knowledge_units: [linkage, dendrogram, cluster-cutting, distance]

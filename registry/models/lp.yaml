@@ -10,3 +10,4 @@ demo_priority: 20
 use_when: [线性目标与约束, 需要最优性保证]
 avoid_when: [强非线性黑箱]
 alternatives: [milp, nlp]
+knowledge_units: [objective-function, constraints, feasible-region, simplex-basis, duality]

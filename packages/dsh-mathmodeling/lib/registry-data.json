@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-26T04:54:12.129Z",
+  "generatedAt": "2026-08-26T06:36:26.730Z",
   "models": [
     {
       "id": "kmeans",
@@ -271,7 +271,13 @@
       "family": "operations-research",
       "difficulty": "beginner",
       "demo_priority": 20,
-      "knowledge_units": [],
+      "knowledge_units": [
+        "objective-function",
+        "constraints",
+        "feasible-region",
+        "simplex-basis",
+        "duality"
+      ],
       "prerequisites": [],
       "use_when": [],
       "avoid_when": [],
@@ -288,7 +294,12 @@
       "family": "operations-research",
       "difficulty": "intermediate",
       "demo_priority": 21,
-      "knowledge_units": [],
+      "knowledge_units": [
+        "integer-variables",
+        "branch-and-bound",
+        "relaxation",
+        "feasibility"
+      ],
       "prerequisites": [],
       "use_when": [],
       "avoid_when": [],
@@ -305,7 +316,12 @@
       "family": "machine-learning",
       "difficulty": "intermediate",
       "demo_priority": 22,
-      "knowledge_units": [],
+      "knowledge_units": [
+        "linkage",
+        "dendrogram",
+        "cluster-cutting",
+        "distance"
+      ],
       "prerequisites": [],
       "use_when": [],
       "avoid_when": [],
@@ -322,7 +338,11 @@
       "family": "statistics",
       "difficulty": "beginner",
       "demo_priority": 23,
-      "knowledge_units": [],
+      "knowledge_units": [
+        "information-entropy",
+        "normalization",
+        "objective-weighting"
+      ],
       "prerequisites": [],
       "use_when": [],
       "avoid_when": [],
@@ -341,7 +361,12 @@
       "family": "machine-learning",
       "difficulty": "intermediate",
       "demo_priority": 24,
-      "knowledge_units": [],
+      "knowledge_units": [
+        "boosting",
+        "regularization",
+        "learning-rate",
+        "overfitting"
+      ],
       "prerequisites": [],
       "use_when": [],
       "avoid_when": [],
