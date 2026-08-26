@@ -1,0 +1,97 @@
+{
+  "id": "czy-mc-integration",
+  "title": "蒙特卡洛方法",
+  "provider_example": {
+    "provider": "czy",
+    "algorithm": "czy-mc-integration",
+    "parameters": {
+      "objective": "x[0]*x[1]",
+      "a": [
+        0,
+        0
+      ],
+      "b": [
+        2,
+        1
+      ],
+      "n_samples": 200000,
+      "seed": 42
+    }
+  },
+  "intuition": "用随机采样估计确定量：样本越多，估计的误差按 1/√N 下降——「以随机对抗维度灾难」。",
+  "scenario": "高维积分（如光学效率期望）、排队系统等待时间分布、可靠性估计——解析解不可得时的标准武器。",
+  "math": "∫f(x)dx ≈ V·(1/N)Σf(xᵢ)，xᵢ 均匀采样；标准误 = V·σ_f/√N。置信区间 ±1.96σ/√N。",
+  "flow": [
+    "定义采样区域与目标函数",
+    "均匀/按分布采样 N 点",
+    "计算函数值均值",
+    "给出估计与标准误"
+  ],
+  "params": [
+    {
+      "name": "objective",
+      "meaning": "被积函数表达式",
+      "how": "x[i] 表示第 i 维变量"
+    },
+    {
+      "name": "a/b",
+      "meaning": "积分上下界向量",
+      "how": "每维一对"
+    },
+    {
+      "name": "n_samples/seed",
+      "meaning": "样本数/种子",
+      "how": "误差 ∝ 1/√N；seed 保证可复现"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "高维积分/期望估计",
+      "复杂随机系统仿真"
+    ],
+    "avoid": [
+      "低维光滑积分（数值积分更快更准）",
+      "需要精确解"
+    ]
+  },
+  "baseline_comparison": "与解析解（若存在）或确定性数值积分对比验证正确性。",
+  "failure_cases": [
+    "样本太少误差巨大",
+    "方差无穷大（重尾函数）导致不收敛",
+    "忘记报告标准误"
+  ],
+  "validation": [
+    "标准误随 N 的 1/√N 收缩",
+    "不同 seed 结果一致性",
+    "与解析/数值解对照"
+  ],
+  "quiz": [
+    {
+      "q": "MC 估计误差随样本数如何变化？",
+      "options": [
+        "∝1/√N",
+        "∝1/N",
+        "∝N",
+        "不变"
+      ],
+      "answer": "A",
+      "explanation": "中心极限定理。"
+    },
+    {
+      "q": "MC 积分对哪类问题最有优势？",
+      "options": [
+        "高维",
+        "一维",
+        "光滑低维",
+        "解析可积"
+      ],
+      "answer": "A",
+      "explanation": "维度灾难下确定性方法失效。"
+    }
+  ],
+  "paper_case": {
+    "title": "排队系统/可靠性/高维期望类赛题",
+    "note": ""
+  },
+  "provider_note": "czy-mc-integration / mc-optimization / queuing-mmsk / random-walk 全部真实仿真，支持 seed。"
+}

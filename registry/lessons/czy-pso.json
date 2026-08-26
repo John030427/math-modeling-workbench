@@ -1,0 +1,96 @@
+{
+  "id": "czy-pso",
+  "title": "粒子群优化 PSO",
+  "provider_example": {
+    "provider": "local",
+    "algorithm": "pso",
+    "parameters": {
+      "objective": "rastrigin",
+      "dims": 2,
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "particles": 24,
+      "iterations": 80
+    }
+  },
+  "intuition": "一群粒子在解空间飞行：每只记住自己的历史最优，也被群体最优吸引——「个体经验+社会共享」的平衡搜索。",
+  "scenario": "非线性目标（如光学效率关于布局参数的复杂函数）找不到梯度时的全局寻优。",
+  "math": "v ← w·v + c₁r₁(pbest−x) + c₂r₂(gbest−x)；x ← x+v。w 惯性、c₁ 认知、c₂ 社会。",
+  "flow": [
+    "初始化粒子群（随机位置速度）",
+    "评价适应度",
+    "更新个体最优与全局最优",
+    "按速度公式飞行",
+    "重复直到收敛"
+  ],
+  "params": [
+    {
+      "name": "objective",
+      "meaning": "目标函数 preset",
+      "how": "sphere/rastrigin/rosenbrock 或自定义表达式"
+    },
+    {
+      "name": "seeds",
+      "meaning": "多种子",
+      "how": "随机算法必须多 seed 报分布"
+    },
+    {
+      "name": "particles/iterations",
+      "meaning": "群规模/迭代",
+      "how": "越大越稳越慢"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "非线性不可导/黑盒目标",
+      "有较好初值分布知识"
+    ],
+    "avoid": [
+      "LP 等可精确求解问题",
+      "超高维（维度灾难）"
+    ]
+  },
+  "baseline_comparison": "与随机搜索/贪心对比；与 LP/NLP 在可解问题上对照最优性 gap。",
+  "failure_cases": [
+    "早熟收敛（w 太小或多样性丢失）",
+    "只报告最好 seed",
+    "bounds 未设置导致飞出有意义区域"
+  ],
+  "validation": [
+    "多 seed best 的 mean/std/median/IQR",
+    "收敛曲线是否平稳",
+    "与 NLP 结果对照 gap"
+  ],
+  "quiz": [
+    {
+      "q": "PSO 的 gbest 表示？",
+      "options": [
+        "全局历史最优",
+        "当前粒子位置",
+        "初始位置",
+        "平均位置"
+      ],
+      "answer": "A",
+      "explanation": "群体共享的社会信息。"
+    },
+    {
+      "q": "为什么随机优化必须多 seed？",
+      "options": [
+        "结果依赖随机性",
+        "加快速度",
+        "减少内存",
+        "法规要求"
+      ],
+      "answer": "A",
+      "explanation": "单次运行可能是运气，分布才代表算法表现。"
+    }
+  ],
+  "paper_case": {
+    "title": "配送路径优化案例（见案例库优化类 PSO 用法）",
+    "note": ""
+  },
+  "provider_note": "local pso 返回收敛曲线 artifact，可直接画收敛图。"
+}

@@ -1,0 +1,90 @@
+{
+  "id": "czy-grey-auto-predict",
+  "title": "灰色预测 GM(1,1) 与自动选型",
+  "provider_example": {
+    "provider": "czy",
+    "algorithm": "czy-grey-auto-predict",
+    "parameters": {
+      "x0": [
+        15,
+        17,
+        19,
+        23,
+        27
+      ],
+      "predict_n": 3
+    }
+  },
+  "intuition": "数据少（4-10 个点）又近似指数规律时，累加生成让规律显出来，用一阶微分方程拟合再还原——这就是 GM(1,1)。",
+  "scenario": "只有 5 年的地区用电量数据要预测未来 3 年：样本太少不能用神经网络/ARIMA 定阶，灰色预测是标准选择。",
+  "math": "AGO 累加 → x⁽¹⁾ 满足 dx⁽¹⁾/dt + a·x⁽¹⁾ = b → 解出时间响应式 → 累减还原。级比检验与后验差 C、P 检验定精度等级。",
+  "flow": [
+    "级比检验（λ∈(e^{-2/(n+1)}, e^{2/(n+1)})）",
+    "AGO 累加生成",
+    "最小二乘估计 a,b",
+    "时间响应式还原预测",
+    "后验差检验定级"
+  ],
+  "params": [
+    {
+      "name": "x0",
+      "meaning": "原始小样本序列",
+      "how": "≥4 个点；级比不合格先做平移变换"
+    },
+    {
+      "name": "predict_n",
+      "meaning": "预测步数",
+      "how": "不宜超过样本数太多"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "小样本近似指数序列",
+      "数据少到统计模型失效"
+    ],
+    "avoid": [
+      "明显振荡序列（用 Verhulst/GM(2,1)）",
+      "大样本（用 ARIMA）"
+    ]
+  },
+  "baseline_comparison": "与移动平均/指数平滑对比 MAPE；grey_auto_predict 自动在 GM(1,1)/GM(2,1)/Verhulst 间按误差选优。",
+  "failure_cases": [
+    "级比检验不过（需平移变换）",
+    "序列有拐点（GM(1,1) 单调假设失效）",
+    "预测步数过多指数发散"
+  ],
+  "validation": [
+    "相对误差均值 <5% 优",
+    "后验差 C<0.35 且 P>0.95 为一级",
+    "关联度检验"
+  ],
+  "quiz": [
+    {
+      "q": "GM(1,1) 建模前对数据做什么？",
+      "options": [
+        "累加生成 AGO",
+        "差分",
+        "归一化到 [0,1]",
+        "取对数"
+      ],
+      "answer": "A",
+      "explanation": "累加生成弱化随机性。"
+    },
+    {
+      "q": "后验差比值 C 越小表示？",
+      "options": [
+        "模型精度越高",
+        "数据越多",
+        "预测越远",
+        "残差越大"
+      ],
+      "answer": "A",
+      "explanation": "C = S_e/S_x，小为优。"
+    }
+  ],
+  "paper_case": {
+    "title": "小样本预测类赛题标准方法（大量 CUMCM 小问使用）",
+    "note": ""
+  },
+  "provider_note": "czy-grey-auto-predict 自动在三种灰色模型中按误差选优，返回完整检验指标。"
+}

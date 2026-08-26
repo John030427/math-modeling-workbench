@@ -1,0 +1,82 @@
+{
+  "id": "dbscan",
+  "title": "DBSCAN 密度聚类",
+  "provider_example": {
+    "provider": "czy",
+    "algorithm": "czy-fuzzy-cmeans",
+    "note": "上游暂无 DBSCAN 执行；本课为概念课，执行可暂用 fuzzy-cmeans 对照软划分。"
+  },
+  "intuition": "不需要指定簇数：密度相连的样本成一簇，密度稀疏的点是噪声。核心思想是「密度可达」。",
+  "scenario": "地理定位数据找热点区域：门店选址分析中把客流密度高的区域自动聚出，同时把零星点击识别为噪声。",
+  "math": "给定 ε（邻域半径）与 MinPts：核心点 = ε 内至少 MinPts 个邻居；从核心点出发密度可达的点连成簇；不可达者为噪声。",
+  "flow": [
+    "对每点数 ε 邻居数",
+    "标记核心点",
+    "核心点间密度可达连成簇",
+    "边界点划入可达簇",
+    "剩余为噪声"
+  ],
+  "params": [
+    {
+      "name": "eps (ε)",
+      "meaning": "邻域半径",
+      "how": "k-距离图（k=MinPts）的肘部"
+    },
+    {
+      "name": "min_samples",
+      "meaning": "核心点阈值",
+      "how": "经验 ≥ 维度+1，通常 4-10"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "任意形状簇",
+      "需要识别噪声",
+      "密度差异明显的空间数据"
+    ],
+    "avoid": [
+      "密度差异大的多簇数据（单一 ε 失效）",
+      "高维稀疏数据（距离度量失效）"
+    ]
+  },
+  "baseline_comparison": "与 K-Means 对比：K-Means 会把噪声强行分进簇、把非凸簇劈开——DBSCAN 在这些场景是修正。",
+  "failure_cases": [
+    "ε 过小：全是噪声",
+    "ε 过大：所有点连成一簇",
+    "簇密度差异大时单一 ε 无法兼顾"
+  ],
+  "validation": [
+    "噪声比例合理性",
+    "簇数对 ε 的敏感性曲线",
+    "业务可解释性"
+  ],
+  "quiz": [
+    {
+      "q": "DBSCAN 相比 K-Means 的最大优势是？",
+      "options": [
+        "速度更快",
+        "可识别任意形状簇与噪声",
+        "不需要任何参数",
+        "一定全局最优"
+      ],
+      "answer": "B",
+      "explanation": "密度可达不假设簇形状，且能标出噪声。"
+    },
+    {
+      "q": "k-距离图用于选什么参数？",
+      "options": [
+        "簇数 k",
+        "ε 邻域半径",
+        "迭代次数",
+        "维度"
+      ],
+      "answer": "B",
+      "explanation": "k-距离曲线肘部提示 ε。"
+    }
+  ],
+  "paper_case": {
+    "title": "与 K-Means 对比见知识单元 kmeans-vs-dbscan",
+    "note": "Atlas 关联知识单元已覆盖。"
+  },
+  "provider_note": "上游 czy 库暂无 DBSCAN 执行入口；概念课 + fuzzy-cmeans 软聚类对照。"
+}

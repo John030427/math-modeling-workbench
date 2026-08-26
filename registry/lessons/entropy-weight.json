@@ -1,0 +1,94 @@
+{
+  "id": "entropy-weight",
+  "title": "熵权法",
+  "provider_example": {
+    "provider": "czy",
+    "algorithm": "czy-entropy-weight",
+    "parameters": {
+      "data": [
+        [
+          9,
+          0.9
+        ],
+        [
+          1,
+          0.5
+        ],
+        [
+          5,
+          0.7
+        ]
+      ],
+      "positive_indicators": [
+        true,
+        true
+      ]
+    }
+  },
+  "intuition": "一个指标各方案差异越大、信息量越大，就越该占高权重——用信息熵度量「差异度」。",
+  "scenario": "20 个城市 8 项指标的宜居性评价：哪些指标真正区分了城市？熵权给出客观答案。",
+  "math": "标准化 → p_ij = x_ij/Σx_ij → e_j = −(1/ln n)Σ p_ij ln p_ij → 权重 w_j = (1−e_j)/Σ(1−e_k)。",
+  "flow": [
+    "正向化+标准化",
+    "计算各指标信息熵",
+    "求差异系数 1−e_j",
+    "归一化为权重"
+  ],
+  "params": [
+    {
+      "name": "data",
+      "meaning": "标准化后数据矩阵",
+      "how": "先正向化处理负向指标"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "需要客观权重",
+      "样本间差异真实的指标"
+    ],
+    "avoid": [
+      "指标值全相同（熵权无意义）",
+      "小样本极端值主导"
+    ]
+  },
+  "baseline_comparison": "与等权重对比：熵权排名变化大的指标就是「区分度来源」，需业务解释。",
+  "failure_cases": [
+    "指标全为常数",
+    "未正向化导致熵计算方向错误",
+    "极端值未处理"
+  ],
+  "validation": [
+    "权重和为 1",
+    "与主观权重组合敏感性",
+    "剔除单指标看排名稳定性"
+  ],
+  "quiz": [
+    {
+      "q": "熵权大的指标意味着？",
+      "options": [
+        "各方案差异大",
+        "专家更重视",
+        "更不重要",
+        "数值更大"
+      ],
+      "answer": "A",
+      "explanation": "差异大→信息量大→权重高。"
+    },
+    {
+      "q": "熵权法属于？",
+      "options": [
+        "主观赋权",
+        "客观赋权",
+        "组合赋权",
+        "随机赋权"
+      ],
+      "answer": "B",
+      "explanation": "完全由数据驱动。"
+    }
+  ],
+  "paper_case": {
+    "title": "评价类案例（组合赋权 70% 熵权）",
+    "note": ""
+  },
+  "provider_note": "czy-entropy-weight 输入数据矩阵即可，返回各指标权重。"
+}

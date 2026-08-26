@@ -851,6 +851,135 @@ function RunFigure({ pal, run, onSave }: { pal: Palette; run: any; onSave?: (fig
   )
 }
 
+/* ---------------- deep lesson renderer ---------------- */
+
+function DeepLesson({ pal, modelId }: { pal: Palette; modelId: string }) {
+  const [lesson, setLesson] = useState<any>(null)
+  const [missing, setMissing] = useState(false)
+  const [picked, setPicked] = useState<Record<number, string>>({})
+  useEffect(() => {
+    setLesson(null)
+    setMissing(false)
+    setPicked({})
+    jget(`${API}/lessons/${modelId}`).then((d) => {
+      if (d.ok) setLesson(d.lesson)
+      else setMissing(true)
+    })
+  }, [modelId])
+  if (missing)
+    return (
+      <div style={{ padding: '18px 22px', height: '100%', overflow: 'auto' }}>
+        <Card pal={pal}>
+          <div style={{ fontSize: 13 }}>
+            该模型暂无深度课程页 — 可在 Algorithm Lab 直接执行实验，或使用下方工作台。
+          </div>
+        </Card>
+      </div>
+    )
+  if (!lesson) return <div style={{ padding: 24, fontSize: 13, color: pal.muted }}>加载课程…</div>
+  const q = lesson.quiz ?? []
+  return (
+    <div style={{ padding: '18px 22px', height: '100%', overflow: 'auto' }}>
+      <h2 style={{ fontSize: 17, margin: '0 0 12px' }}>{lesson.title}</h2>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>⏱ 30 秒直觉</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.7 }}>{lesson.intuition}</div>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>📌 真实建模场景</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.7 }}>{lesson.scenario}</div>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>🧮 数学形式</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.8, fontFamily: 'Georgia, serif' }}>{lesson.math}</div>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>🔀 算法流程</div>
+        <ol style={{ fontSize: 12.5, margin: 0, paddingLeft: 18, lineHeight: 1.9 }}>
+          {(lesson.flow ?? []).map((s: string, i: number) => (
+            <li key={i}>{s}</li>
+          ))}
+        </ol>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>⚙️ 参数怎么设</div>
+        {(lesson.params ?? []).map((p: any) => (
+          <div key={p.name} style={{ fontSize: 12.5, marginBottom: 6, lineHeight: 1.6 }}>
+            <strong>{p.name}</strong>：{p.meaning} — <span style={{ color: pal.muted }}>{p.how}</span>
+          </div>
+        ))}
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>✅ 适用 / ❌ 不适用</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.8 }}>
+          {(lesson.use_avoid?.use ?? []).map((u: string) => (
+            <div key={u}>✅ {u}</div>
+          ))}
+          {(lesson.use_avoid?.avoid ?? []).map((u: string) => (
+            <div key={u} style={{ color: pal.warn }}>
+              ❌ {u}
+            </div>
+          ))}
+        </div>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>⚖️ Baseline 对照</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.7 }}>{lesson.baseline_comparison}</div>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>💥 常见失败</div>
+        <ul style={{ fontSize: 12.5, margin: 0, paddingLeft: 18, lineHeight: 1.8 }}>
+          {(lesson.failure_cases ?? []).map((f: string) => (
+            <li key={f}>{f}</li>
+          ))}
+        </ul>
+      </Card>
+      <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>🔬 验证方法</div>
+        <ul style={{ fontSize: 12.5, margin: 0, paddingLeft: 18, lineHeight: 1.8 }}>
+          {(lesson.validation ?? []).map((v: string) => (
+            <li key={v}>{v}</li>
+          ))}
+        </ul>
+      </Card>
+      {(lesson.quiz ?? []).length > 0 && (
+        <Card pal={pal} style={{ marginBottom: 10, padding: '14px 16px' }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>📝 Mini Quiz</div>
+          {q.map((item: any, i: number) => (
+            <div key={i} style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 5 }}>
+                {i + 1}. {item.q}
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {Object.entries(item.options).map(([k, v]) => (
+                  <Btn key={k} pal={pal} primary={picked[i] === k} onClick={() => setPicked({ ...picked, [i]: k })}>
+                    {k}. {v as string}
+                  </Btn>
+                ))}
+              </div>
+              {picked[i] && (
+                <div style={{ fontSize: 12, marginTop: 6, color: picked[i] === item.answer ? pal.ok : pal.danger }}>
+                  {picked[i] === item.answer ? '✓ 正确 — ' : `✗ 正确答案 ${item.answer} — `}
+                  {item.explanation}
+                </div>
+              )}
+            </div>
+          ))}
+        </Card>
+      )}
+      <Card pal={pal} style={{ padding: '14px 16px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>📄 真实论文/案例</div>
+        <div style={{ fontSize: 12.5, lineHeight: 1.7 }}>
+          {lesson.paper_case?.title}
+          <span style={{ color: pal.muted }}> — {lesson.paper_case?.note}</span>
+        </div>
+        <div style={{ fontSize: 12, color: pal.accent, marginTop: 8 }}>💡 {lesson.provider_note}</div>
+      </Card>
+      <div style={{ height: 20 }} />
+    </div>
+  )
+}
+
 /* ---------------- competition workbench ---------------- */
 
 const STAGES = ['problem', 'decompose', 'data', 'features', 'selector', 'lab', 'viz', 'validation', 'review'] as const
@@ -2249,6 +2378,7 @@ function ShellFrame({ renderSlot }: FrameProps) {
   const pal = useThemePalette()
   const S = styles(pal)
   const [active, setActive] = useState<SectionId>(loadSection)
+  const [lessonModel, setLessonModel] = useState<string | null>('kmeans')
   const [narrow, setNarrow] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 1180 : false))
   const [agentOpen, setAgentOpen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth > 1180 : true))
 
@@ -2278,6 +2408,7 @@ function ShellFrame({ renderSlot }: FrameProps) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ page: 'lesson', module: 'atlas', model_id: modelId, ...(sid ? { session_id: sid } : {}) }),
     }).catch(() => {})
+    setLessonModel(modelId)
     navigate('lesson')
   }
 
@@ -2339,7 +2470,7 @@ function ShellFrame({ renderSlot }: FrameProps) {
             <Atlas pal={pal} onSelect={selectModel} />
           </div>
           <div style={S.pane(active === 'lesson')} data-mm-section="lesson">
-            {renderSlot('mathmodel.workbench', {})}
+            {lessonModel === 'kmeans' ? renderSlot('mathmodel.workbench', {}) : <DeepLesson pal={pal} modelId={lessonModel ?? ''} />}
           </div>
           <div style={S.pane(active === 'review')} data-mm-section="review">
             <DailyReview pal={pal} />
@@ -2458,6 +2589,8 @@ export function apply(ctx: ClientContext): void {
     'mathmodel-shell: dispose',
   )
 }
+
+
 
 
 

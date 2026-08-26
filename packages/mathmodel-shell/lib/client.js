@@ -658,6 +658,112 @@ function RunFigure({ pal, run, onSave }) {
     }
   );
 }
+function DeepLesson({ pal, modelId }) {
+  const [lesson, setLesson] = (0, import_react.useState)(null);
+  const [missing, setMissing] = (0, import_react.useState)(false);
+  const [picked, setPicked] = (0, import_react.useState)({});
+  (0, import_react.useEffect)(() => {
+    setLesson(null);
+    setMissing(false);
+    setPicked({});
+    jget(`${API}/lessons/${modelId}`).then((d) => {
+      if (d.ok) setLesson(d.lesson);
+      else setMissing(true);
+    });
+  }, [modelId]);
+  if (missing)
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { padding: "18px 22px", height: "100%", overflow: "auto" }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { pal, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13 }, children: "\u8BE5\u6A21\u578B\u6682\u65E0\u6DF1\u5EA6\u8BFE\u7A0B\u9875 \u2014 \u53EF\u5728 Algorithm Lab \u76F4\u63A5\u6267\u884C\u5B9E\u9A8C\uFF0C\u6216\u4F7F\u7528\u4E0B\u65B9\u5DE5\u4F5C\u53F0\u3002" }) }) });
+  if (!lesson) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { padding: 24, fontSize: 13, color: pal.muted }, children: "\u52A0\u8F7D\u8BFE\u7A0B\u2026" });
+  const q = lesson.quiz ?? [];
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { padding: "18px 22px", height: "100%", overflow: "auto" }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { style: { fontSize: 17, margin: "0 0 12px" }, children: lesson.title }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u23F1 30 \u79D2\u76F4\u89C9" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12.5, lineHeight: 1.7 }, children: lesson.intuition })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u{1F4CC} \u771F\u5B9E\u5EFA\u6A21\u573A\u666F" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12.5, lineHeight: 1.7 }, children: lesson.scenario })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u{1F9EE} \u6570\u5B66\u5F62\u5F0F" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12.5, lineHeight: 1.8, fontFamily: "Georgia, serif" }, children: lesson.math })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u{1F500} \u7B97\u6CD5\u6D41\u7A0B" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", { style: { fontSize: 12.5, margin: 0, paddingLeft: 18, lineHeight: 1.9 }, children: (lesson.flow ?? []).map((s, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: s }, i)) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u2699\uFE0F \u53C2\u6570\u600E\u4E48\u8BBE" }),
+      (lesson.params ?? []).map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, marginBottom: 6, lineHeight: 1.6 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: p.name }),
+        "\uFF1A",
+        p.meaning,
+        " \u2014 ",
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: { color: pal.muted }, children: p.how })
+      ] }, p.name))
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u2705 \u9002\u7528 / \u274C \u4E0D\u9002\u7528" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, lineHeight: 1.8 }, children: [
+        (lesson.use_avoid?.use ?? []).map((u) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+          "\u2705 ",
+          u
+        ] }, u)),
+        (lesson.use_avoid?.avoid ?? []).map((u) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { color: pal.warn }, children: [
+          "\u274C ",
+          u
+        ] }, u))
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u2696\uFE0F Baseline \u5BF9\u7167" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12.5, lineHeight: 1.7 }, children: lesson.baseline_comparison })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u{1F4A5} \u5E38\u89C1\u5931\u8D25" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", { style: { fontSize: 12.5, margin: 0, paddingLeft: 18, lineHeight: 1.8 }, children: (lesson.failure_cases ?? []).map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: f }, f)) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u{1F52C} \u9A8C\u8BC1\u65B9\u6CD5" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", { style: { fontSize: 12.5, margin: 0, paddingLeft: 18, lineHeight: 1.8 }, children: (lesson.validation ?? []).map((v) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: v }, v)) })
+    ] }),
+    (lesson.quiz ?? []).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 10, padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 8 }, children: "\u{1F4DD} Mini Quiz" }),
+      q.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { marginBottom: 12 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, fontWeight: 600, marginBottom: 5 }, children: [
+          i + 1,
+          ". ",
+          item.q
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "flex", gap: 6, flexWrap: "wrap" }, children: Object.entries(item.options).map(([k, v]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Btn, { pal, primary: picked[i] === k, onClick: () => setPicked({ ...picked, [i]: k }), children: [
+          k,
+          ". ",
+          v
+        ] }, k)) }),
+        picked[i] && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12, marginTop: 6, color: picked[i] === item.answer ? pal.ok : pal.danger }, children: [
+          picked[i] === item.answer ? "\u2713 \u6B63\u786E \u2014 " : `\u2717 \u6B63\u786E\u7B54\u6848 ${item.answer} \u2014 `,
+          item.explanation
+        ] })
+      ] }, i))
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { padding: "14px 16px" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 5 }, children: "\u{1F4C4} \u771F\u5B9E\u8BBA\u6587/\u6848\u4F8B" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, lineHeight: 1.7 }, children: [
+        lesson.paper_case?.title,
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { color: pal.muted }, children: [
+          " \u2014 ",
+          lesson.paper_case?.note
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12, color: pal.accent, marginTop: 8 }, children: [
+        "\u{1F4A1} ",
+        lesson.provider_note
+      ] })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { height: 20 } })
+  ] });
+}
 var STAGES = ["problem", "decompose", "data", "features", "selector", "lab", "viz", "validation", "review"];
 var STAGE_LABEL = {
   problem: "\u9898\u76EE",
@@ -1819,6 +1925,7 @@ function ShellFrame({ renderSlot }) {
   const pal = useThemePalette();
   const S = styles(pal);
   const [active, setActive] = (0, import_react.useState)(loadSection);
+  const [lessonModel, setLessonModel] = (0, import_react.useState)("kmeans");
   const [narrow, setNarrow] = (0, import_react.useState)(() => typeof window !== "undefined" ? window.innerWidth <= 1180 : false);
   const [agentOpen, setAgentOpen] = (0, import_react.useState)(() => typeof window !== "undefined" ? window.innerWidth > 1180 : true);
   (0, import_react.useEffect)(() => {
@@ -1845,6 +1952,7 @@ function ShellFrame({ renderSlot }) {
       body: JSON.stringify({ page: "lesson", module: "atlas", model_id: modelId, ...sid ? { session_id: sid } : {} })
     }).catch(() => {
     });
+    setLessonModel(modelId);
     navigate("lesson");
   };
   const agentStyle = narrow ? {
@@ -1891,7 +1999,7 @@ function ShellFrame({ renderSlot }) {
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: S.mainBody, children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "dashboard"), "data-mm-section": "dashboard", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dashboard, { pal, onNavigate: navigate }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "atlas"), "data-mm-section": "atlas", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Atlas, { pal, onSelect: selectModel }) }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "lesson"), "data-mm-section": "lesson", children: renderSlot("mathmodel.workbench", {}) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "lesson"), "data-mm-section": "lesson", children: lessonModel === "kmeans" ? renderSlot("mathmodel.workbench", {}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DeepLesson, { pal, modelId: lessonModel ?? "" }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "review"), "data-mm-section": "review", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DailyReview, { pal }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "gym"), "data-mm-section": "gym", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Gym, { pal }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "competition"), "data-mm-section": "competition", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Competition, { pal, onNavigate: navigate }) }),

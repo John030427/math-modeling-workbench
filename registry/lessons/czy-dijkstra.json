@@ -1,0 +1,99 @@
+{
+  "id": "czy-dijkstra",
+  "title": "Dijkstra 最短路",
+  "provider_example": {
+    "provider": "czy",
+    "algorithm": "czy-dijkstra",
+    "parameters": {
+      "graph": [
+        [
+          0,
+          2,
+          99
+        ],
+        [
+          2,
+          0,
+          1
+        ],
+        [
+          99,
+          1,
+          0
+        ]
+      ],
+      "source": 0
+    }
+  },
+  "intuition": "从起点出发，每次「锁定」当前最近的未访问点，用它松弛邻居——贪心地扩展最短路树。",
+  "scenario": "配送中心到各网点的最短运输距离/时间；应急救灾的资源到达时间评估。",
+  "math": "非负权图 G(V,E)，维护 dist[]，每次取未确定集合中 dist 最小的点 u 松弛其邻边：dist[v] = min(dist[v], dist[u]+w(u,v))。",
+  "flow": [
+    "构建邻接矩阵/表（非负权）",
+    "初始化 dist[source]=0",
+    "贪心锁定最近点并松弛邻居",
+    "重复直到全部确定",
+    "回溯前驱得路径"
+  ],
+  "params": [
+    {
+      "name": "graph",
+      "meaning": "邻接矩阵",
+      "how": "无边的用大数（如 99/INF）表示，对角线 0"
+    },
+    {
+      "name": "source",
+      "meaning": "源点索引",
+      "how": "0-based"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "非负权单源最短路"
+    ],
+    "avoid": [
+      "负权边（用 Bellman-Ford 类）",
+      "需要全源（用 Floyd）"
+    ]
+  },
+  "baseline_comparison": "与 BFS（无权图）/Floyd（全源）对照；结果必须满足三角不等式。",
+  "failure_cases": [
+    "负权边导致贪心失效",
+    "邻接矩阵不对称（有向图按无向用错）",
+    "大数表示 INF 参与加法溢出"
+  ],
+  "validation": [
+    "小图手工验证",
+    "与 Floyd 单行交叉核对",
+    "路径回溯的连续性检查"
+  ],
+  "quiz": [
+    {
+      "q": "Dijkstra 能处理负权边吗？",
+      "options": [
+        "能",
+        "不能",
+        "只对小图能",
+        "只对有向图能"
+      ],
+      "answer": "B",
+      "explanation": "贪心性质依赖非负权。"
+    },
+    {
+      "q": "需要所有点对最短路时用？",
+      "options": [
+        "Floyd",
+        "Dijkstra 一次",
+        "Prim",
+        "最大流"
+      ],
+      "answer": "A",
+      "explanation": "Floyd 动态规划求全源。"
+    }
+  ],
+  "paper_case": {
+    "title": "配送/管网/应急类赛题的标准组件",
+    "note": ""
+  },
+  "provider_note": "czy-dijkstra 返回距离数组与前驱数组（可回溯路径）。"
+}

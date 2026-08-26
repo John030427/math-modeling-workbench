@@ -1,0 +1,105 @@
+{
+  "id": "topsis",
+  "title": "TOPSIS 逼近理想解",
+  "provider_example": {
+    "provider": "czy",
+    "algorithm": "czy-topsis",
+    "parameters": {
+      "data": [
+        [
+          9,
+          0.9
+        ],
+        [
+          1,
+          0.5
+        ],
+        [
+          5,
+          0.7
+        ]
+      ],
+      "weights": [
+        0.6,
+        0.4
+      ],
+      "positive_indicators": [
+        true,
+        true
+      ]
+    }
+  },
+  "intuition": "最好的方案应该离「正理想解」最近、离「负理想解」最远——用两个距离的比值给方案排序。",
+  "scenario": "城市宜居性排名：8 项指标标准化后加权，算每城与最优/最差虚拟城市的距离，得贴近度排序。",
+  "math": "向量归一化 → 加权 → 正理想 x⁺ 与负理想 x⁻ → D⁺/D⁻ 欧氏距离 → 贴近度 C = D⁻/(D⁺+D⁻)，越大越好。",
+  "flow": [
+    "正向化处理负向指标",
+    "向量归一化",
+    "乘权重",
+    "确定正/负理想解",
+    "算距离与贴近度",
+    "排序"
+  ],
+  "params": [
+    {
+      "name": "weights",
+      "meaning": "指标权重",
+      "how": "熵权（客观）/AHP（主观）/组合赋权"
+    },
+    {
+      "name": "positive_indicators",
+      "meaning": "是否正向指标",
+      "how": "成本型指标设 false"
+    }
+  ],
+  "use_avoid": {
+    "use": [
+      "多方案多指标排序",
+      "权重来源明确"
+    ],
+    "avoid": [
+      "指标强相关（重复计权）",
+      "方案间无可比性"
+    ]
+  },
+  "baseline_comparison": "与等权重 TOPSIS 对比：若排名差异大，必须做权重敏感性分析并解释。",
+  "failure_cases": [
+    "忘记正向化负向指标",
+    "指标强相关导致某维度重复计权",
+    "权重来源无依据"
+  ],
+  "validation": [
+    "权重扰动 ±10% 排名稳定性",
+    "与熵权法/RSR 结果对照",
+    "Spearman 秩相关检查"
+  ],
+  "quiz": [
+    {
+      "q": "TOPSIS 的贴近度 C 的范围是？",
+      "options": [
+        "[0,1]",
+        "[-1,1]",
+        "(0,∞)",
+        "[0,100]"
+      ],
+      "answer": "A",
+      "explanation": "C = D⁻/(D⁺+D⁻) ∈ [0,1]。"
+    },
+    {
+      "q": "成本型指标应该？",
+      "options": [
+        "当作正向处理",
+        "正向化或标记 positive=false",
+        "直接删除",
+        "乘 -1 后不用管"
+      ],
+      "answer": "B",
+      "explanation": "必须告知算法该指标越小越好。"
+    }
+  ],
+  "paper_case": {
+    "title": "城市宜居性评价（见案例库 评价/决策 案例）",
+    "note": "组合赋权 + 敏感性分析是加分点。"
+  },
+  "provider_note": "czy-topsis 传 data/weights/positive_indicators 真实执行，返回 scores 与 ranking。"
+}

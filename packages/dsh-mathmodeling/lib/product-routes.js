@@ -385,6 +385,38 @@ export function makeProductRoutes() {
       },
     },
 
+    // deep lessons
+    {
+      kind: 'prefix',
+      path: `${MATHMODELING_API_PREFIX}/lessons`,
+      handler: (req, res) => {
+        if (req.method !== 'GET') {
+          json(res, 405, { ok: false, error: 'method-not-allowed' })
+          return
+        }
+        const pathname = new URL(req.url ?? '/', 'http://localhost').pathname
+        const modelId = decodeURIComponent(pathname.split('/').pop() || '')
+        const lesson = readJson(join(LIB_DIR, '../../../registry/lessons', `${modelId}.json`))
+        if (!lesson) {
+          json(res, 404, { ok: false, error: 'lesson-not-found' })
+          return
+        }
+        json(res, 200, { ok: true, lesson })
+      },
+    },
+    {
+      kind: 'exact',
+      path: `${MATHMODELING_API_PREFIX}/lessons`,
+      handler: (req, res) => {
+        if (req.method !== 'GET') {
+          json(res, 405, { ok: false, error: 'method-not-allowed' })
+          return
+        }
+        const dir = join(LIB_DIR, '../../../registry/lessons')
+        const ids = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => f.replace('.json', '')) : []
+        json(res, 200, { ok: true, lessons: ids })
+      },
+    },
     // CUMCM archive index (5244 real records from yushugulao/CUMCM-Archive, link-only)
     {
       kind: 'exact',
@@ -1106,6 +1138,8 @@ function readdirSafe(dir) {
     return []
   }
 }
+
+
 
 
 
