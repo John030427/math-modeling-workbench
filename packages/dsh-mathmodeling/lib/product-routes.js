@@ -669,6 +669,7 @@ export function makeProductRoutes() {
                 datadoctor: readJson(join(dir, 'datadoctor.json')),
                 runs: readJson(join(dir, 'experiments', 'run-manifest.json'))?.runs ?? [],
                 validation: readJson(join(dir, 'validation.json')),
+                figures: readJson(join(dir, 'figures.json'))?.figures ?? [],
                 claims: readJson(join(dir, 'review', 'claim-ledger.json')),
               })
               return
@@ -781,6 +782,32 @@ export function makeProductRoutes() {
               return
             }
 
+            if (req.method === 'POST' && action === 'figures') {
+              const body = await readJsonBody(req)
+              const figPath = join(dir, 'figures.json')
+              const store = readJson(figPath) ?? { project_id: projectId, figures: [] }
+              const figure = {
+                figure_id: `fig_${randomUUID().slice(0, 8)}`,
+                run_id: body.run_id ?? null,
+                type: body.type ?? 'unknown',
+                caption: body.caption ?? '',
+                data: body.data ?? {},
+                created_at: new Date().toISOString(),
+              }
+              store.figures.push(figure)
+              writeJson(figPath, store)
+              touchProject(dir, {
+                stage: maxStage(project.stage, 'lab'),
+                artifacts: [...new Set([...(project.artifacts ?? []), 'figures'])],
+              })
+              json(res, 200, { ok: true, figure })
+              return
+            }
+
+            if (req.method === 'GET' && action === 'figures') {
+              json(res, 200, { ok: true, figures: readJson(join(dir, 'figures.json'))?.figures ?? [] })
+              return
+            }
             if (req.method === 'POST' && action === 'validation') {
               const body = await readJsonBody(req)
               const manifest = readJson(join(dir, 'experiments', 'run-manifest.json'))?.runs ?? []
@@ -896,7 +923,7 @@ function upsertAll(records, record) {
   return next
 }
 
-const STAGE_ORDER = ['problem', 'decompose', 'data', 'features', 'selector', 'lab', 'validation', 'review']
+const STAGE_ORDER = ['problem', 'decompose', 'data', 'features', 'selector', 'lab', 'viz', 'validation', 'review']
 function maxStage(a, b) {
   return STAGE_ORDER.indexOf(b) > STAGE_ORDER.indexOf(a) ? b : a
 }
@@ -908,6 +935,8 @@ function readdirSafe(dir) {
     return []
   }
 }
+
+
 
 
 

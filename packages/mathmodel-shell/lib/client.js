@@ -495,7 +495,168 @@ function Gym({ pal }) {
     ] })
   ] });
 }
-var STAGES = ["problem", "decompose", "data", "features", "selector", "lab", "validation", "review"];
+var CLUSTER_COLORS = ["#3f66f0", "#2e9e5b", "#c77c1d", "#8e44ad", "#e05656", "#16a085"];
+function FigureFrame({
+  pal,
+  caption,
+  children,
+  onSave
+}) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { padding: "12px 14px", marginBottom: 12 }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { viewBox: "0 0 420 260", style: { width: "100%", maxWidth: 560, display: "block", margin: "0 auto", background: "rgba(128,128,128,0.04)", borderRadius: 6 }, children }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, gap: 8 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 11.5, color: pal.muted, lineHeight: 1.5 }, children: caption }),
+      onSave && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Btn, { pal, onClick: onSave, children: "\u4FDD\u5B58\u56FE\u8868\u8BB0\u5F55" })
+    ] })
+  ] });
+}
+function axes(pal) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { stroke: pal.border, strokeWidth: 1, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", { x1: 40, y1: 220, x2: 400, y2: 220 }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", { x1: 40, y1: 10, x2: 40, y2: 220 })
+  ] });
+}
+function ScatterClusters({
+  pal,
+  points,
+  labels,
+  centroids
+}) {
+  const all = [...points, ...centroids];
+  const xs = all.map((p) => p[0]);
+  const ys = all.map((p) => p[1]);
+  const x0 = Math.min(...xs);
+  const x1 = Math.max(...xs);
+  const y0 = Math.min(...ys);
+  const y1 = Math.max(...ys);
+  const sx = (v) => 50 + (v - x0) / Math.max(1e-9, x1 - x0) * 340;
+  const sy = (v) => 215 - (v - y0) / Math.max(1e-9, y1 - y0) * 195;
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [
+    axes(pal),
+    points.map((p, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", { cx: sx(p[0]), cy: sy(p[1]), r: 4, fill: CLUSTER_COLORS[labels[i] % CLUSTER_COLORS.length], opacity: 0.85 }, i)),
+    centroids.map((c, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", { x1: sx(c[0]) - 7, y1: sy(c[1]) - 7, x2: sx(c[0]) + 7, y2: sy(c[1]) + 7, stroke: CLUSTER_COLORS[i % CLUSTER_COLORS.length], strokeWidth: 2.5 }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", { x1: sx(c[0]) - 7, y1: sy(c[1]) + 7, x2: sx(c[0]) + 7, y2: sy(c[1]) - 7, stroke: CLUSTER_COLORS[i % CLUSTER_COLORS.length], strokeWidth: 2.5 })
+    ] }, `c${i}`)),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", { x: 220, y: 248, fontSize: 11, fill: pal.muted, textAnchor: "middle", children: "\u7279\u5F81\u7A7A\u95F4\u6563\u70B9\uFF08\u989C\u8272 = \u7C07\uFF0C\xD7 = \u8D28\u5FC3\uFF09" })
+  ] });
+}
+function PredictedVsActual({
+  pal,
+  actual,
+  predicted
+}) {
+  const all = [...actual, ...predicted, 0];
+  const lo = Math.min(...all);
+  const hi = Math.max(...all);
+  const s = (v) => 50 + (v - lo) / Math.max(1e-9, hi - lo) * 340;
+  const sy = (v) => 215 - (v - lo) / Math.max(1e-9, hi - lo) * 195;
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [
+    axes(pal),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", { x1: s(lo), y1: sy(lo), x2: s(hi), y2: sy(hi), stroke: pal.muted, strokeDasharray: "4 3" }),
+    actual.map((a, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", { cx: s(a), cy: sy(predicted[i]), r: 4.5, fill: pal.accent, opacity: 0.9 }, i)),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", { x: 230, y: 248, fontSize: 11, fill: pal.muted, textAnchor: "middle", children: "\u5B9E\u9645\u503C\uFF08x\uFF09vs \u9884\u6D4B\u503C\uFF08y\uFF09\xB7 \u865A\u7EBF = \u5B8C\u7F8E\u9884\u6D4B" })
+  ] });
+}
+function ConvergenceCurve({ pal, curve, seed }) {
+  const lo = Math.min(...curve);
+  const hi = Math.max(...curve);
+  const sx = (i) => 50 + i / Math.max(1, curve.length - 1) * 340;
+  const sy = (v) => 215 - (v - lo) / Math.max(1e-9, hi - lo || 1) * 195;
+  const path = curve.map((v, i) => `${i === 0 ? "M" : "L"}${sx(i)},${sy(v)}`).join(" ");
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [
+    axes(pal),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: path, fill: "none", stroke: pal.accent, strokeWidth: 2 }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", { cx: sx(curve.length - 1), cy: sy(curve[curve.length - 1]), r: 4, fill: pal.ok }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", { x: 230, y: 248, fontSize: 11, fill: pal.muted, textAnchor: "middle", children: [
+      "\u6536\u655B\u66F2\u7EBF\uFF08seed ",
+      seed,
+      "\uFF09\xB7 \u8FED\u4EE3 \u2192 \u6700\u4F18\u76EE\u6807\u503C"
+    ] })
+  ] });
+}
+function BarList({ pal, items }) {
+  const max = Math.max(...items.map((i) => i.value), 1e-9);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("g", { children: items.map((it, i) => {
+    const w = it.value / max * 300;
+    const y = 18 + i * (200 / Math.max(1, items.length));
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", { x: 38, y: y + 12, fontSize: 10.5, fill: pal.muted, textAnchor: "end", children: it.label.length > 10 ? it.label.slice(0, 10) : it.label }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("rect", { x: 44, y, width: Math.max(2, w), height: 16, fill: pal.accent, opacity: 0.85, rx: 3 }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", { x: 44 + Math.max(2, w) + 6, y: y + 12, fontSize: 10.5, fill: pal.fg, children: it.value })
+    ] }, i);
+  }) });
+}
+function figureFromRun(run) {
+  const a = run.artifacts ?? {};
+  const p = run.parameters ?? {};
+  if (run.algorithm === "kmeans" && a.labels && a.centroids) {
+    return {
+      type: "scatter-clusters",
+      caption: `K-Means \u805A\u7C7B\u6563\u70B9\uFF08k=${p.k}\uFF0Cseeds=${(p.seeds ?? []).join("/")}\uFF0CSSE \u5747\u503C ${run.metrics.sse_mean}\uFF09`,
+      data: { points: p.points ?? [], labels: JSON.parse(a.labels), centroids: JSON.parse(a.centroids) }
+    };
+  }
+  if (run.algorithm === "linear-regression" && a.coefficients && a.residuals) {
+    const w = JSON.parse(a.coefficients);
+    const X = p.X ?? [];
+    const actual = p.y ?? [];
+    const predicted = X.map((row) => row.reduce((s, v, j) => s + v * w[j + 1], w[0]));
+    return {
+      type: "predicted-vs-actual",
+      caption: `\u7EBF\u6027\u56DE\u5F52 \u5B9E\u9645 vs \u9884\u6D4B\uFF08R\xB2=${run.metrics.r2}\uFF0Cn=${run.metrics.n}\uFF09`,
+      data: { actual, predicted }
+    };
+  }
+  if (run.algorithm === "pso" && a.convergence_best_seed) {
+    return {
+      type: "convergence",
+      caption: `PSO \u6536\u655B\u66F2\u7EBF\uFF08${p.objective}\uFF0Cdims=${p.dims}\uFF0C\u6700\u4F18 ${run.metrics.best_overall}\uFF09`,
+      data: { curve: JSON.parse(a.convergence_best_seed), seed: run.seed }
+    };
+  }
+  if (run.algorithm === "topsis" && a.closeness) {
+    const closeness = JSON.parse(a.closeness);
+    return {
+      type: "bars",
+      caption: `TOPSIS \u8D34\u8FD1\u5EA6\uFF08${run.metrics.alternatives} \u4E2A\u65B9\u6848\uFF09`,
+      data: { items: closeness.map((c, i) => ({ label: `\u65B9\u6848${i + 1}`, value: c })) }
+    };
+  }
+  if (run.algorithm === "entropy-weight" && a.weights) {
+    const weights = JSON.parse(a.weights);
+    return {
+      type: "bars",
+      caption: "\u71B5\u6743\u6CD5\u6743\u91CD\u5206\u5E03",
+      data: { items: weights.map((w, i) => ({ label: `\u6307\u6807${i + 1}`, value: w })) }
+    };
+  }
+  return null;
+}
+function RunFigure({ pal, run, onSave }) {
+  const fig = (0, import_react.useMemo)(() => figureFromRun(run), [run]);
+  if (!fig)
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { pal, style: { marginBottom: 12 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12, color: pal.muted }, children: [
+      "\u8BE5 run \u65E0\u53EF\u7ED8\u5236\u4EA7\u7269\uFF08",
+      run.algorithm,
+      "\uFF09\u2014 \u56FE\u8868\u7C7B\u578B\uFF1A\u6563\u70B9\u805A\u7C7B / \u5B9E\u9645vs\u9884\u6D4B / \u6536\u655B\u66F2\u7EBF / \u6743\u91CD\u6761\u5F62\u3002"
+    ] }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+    FigureFrame,
+    {
+      pal,
+      caption: `${fig.caption} \xB7 run ${run.run_id.slice(0, 8)}\u2026`,
+      onSave: onSave ? () => onSave({ ...fig, run_id: run.run_id }) : void 0,
+      children: [
+        fig.type === "scatter-clusters" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ScatterClusters, { pal, points: fig.data.points, labels: fig.data.labels, centroids: fig.data.centroids }),
+        fig.type === "predicted-vs-actual" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PredictedVsActual, { pal, actual: fig.data.actual, predicted: fig.data.predicted }),
+        fig.type === "convergence" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ConvergenceCurve, { pal, curve: fig.data.curve, seed: fig.data.seed }),
+        fig.type === "bars" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BarList, { pal, items: fig.data.items })
+      ]
+    }
+  );
+}
+var STAGES = ["problem", "decompose", "data", "features", "selector", "lab", "viz", "validation", "review"];
 var STAGE_LABEL = {
   problem: "\u9898\u76EE",
   decompose: "\u95EE\u9898\u5951\u7EA6",
@@ -503,6 +664,7 @@ var STAGE_LABEL = {
   features: "\u7279\u5F81\u5361",
   selector: "\u9009\u578B B/M/A",
   lab: "\u5B9E\u9A8C",
+  viz: "\u53EF\u89C6\u5316",
   validation: "\u9A8C\u8BC1",
   review: "\u8BC4\u5BA1"
 };
@@ -522,6 +684,10 @@ function Competition({ pal, onNavigate }) {
       setDetail(d);
       setStage(d.project?.stage && STAGES.includes(d.project.stage) ? d.project.stage : "decompose");
     });
+  };
+  const refreshDetail = () => {
+    if (!activeId) return;
+    jget(`${API}/projects/${activeId}`).then(setDetail);
   };
   (0, import_react.useEffect)(() => {
     loadProjects().then((list) => {
@@ -566,18 +732,19 @@ function Competition({ pal, onNavigate }) {
     notice && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12, color: pal.ok, marginBottom: 10 }, children: notice }),
     !detail ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { pal, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13 }, children: "\u521B\u5EFA\u6216\u9009\u62E9\u4E00\u4E2A\u9879\u76EE\u5F00\u59CB\u3002\u9879\u76EE\u6570\u636E\u6301\u4E45\u5316\u5728 workspace/ \u4E0B\uFF0C\u5237\u65B0\u4E0D\u4E22\u3002" }) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap" }, children: STAGES.map((s) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Btn, { pal, primary: stage === s, onClick: () => setStage(s), children: STAGE_LABEL[s] }, s)) }),
-      stage === "decompose" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ContractStage, { pal, detail, onDone: () => openProject(detail.project.project_id), say }),
-      stage === "data" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataStage, { pal, detail, onDone: () => openProject(detail.project.project_id), say }),
-      stage === "features" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FeatureStage, { pal, detail, onDone: () => openProject(detail.project.project_id), say }),
+      stage === "decompose" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ContractStage, { pal, detail, onDone: refreshDetail, say }),
+      stage === "data" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataStage, { pal, detail, onDone: refreshDetail, say }),
+      stage === "features" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FeatureStage, { pal, detail, onDone: refreshDetail, say }),
       stage === "selector" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectorStage, { pal, detail }),
-      stage === "lab" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LabStage, { pal, detail, onDone: () => openProject(detail.project.project_id), say }),
-      stage === "validation" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ValidationStage, { pal, detail, onDone: () => openProject(detail.project.project_id), say }),
+      stage === "lab" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LabStage, { pal, detail, onDone: refreshDetail, say }),
+      stage === "viz" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VizStage, { pal, detail, say }),
+      stage === "validation" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ValidationStage, { pal, detail, onDone: refreshDetail, say }),
       stage === "review" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         ReviewStage,
         {
           pal,
           detail,
-          onDone: () => openProject(detail.project.project_id),
+          onDone: refreshDetail,
           say,
           onNavigate
         }
@@ -825,26 +992,40 @@ function LabStage({ pal, detail, onDone, say }) {
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Btn, { pal, primary: true, onClick: runIt, children: "\u6267\u884C\u5B9E\u9A8C" })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, { label: "\u53C2\u6570\uFF08JSON\uFF09\u2014 \u968F\u673A\u7B97\u6CD5\u8BF7\u7ED9\u591A\u4E2A seeds\uFF0C\u6307\u6807\u81EA\u52A8\u805A\u5408 mean/std/median/IQR", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", { rows: 6, style: { ...inputStyle(pal), fontFamily: "monospace" }, value: paramsText, onChange: (e) => setParamsText(e.target.value) }) }),
-    lastRun && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 14, padding: "12px 14px" }, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, fontWeight: 600 }, children: [
-        "run ",
-        lastRun.run_id.slice(0, 8),
-        "\u2026 \xB7 ",
-        lastRun.runtime_ms,
-        "ms \xB7 input_hash ",
-        lastRun.input_hash.slice(0, 10),
-        "\u2026",
-        lastRun.stale && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: { color: pal.warn }, children: "\uFF08STALE\uFF09" })
+    lastRun && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 12, padding: "12px 14px" }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, fontWeight: 600 }, children: [
+          "run ",
+          lastRun.run_id.slice(0, 8),
+          "\u2026 \xB7 ",
+          lastRun.runtime_ms,
+          "ms \xB7 input_hash ",
+          lastRun.input_hash.slice(0, 10),
+          "\u2026",
+          lastRun.stale && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { style: { color: pal.warn }, children: "\uFF08STALE\uFF09" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12, marginTop: 6, lineHeight: 1.7 }, children: Object.entries(lastRun.metrics).map(([k, v]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { marginRight: 14 }, children: [
+          k,
+          " = ",
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: String(v) })
+        ] }, k)) }),
+        lastRun.warnings?.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12, color: pal.danger, marginTop: 6 }, children: [
+          "\u26A0 ",
+          lastRun.warnings.join("\uFF1B")
+        ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12, marginTop: 6, lineHeight: 1.7 }, children: Object.entries(lastRun.metrics).map(([k, v]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { marginRight: 14 }, children: [
-        k,
-        " = ",
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: String(v) })
-      ] }, k)) }),
-      lastRun.warnings?.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12, color: pal.danger, marginTop: 6 }, children: [
-        "\u26A0 ",
-        lastRun.warnings.join("\uFF1B")
-      ] })
+      !lastRun.error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        RunFigure,
+        {
+          pal,
+          run: lastRun,
+          onSave: async (fig) => {
+            await jsend("POST", `${API}/projects/${detail.project.project_id}/figures`, fig);
+            say(`\u56FE\u8868\u8BB0\u5F55\u5DF2\u4FDD\u5B58\uFF08${fig.type}\uFF0Crun ${lastRun.run_id.slice(0, 8)}\u2026\uFF09`);
+            onDone();
+          }
+        }
+      )
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 13, fontWeight: 700, marginBottom: 8 }, children: [
       "Run Manifest\uFF08",
@@ -871,6 +1052,48 @@ function LabStage({ pal, detail, onDone, say }) {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 11, color: pal.muted, marginTop: 3 }, children: Object.entries(r.metrics).slice(0, 5).map(([k, v]) => `${k}=${String(v)}`).join(" \xB7 ") })
     ] }, r.run_id))
+  ] });
+}
+function VizStage({ pal, detail, say }) {
+  const runs = (detail.runs ?? []).filter((r) => !r.error);
+  const [runId, setRunId] = (0, import_react.useState)(runs[0]?.run_id ?? "");
+  const [caption, setCaption] = (0, import_react.useState)("");
+  const run = runs.find((r) => r.run_id === runId);
+  const saved = detail.figures ?? [];
+  const save = async (fig) => {
+    await jsend("POST", `${API}/projects/${detail.project.project_id}/figures`, { ...fig, caption: caption || fig.caption });
+    say(`\u56FE\u8868\u8BB0\u5F55\u5DF2\u4FDD\u5B58\uFF08${fig.type}\uFF09`);
+  };
+  if (runs.length === 0)
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, color: pal.muted }, children: "\u5148\u5728\u300C\u5B9E\u9A8C\u300D\u9636\u6BB5\u5B8C\u6210\u81F3\u5C11\u4E00\u6B21\u6210\u529F\u8FD0\u884C\uFF0C\u518D\u6765\u751F\u6210\u56FE\u8868\u3002" });
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { display: "flex", gap: 8, alignItems: "end", marginBottom: 12, flexWrap: "wrap" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, { label: "\u9009\u62E9 run", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", { style: { ...inputStyle(pal), width: 320 }, value: runId, onChange: (e) => setRunId(e.target.value), children: runs.map((r) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", { value: r.run_id, children: [
+        r.algorithm,
+        " \xB7 ",
+        r.run_id.slice(0, 8),
+        "\u2026 \xB7 seed ",
+        String(r.seed)
+      ] }, r.run_id)) }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, { label: "\u56FE\u8868\u8BF4\u660E\uFF08caption\uFF09", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { style: { ...inputStyle(pal), width: 320 }, value: caption, onChange: (e) => setCaption(e.target.value), placeholder: "\u7559\u7A7A\u5219\u81EA\u52A8\u751F\u6210" }) })
+    ] }),
+    run && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RunFigure, { pal, run, onSave: save }),
+    saved.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 13, fontWeight: 700, margin: "10px 0 8px" }, children: [
+        "\u5DF2\u4FDD\u5B58\u56FE\u8868\u8BB0\u5F55\uFF08",
+        saved.length,
+        "\uFF09"
+      ] }),
+      saved.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { pal, style: { marginBottom: 6, padding: "8px 12px" }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12 }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: f.figure_id }),
+        " \xB7 ",
+        f.type,
+        " \xB7 run ",
+        f.run_id?.slice(0, 8) ?? "\u2014",
+        " \xB7 ",
+        f.caption
+      ] }) }, f.figure_id))
+    ] })
   ] });
 }
 function ValidationStage({ pal, detail, onDone, say }) {
@@ -1216,8 +1439,23 @@ function Cases({ pal }) {
     });
   }, []);
   if (!active) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { padding: 24, fontSize: 13, color: pal.muted }, children: "\u52A0\u8F7D\u6848\u4F8B\u2026" });
+  const ref = active.problem_ref ?? {};
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { padding: "18px 22px", height: "100%", overflow: "auto" }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "flex", gap: 8, marginBottom: 12 }, children: cases.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Btn, { pal, primary: active.id === c.id, onClick: () => setActive(c), children: c.title }, c.id)) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }, children: cases.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Btn, { pal, primary: active.id === c.id, onClick: () => setActive(c), children: c.title }, c.id)) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { padding: "12px 16px", marginBottom: 12 }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, fontWeight: 600 }, children: [
+        "\u771F\u9898\u6765\u6E90\uFF1A",
+        ref.contest,
+        "\u300C",
+        ref.title,
+        "\u300D"
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12, marginTop: 6, display: "flex", gap: 16 }, children: [
+        ref.official_link && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", { href: ref.official_link, target: "_blank", rel: "noreferrer", style: { color: pal.accent }, children: "\u5B98\u65B9\u8D5B\u9898\u5165\u53E3 \u2197" }),
+        ref.paper_discovery && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", { href: ref.paper_discovery, target: "_blank", rel: "noreferrer", style: { color: pal.accent }, children: "\u83B7\u5956\u8BBA\u6587\u53D1\u73B0\uFF08\u83B7\u5956\u540D\u5355\u76EE\u5F55\uFF09\u2197" })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 11, color: pal.muted, marginTop: 6 }, children: "\u672C\u6848\u4F8B\u4E3A\u6211\u4EEC\u5BF9\u516C\u5F00\u771F\u9898\u7684\u6559\u5B66\u84B8\u998F\uFF0C\u975E\u5B98\u65B9\u8BC4\u5206\uFF0C\u4E5F\u4E0D\u4EE3\u8868\u4EFB\u4F55\u4E00\u7BC7\u5177\u4F53\u83B7\u5956\u8BBA\u6587\u3002" })
+    ] }),
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { padding: "16px 18px" }, children: [
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 14, fontWeight: 700, marginBottom: 8 }, children: [
         active.title,

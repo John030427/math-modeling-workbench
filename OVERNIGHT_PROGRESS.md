@@ -13,3 +13,5 @@
 | 6 | P12 文档：README 快速开始 · ARCHITECTURE/PRODUCT 已同步 · OVERNIGHT 报告 | 本 commit | — |
 
 **Live instances:** mathmodel :3100（产品）· web :3080（原版，未动）
+
+| 7 | 补欠账：可视化（SVG 散点聚类/实际vs预测/收敛曲线/权重条形 + figure 记录持久化 + 可视化阶段）· 优秀案例锚定真实真题（CUMCM 2023C/2021C/2022C + zhanwen 获奖名单发现入口）· 修复 run 后阶段弹回 bug（refreshDetail）| $(git rev-parse --short HEAD) | E2E 18/18 + gate PASS + viz 实机 ✓ |

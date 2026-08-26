@@ -625,9 +625,232 @@ function Gym({ pal }: { pal: Palette }) {
   )
 }
 
+/* ---------------- SVG charts (dependency-free) ---------------- */
+
+const CLUSTER_COLORS = ['#3f66f0', '#2e9e5b', '#c77c1d', '#8e44ad', '#e05656', '#16a085']
+
+function FigureFrame({
+  pal,
+  caption,
+  children,
+  onSave,
+}: {
+  pal: Palette
+  caption: string
+  children: ReactNode
+  onSave?: () => void
+}) {
+  return (
+    <Card pal={pal} style={{ padding: '12px 14px', marginBottom: 12 }}>
+      <svg viewBox="0 0 420 260" style={{ width: '100%', maxWidth: 560, display: 'block', margin: '0 auto', background: 'rgba(128,128,128,0.04)', borderRadius: 6 }}>
+        {children}
+      </svg>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, gap: 8 }}>
+        <div style={{ fontSize: 11.5, color: pal.muted, lineHeight: 1.5 }}>{caption}</div>
+        {onSave && (
+          <Btn pal={pal} onClick={onSave}>
+            保存图表记录
+          </Btn>
+        )}
+      </div>
+    </Card>
+  )
+}
+
+function axes(pal: Palette) {
+  return (
+    <g stroke={pal.border} strokeWidth={1}>
+      <line x1={40} y1={220} x2={400} y2={220} />
+      <line x1={40} y1={10} x2={40} y2={220} />
+    </g>
+  )
+}
+
+function ScatterClusters({
+  pal,
+  points,
+  labels,
+  centroids,
+}: {
+  pal: Palette
+  points: number[][]
+  labels: number[]
+  centroids: number[][]
+}) {
+  const all = [...points, ...centroids]
+  const xs = all.map((p) => p[0])
+  const ys = all.map((p) => p[1])
+  const x0 = Math.min(...xs)
+  const x1 = Math.max(...xs)
+  const y0 = Math.min(...ys)
+  const y1 = Math.max(...ys)
+  const sx = (v: number) => 50 + ((v - x0) / Math.max(1e-9, x1 - x0)) * 340
+  const sy = (v: number) => 215 - ((v - y0) / Math.max(1e-9, y1 - y0)) * 195
+  return (
+    <g>
+      {axes(pal)}
+      {points.map((p, i) => (
+        <circle key={i} cx={sx(p[0])} cy={sy(p[1])} r={4} fill={CLUSTER_COLORS[labels[i] % CLUSTER_COLORS.length]} opacity={0.85} />
+      ))}
+      {centroids.map((c, i) => (
+        <g key={`c${i}`}>
+          <line x1={sx(c[0]) - 7} y1={sy(c[1]) - 7} x2={sx(c[0]) + 7} y2={sy(c[1]) + 7} stroke={CLUSTER_COLORS[i % CLUSTER_COLORS.length]} strokeWidth={2.5} />
+          <line x1={sx(c[0]) - 7} y1={sy(c[1]) + 7} x2={sx(c[0]) + 7} y2={sy(c[1]) - 7} stroke={CLUSTER_COLORS[i % CLUSTER_COLORS.length]} strokeWidth={2.5} />
+        </g>
+      ))}
+      <text x={220} y={248} fontSize={11} fill={pal.muted} textAnchor="middle">
+        特征空间散点（颜色 = 簇，× = 质心）
+      </text>
+    </g>
+  )
+}
+
+function PredictedVsActual({
+  pal,
+  actual,
+  predicted,
+}: {
+  pal: Palette
+  actual: number[]
+  predicted: number[]
+}) {
+  const all = [...actual, ...predicted, 0]
+  const lo = Math.min(...all)
+  const hi = Math.max(...all)
+  const s = (v: number) => 50 + ((v - lo) / Math.max(1e-9, hi - lo)) * 340
+  const sy = (v: number) => 215 - ((v - lo) / Math.max(1e-9, hi - lo)) * 195
+  return (
+    <g>
+      {axes(pal)}
+      <line x1={s(lo)} y1={sy(lo)} x2={s(hi)} y2={sy(hi)} stroke={pal.muted} strokeDasharray="4 3" />
+      {actual.map((a, i) => (
+        <circle key={i} cx={s(a)} cy={sy(predicted[i])} r={4.5} fill={pal.accent} opacity={0.9} />
+      ))}
+      <text x={230} y={248} fontSize={11} fill={pal.muted} textAnchor="middle">
+        实际值（x）vs 预测值（y）· 虚线 = 完美预测
+      </text>
+    </g>
+  )
+}
+
+function ConvergenceCurve({ pal, curve, seed }: { pal: Palette; curve: number[]; seed: number }) {
+  const lo = Math.min(...curve)
+  const hi = Math.max(...curve)
+  const sx = (i: number) => 50 + (i / Math.max(1, curve.length - 1)) * 340
+  const sy = (v: number) => 215 - ((v - lo) / Math.max(1e-9, hi - lo || 1)) * 195
+  const path = curve.map((v, i) => `${i === 0 ? 'M' : 'L'}${sx(i)},${sy(v)}`).join(' ')
+  return (
+    <g>
+      {axes(pal)}
+      <path d={path} fill="none" stroke={pal.accent} strokeWidth={2} />
+      <circle cx={sx(curve.length - 1)} cy={sy(curve[curve.length - 1])} r={4} fill={pal.ok} />
+      <text x={230} y={248} fontSize={11} fill={pal.muted} textAnchor="middle">
+        收敛曲线（seed {seed}）· 迭代 → 最优目标值
+      </text>
+    </g>
+  )
+}
+
+function BarList({ pal, items }: { pal: Palette; items: { label: string; value: number }[] }) {
+  const max = Math.max(...items.map((i) => i.value), 1e-9)
+  return (
+    <g>
+      {items.map((it, i) => {
+        const w = (it.value / max) * 300
+        const y = 18 + i * ((200 / Math.max(1, items.length)))
+        return (
+          <g key={i}>
+            <text x={38} y={y + 12} fontSize={10.5} fill={pal.muted} textAnchor="end">
+              {it.label.length > 10 ? it.label.slice(0, 10) : it.label}
+            </text>
+            <rect x={44} y={y} width={Math.max(2, w)} height={16} fill={pal.accent} opacity={0.85} rx={3} />
+            <text x={44 + Math.max(2, w) + 6} y={y + 12} fontSize={10.5} fill={pal.fg}>
+              {it.value}
+            </text>
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+/** Derive a figure (type + data + caption) from a run. */
+function figureFromRun(run: any) {
+  const a = run.artifacts ?? {}
+  const p = run.parameters ?? {}
+  if (run.algorithm === 'kmeans' && a.labels && a.centroids) {
+    return {
+      type: 'scatter-clusters',
+      caption: `K-Means 聚类散点（k=${p.k}，seeds=${(p.seeds ?? []).join('/')}，SSE 均值 ${run.metrics.sse_mean}）`,
+      data: { points: p.points ?? [], labels: JSON.parse(a.labels), centroids: JSON.parse(a.centroids) },
+    }
+  }
+  if (run.algorithm === 'linear-regression' && a.coefficients && a.residuals) {
+    const w = JSON.parse(a.coefficients)
+    const X = p.X ?? []
+    const actual = p.y ?? []
+    const predicted = X.map((row: number[]) => row.reduce((s, v, j) => s + v * w[j + 1], w[0]))
+    return {
+      type: 'predicted-vs-actual',
+      caption: `线性回归 实际 vs 预测（R²=${run.metrics.r2}，n=${run.metrics.n}）`,
+      data: { actual, predicted },
+    }
+  }
+  if (run.algorithm === 'pso' && a.convergence_best_seed) {
+    return {
+      type: 'convergence',
+      caption: `PSO 收敛曲线（${p.objective}，dims=${p.dims}，最优 ${run.metrics.best_overall}）`,
+      data: { curve: JSON.parse(a.convergence_best_seed), seed: run.seed },
+    }
+  }
+  if (run.algorithm === 'topsis' && a.closeness) {
+    const closeness = JSON.parse(a.closeness)
+    return {
+      type: 'bars',
+      caption: `TOPSIS 贴近度（${run.metrics.alternatives} 个方案）`,
+      data: { items: closeness.map((c: number, i: number) => ({ label: `方案${i + 1}`, value: c })) },
+    }
+  }
+  if (run.algorithm === 'entropy-weight' && a.weights) {
+    const weights = JSON.parse(a.weights)
+    return {
+      type: 'bars',
+      caption: '熵权法权重分布',
+      data: { items: weights.map((w: number, i: number) => ({ label: `指标${i + 1}`, value: w })) },
+    }
+  }
+  return null
+}
+
+function RunFigure({ pal, run, onSave }: { pal: Palette; run: any; onSave?: (fig: any) => void }) {
+  const fig = useMemo(() => figureFromRun(run), [run])
+  if (!fig)
+    return (
+      <Card pal={pal} style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 12, color: pal.muted }}>
+          该 run 无可绘制产物（{run.algorithm}）— 图表类型：散点聚类 / 实际vs预测 / 收敛曲线 / 权重条形。
+        </div>
+      </Card>
+    )
+  return (
+    <FigureFrame
+      pal={pal}
+      caption={`${fig.caption} · run ${run.run_id.slice(0, 8)}…`}
+      onSave={onSave ? () => onSave({ ...fig, run_id: run.run_id }) : undefined}
+    >
+      {fig.type === 'scatter-clusters' && (
+        <ScatterClusters pal={pal} points={fig.data.points} labels={fig.data.labels} centroids={fig.data.centroids} />
+      )}
+      {fig.type === 'predicted-vs-actual' && <PredictedVsActual pal={pal} actual={fig.data.actual} predicted={fig.data.predicted} />}
+      {fig.type === 'convergence' && <ConvergenceCurve pal={pal} curve={fig.data.curve} seed={fig.data.seed} />}
+      {fig.type === 'bars' && <BarList pal={pal} items={fig.data.items} />}
+    </FigureFrame>
+  )
+}
+
 /* ---------------- competition workbench ---------------- */
 
-const STAGES = ['problem', 'decompose', 'data', 'features', 'selector', 'lab', 'validation', 'review'] as const
+const STAGES = ['problem', 'decompose', 'data', 'features', 'selector', 'lab', 'viz', 'validation', 'review'] as const
 const STAGE_LABEL: Record<string, string> = {
   problem: '题目',
   decompose: '问题契约',
@@ -635,6 +858,7 @@ const STAGE_LABEL: Record<string, string> = {
   features: '特征卡',
   selector: '选型 B/M/A',
   lab: '实验',
+  viz: '可视化',
   validation: '验证',
   review: '评审',
 }
@@ -658,6 +882,12 @@ function Competition({ pal, onNavigate }: { pal: Palette; onNavigate: (id: Secti
       setDetail(d)
       setStage(d.project?.stage && STAGES.includes(d.project.stage) ? d.project.stage : 'decompose')
     })
+  }
+
+  // same-project refresh: update data WITHOUT clobbering the user's current stage
+  const refreshDetail = () => {
+    if (!activeId) return
+    jget(`${API}/projects/${activeId}`).then(setDetail)
   }
 
   useEffect(() => {
@@ -722,17 +952,18 @@ function Competition({ pal, onNavigate }: { pal: Palette; onNavigate: (id: Secti
             ))}
           </div>
 
-          {stage === 'decompose' && <ContractStage pal={pal} detail={detail} onDone={() => openProject(detail.project.project_id)} say={say} />}
-          {stage === 'data' && <DataStage pal={pal} detail={detail} onDone={() => openProject(detail.project.project_id)} say={say} />}
-          {stage === 'features' && <FeatureStage pal={pal} detail={detail} onDone={() => openProject(detail.project.project_id)} say={say} />}
+          {stage === 'decompose' && <ContractStage pal={pal} detail={detail} onDone={refreshDetail} say={say} />}
+          {stage === 'data' && <DataStage pal={pal} detail={detail} onDone={refreshDetail} say={say} />}
+          {stage === 'features' && <FeatureStage pal={pal} detail={detail} onDone={refreshDetail} say={say} />}
           {stage === 'selector' && <SelectorStage pal={pal} detail={detail} />}
-          {stage === 'lab' && <LabStage pal={pal} detail={detail} onDone={() => openProject(detail.project.project_id)} say={say} />}
-          {stage === 'validation' && <ValidationStage pal={pal} detail={detail} onDone={() => openProject(detail.project.project_id)} say={say} />}
+          {stage === 'lab' && <LabStage pal={pal} detail={detail} onDone={refreshDetail} say={say} />}
+          {stage === 'viz' && <VizStage pal={pal} detail={detail} say={say} />}
+          {stage === 'validation' && <ValidationStage pal={pal} detail={detail} onDone={refreshDetail} say={say} />}
           {stage === 'review' && (
             <ReviewStage
               pal={pal}
               detail={detail}
-              onDone={() => openProject(detail.project.project_id)}
+              onDone={refreshDetail}
               say={say}
               onNavigate={onNavigate}
             />
@@ -1053,20 +1284,33 @@ function LabStage({ pal, detail, onDone, say }: any) {
       </Field>
 
       {lastRun && (
-        <Card pal={pal} style={{ marginBottom: 14, padding: '12px 14px' }}>
-          <div style={{ fontSize: 12.5, fontWeight: 600 }}>
-            run {lastRun.run_id.slice(0, 8)}… · {lastRun.runtime_ms}ms · input_hash {lastRun.input_hash.slice(0, 10)}…
-            {lastRun.stale && <span style={{ color: pal.warn }}>（STALE）</span>}
-          </div>
-          <div style={{ fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
-            {Object.entries(lastRun.metrics).map(([k, v]) => (
-              <span key={k} style={{ marginRight: 14 }}>
-                {k} = <strong>{String(v)}</strong>
-              </span>
-            ))}
-          </div>
-          {lastRun.warnings?.length > 0 && <div style={{ fontSize: 12, color: pal.danger, marginTop: 6 }}>⚠ {lastRun.warnings.join('；')}</div>}
-        </Card>
+        <>
+          <Card pal={pal} style={{ marginBottom: 12, padding: '12px 14px' }}>
+            <div style={{ fontSize: 12.5, fontWeight: 600 }}>
+              run {lastRun.run_id.slice(0, 8)}… · {lastRun.runtime_ms}ms · input_hash {lastRun.input_hash.slice(0, 10)}…
+              {lastRun.stale && <span style={{ color: pal.warn }}>（STALE）</span>}
+            </div>
+            <div style={{ fontSize: 12, marginTop: 6, lineHeight: 1.7 }}>
+              {Object.entries(lastRun.metrics).map(([k, v]) => (
+                <span key={k} style={{ marginRight: 14 }}>
+                  {k} = <strong>{String(v)}</strong>
+                </span>
+              ))}
+            </div>
+            {lastRun.warnings?.length > 0 && <div style={{ fontSize: 12, color: pal.danger, marginTop: 6 }}>⚠ {lastRun.warnings.join('；')}</div>}
+          </Card>
+          {!lastRun.error && (
+            <RunFigure
+              pal={pal}
+              run={lastRun}
+              onSave={async (fig) => {
+                await jsend('POST', `${API}/projects/${detail.project.project_id}/figures`, fig)
+                say(`图表记录已保存（${fig.type}，run ${lastRun.run_id.slice(0, 8)}…）`)
+                onDone()
+              }}
+            />
+          )}
+        </>
       )}
 
       <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Run Manifest（{runs.length}）</div>
@@ -1083,6 +1327,56 @@ function LabStage({ pal, detail, onDone, say }: any) {
           </div>
         </Card>
       ))}
+    </div>
+  )
+}
+
+function VizStage({ pal, detail, say }: any) {
+  const runs = (detail.runs ?? []).filter((r: any) => !r.error)
+  const [runId, setRunId] = useState(runs[0]?.run_id ?? '')
+  const [caption, setCaption] = useState('')
+  const run = runs.find((r: any) => r.run_id === runId)
+  const saved = detail.figures ?? []
+
+  const save = async (fig: any) => {
+    await jsend('POST', `${API}/projects/${detail.project.project_id}/figures`, { ...fig, caption: caption || fig.caption })
+    say(`图表记录已保存（${fig.type}）`)
+  }
+
+  if (runs.length === 0)
+    return <div style={{ fontSize: 13, color: pal.muted }}>先在「实验」阶段完成至少一次成功运行，再来生成图表。</div>
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'end', marginBottom: 12, flexWrap: 'wrap' }}>
+        <Field label="选择 run">
+          <select style={{ ...inputStyle(pal), width: 320 }} value={runId} onChange={(e) => setRunId(e.target.value)}>
+            {runs.map((r: any) => (
+              <option key={r.run_id} value={r.run_id}>
+                {r.algorithm} · {r.run_id.slice(0, 8)}… · seed {String(r.seed)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="图表说明（caption）">
+          <input style={{ ...inputStyle(pal), width: 320 }} value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="留空则自动生成" />
+        </Field>
+      </div>
+
+      {run && <RunFigure pal={pal} run={run} onSave={save} />}
+
+      {saved.length > 0 && (
+        <>
+          <div style={{ fontSize: 13, fontWeight: 700, margin: '10px 0 8px' }}>已保存图表记录（{saved.length}）</div>
+          {saved.map((f: any) => (
+            <Card key={f.figure_id} pal={pal} style={{ marginBottom: 6, padding: '8px 12px' }}>
+              <div style={{ fontSize: 12 }}>
+                <strong>{f.figure_id}</strong> · {f.type} · run {f.run_id?.slice(0, 8) ?? '—'} · {f.caption}
+              </div>
+            </Card>
+          ))}
+        </>
+      )}
     </div>
   )
 }
@@ -1516,15 +1810,34 @@ function Cases({ pal }: { pal: Palette }) {
     })
   }, [])
   if (!active) return <div style={{ padding: 24, fontSize: 13, color: pal.muted }}>加载案例…</div>
+  const ref = active.problem_ref ?? {}
   return (
     <div style={{ padding: '18px 22px', height: '100%', overflow: 'auto' }}>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
         {cases.map((c) => (
           <Btn key={c.id} pal={pal} primary={active.id === c.id} onClick={() => setActive(c)}>
             {c.title}
           </Btn>
         ))}
       </div>
+      <Card pal={pal} style={{ padding: '12px 16px', marginBottom: 12 }}>
+        <div style={{ fontSize: 12.5, fontWeight: 600 }}>真题来源：{ref.contest}「{ref.title}」</div>
+        <div style={{ fontSize: 12, marginTop: 6, display: 'flex', gap: 16 }}>
+          {ref.official_link && (
+            <a href={ref.official_link} target="_blank" rel="noreferrer" style={{ color: pal.accent }}>
+              官方赛题入口 ↗
+            </a>
+          )}
+          {ref.paper_discovery && (
+            <a href={ref.paper_discovery} target="_blank" rel="noreferrer" style={{ color: pal.accent }}>
+              获奖论文发现（获奖名单目录）↗
+            </a>
+          )}
+        </div>
+        <div style={{ fontSize: 11, color: pal.muted, marginTop: 6 }}>
+          本案例为我们对公开真题的教学蒸馏，非官方评分，也不代表任何一篇具体获奖论文。
+        </div>
+      </Card>
       <Card pal={pal} style={{ padding: '16px 18px' }}>
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>
           {active.title} <span style={{ fontSize: 11.5, color: pal.muted, fontWeight: 400 }}>{active.problem_type}</span>
@@ -2030,3 +2343,5 @@ export function apply(ctx: ClientContext): void {
     'mathmodel-shell: dispose',
   )
 }
+
+
