@@ -10,8 +10,8 @@ const LEARNING_PATH = join(PLUGIN_DIR, 'learning-state.json')
 /** @type {Map<string, import('@math-modeling/core/context').ModelingContext>} */
 const sessionContexts = new Map()
 
-/** @type {{ mastery: import('@math-modeling/core/mastery').MasteryRecord[], quiz_attempts: Array<Record<string, unknown>> }} */
-let learningState = { mastery: [], quiz_attempts: [] }
+/** @type {{ mastery: import('@math-modeling/core/mastery').MasteryRecord[], quiz_attempts: Array<Record<string, unknown>>, gym_attempts: Array<Record<string, unknown>>, reviewer_findings: Array<Record<string, unknown>> }} */
+let learningState = { mastery: [], quiz_attempts: [], gym_attempts: [], reviewer_findings: [] }
 
 function ensureDir() {
   mkdirSync(PLUGIN_DIR, { recursive: true })
@@ -20,7 +20,7 @@ function ensureDir() {
 function loadLearningState() {
   try {
     if (!existsSync(LEARNING_PATH)) {
-      learningState = { mastery: seedMasteryRecords('demo'), quiz_attempts: [] }
+      learningState = { mastery: seedMasteryRecords('demo'), quiz_attempts: [], gym_attempts: [], reviewer_findings: [] }
       persistLearningState()
       return
     }
@@ -28,9 +28,11 @@ function loadLearningState() {
     learningState = {
       mastery: Array.isArray(parsed.mastery) ? parsed.mastery : seedMasteryRecords('demo'),
       quiz_attempts: Array.isArray(parsed.quiz_attempts) ? parsed.quiz_attempts : [],
+      gym_attempts: Array.isArray(parsed.gym_attempts) ? parsed.gym_attempts : [],
+      reviewer_findings: Array.isArray(parsed.reviewer_findings) ? parsed.reviewer_findings : [],
     }
   } catch {
-    learningState = { mastery: seedMasteryRecords('demo'), quiz_attempts: [] }
+    learningState = { mastery: seedMasteryRecords('demo'), quiz_attempts: [], gym_attempts: [], reviewer_findings: [] }
   }
 }
 
@@ -73,7 +75,35 @@ export function appendQuizAttempt(attempt) {
   persistLearningState()
 }
 
+export function appendGymAttempt(attempt) {
+  learningState.gym_attempts.push({ ...attempt, created_at: new Date().toISOString() })
+  persistLearningState()
+}
+
+export function getGymAttempts(userId = 'demo') {
+  return learningState.gym_attempts.filter((a) => a.user_id === userId)
+}
+
+export function setReviewerFindings(userId, projectId, findings) {
+  learningState.reviewer_findings = learningState.reviewer_findings.filter(
+    (f) => !(f.user_id === userId && f.project_id === projectId),
+  )
+  for (const f of findings) {
+    learningState.reviewer_findings.push({
+      ...f,
+      user_id: userId,
+      project_id: projectId,
+      created_at: new Date().toISOString(),
+    })
+  }
+  persistLearningState()
+}
+
+export function getReviewerFindings(userId = 'demo') {
+  return learningState.reviewer_findings.filter((f) => f.user_id === userId)
+}
+
 export function resetDemoLearning() {
-  learningState = { mastery: seedMasteryRecords('demo'), quiz_attempts: [] }
+  learningState = { mastery: seedMasteryRecords('demo'), quiz_attempts: [], gym_attempts: [], reviewer_findings: [] }
   persistLearningState()
 }

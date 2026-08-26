@@ -1,0 +1,49 @@
+{
+  "cases": [
+    {
+      "id": "kmeans-feature-scaling",
+      "title": "Gym 案例 1：客户分群的特征准备与 K-Means 使用判断",
+      "problem": "某商场有 500 名会员的消费记录：月均消费金额（元，范围 200–20000）、到店频次（次/月，范围 0–30）、会员年龄（岁，范围 18–70）、最近一次消费距今天数（天，范围 0–400）。运营希望把会员分成 3–5 个可解释的群体用于精准营销。请给出你的建模提案：需要哪些变量、目标是什么、数据要做什么预处理、用什么方法、如何验证分群质量。",
+      "dimensions": [
+        {
+          "name": "变量选择与目标定义",
+          "reference_keywords": ["消费", "频次", "聚类", "分群", "无监督"],
+          "hint": "先明确这是无监督分群任务：目标不是预测，而是找到群体结构。变量应围绕消费行为，剔除与行为无关的标识列。",
+          "knowledge_units": ["clustering-basic", "decomposition"]
+        },
+        {
+          "name": "数据预处理（量纲）",
+          "reference_keywords": ["标准化", "z-score", "量纲", "归一化", "standardiz"],
+          "hint": "金额（200–20000）与频次（0–30）量纲差距悬殊。K-Means 基于欧氏距离，不标准化时金额会主导距离，年龄和频次几乎不起作用。",
+          "knowledge_units": ["feature-scaling", "distance"]
+        },
+        {
+          "name": "异常值与分布检查",
+          "reference_keywords": ["异常值", "离群", "outlier", "对数", "分布"],
+          "hint": "消费金额通常右偏且有高额会员离群点。K-Means 对离群敏感（质心被拉偏）。先检查分布，必要时做对数变换或剔除/分箱。",
+          "knowledge_units": ["outlier-sensitivity"]
+        },
+        {
+          "name": "方法选择与 K 的确定",
+          "reference_keywords": ["k-means", "kmeans", "肘部", "elbow", "轮廓", "silhouette", "k 值"],
+          "hint": "选 K-Means 合理，但要说明 K 如何定：肘部法（SSE-K 曲线）+ 轮廓系数相互印证；同时说明 K-Means 假设球形簇。",
+          "knowledge_units": ["k-selection", "sse", "silhouette", "initialization"]
+        },
+        {
+          "name": "验证与可解释性",
+          "reference_keywords": ["轮廓", "silhouette", "画像", "解释", "质心", "稳定", "多"],
+          "hint": "分群质量验证：轮廓系数 + 多次随机初始化看结果稳定性 + 给每个簇写业务画像（质心反推）。无监督任务没有标签，稳定性与可解释性就是验证。",
+          "knowledge_units": ["silhouette", "initialization", "local-optimum", "centroid"]
+        }
+      ],
+      "reference_outline": {
+        "变量与目标": "无监督分群：月均消费、到店频次（行为变量）为主，年龄可作辅助；剔除会员 ID 等标识列。",
+        "预处理": "Z-score 标准化消除量纲；金额右偏可先取对数；检查并处理离群会员。",
+        "方法": "K-Means（K=3~5），kmeans++ 初始化、多种子运行看稳定性。",
+        "定 K": "肘部法 SSE 曲线 + 轮廓系数联合选择。",
+        "验证": "轮廓系数、簇大小均衡性、质心业务画像可解释性、跨种子标签稳定性（如 ARI）。"
+      },
+      "knowledge_units": ["feature-scaling", "k-selection", "silhouette", "outlier-sensitivity", "initialization"]
+    }
+  ]
+}

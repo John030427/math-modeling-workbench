@@ -1,108 +1,268 @@
 {
-  "generatedAt": "2026-08-25T16:01:43.586Z",
+  "generatedAt": "2026-08-26T04:09:18.331Z",
   "models": [
     {
       "id": "kmeans",
       "name": "K-Means",
       "name_zh": "K-Means 聚类",
+      "task": "clustering",
+      "tasks": [
+        "clustering"
+      ],
+      "family": "machine-learning",
       "difficulty": "beginner",
       "demo_priority": 1,
+      "knowledge_units": [
+        "clustering-basic",
+        "distance",
+        "feature-scaling",
+        "centroid",
+        "iteration",
+        "k-selection",
+        "sse",
+        "silhouette",
+        "initialization",
+        "local-optimum",
+        "outlier-sensitivity",
+        "kmeans-vs-dbscan"
+      ],
+      "prerequisites": [
+        "distance",
+        "feature-scaling"
+      ],
+      "use_when": [
+        "需要把样本分成大致球形的簇",
+        "事先大致知道簇数 K",
+        "特征已数值化且可比较"
+      ],
+      "avoid_when": [
+        "簇形状非凸 / 密度差异大",
+        "存在严重异常值且未处理",
+        "特征量纲差异巨大且未标准化"
+      ],
       "summary": "通过迭代更新簇中心，把样本划分到最近中心，最小化簇内平方误差（SSE）。"
     },
     {
       "id": "dbscan",
       "name": "DBSCAN",
       "name_zh": "DBSCAN 密度聚类",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 2,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "簇形状不规则",
+        "需要自动发现噪声点",
+        "不知道准确簇数"
+      ],
+      "avoid_when": [
+        "密度差异极大",
+        "高维稀疏空间"
+      ],
       "summary": "基于密度连通性聚类，可识别噪声与非球形簇。"
     },
     {
       "id": "ahp",
       "name": "AHP",
       "name_zh": "层次分析法",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "beginner",
       "demo_priority": 3,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "多准则决策且专家判断可用",
+        "需要可解释权重"
+      ],
+      "avoid_when": [
+        "准则极多导致判断矩阵爆炸",
+        "完全客观数据场景更适合熵权/CRITIC"
+      ],
       "summary": "通过两两比较构建判断矩阵，求权重并做一致性检验。"
     },
     {
       "id": "topsis",
       "name": "TOPSIS",
       "name_zh": "TOPSIS",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "beginner",
       "demo_priority": 4,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "多指标综合评价",
+        "已有权重或可与熵权/AHP 组合"
+      ],
+      "avoid_when": [
+        "指标强相关未处理",
+        "量纲/方向未正确处理"
+      ],
       "summary": "计算方案到正负理想解的距离，用相对贴近度排序。"
     },
     {
       "id": "linear-regression",
       "name": "Linear Regression",
       "name_zh": "线性回归",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "beginner",
       "demo_priority": 5,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "关系近似线性",
+        "需要可解释系数"
+      ],
+      "avoid_when": [
+        "强非线性",
+        "严重异方差未处理"
+      ],
       "summary": "用线性函数拟合目标，是预测任务的重要 baseline。"
     },
     {
       "id": "random-forest",
       "name": "Random Forest",
       "name_zh": "随机森林",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 6,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "非线性关系",
+        "需要较稳健的 baseline+"
+      ],
+      "avoid_when": [
+        "必须强可解释线性系数",
+        "极小样本"
+      ],
       "summary": "多棵决策树 bagging 集成，适合非线性表格数据。"
     },
     {
       "id": "arima",
       "name": "ARIMA",
       "name_zh": "ARIMA",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 7,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "单变量时间序列",
+        "短期预测且结构相对稳定"
+      ],
+      "avoid_when": [
+        "强外生驱动未建模",
+        "样本极短"
+      ],
       "summary": "自回归积分滑动平均模型，时间序列经典方法。"
     },
     {
       "id": "pso",
       "name": "PSO",
       "name_zh": "粒子群优化",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 8,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [
+        "目标非凸、难求导",
+        "精确算法不可行且需启发式"
+      ],
+      "avoid_when": [
+        "问题是线性/凸可用 LP/凸优化",
+        "需要全局最优保证"
+      ],
       "summary": "群体启发式搜索；能用精确优化时不要默认上 PSO。"
     },
     {
       "id": "lp",
       "name": "Linear Programming",
       "name_zh": "线性规划",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "beginner",
       "demo_priority": 20,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [],
+      "avoid_when": [],
       "summary": "线性目标与线性约束的精确优化基线；能用 LP 时不要默认元启发式。"
     },
     {
       "id": "milp",
       "name": "MILP",
       "name_zh": "混合整数线性规划",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 21,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [],
+      "avoid_when": [],
       "summary": "在 LP 基础上引入整数/0-1 变量，适合选址、路径的精确建模。"
     },
     {
       "id": "hierarchical-clustering",
       "name": "Hierarchical Clustering",
       "name_zh": "层次聚类",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 22,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [],
+      "avoid_when": [],
       "summary": "通过凝聚/分裂层次结构探索簇，样本不大时便于可视化树状图。"
     },
     {
       "id": "entropy-weight",
       "name": "Entropy Weight",
       "name_zh": "熵权法",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "beginner",
       "demo_priority": 23,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [],
+      "avoid_when": [],
       "summary": "用信息熵客观赋权，常与 TOPSIS 组合。"
     },
     {
       "id": "xgboost",
       "name": "XGBoost",
       "name_zh": "XGBoost",
+      "task": "other",
+      "tasks": [],
+      "family": "other",
       "difficulty": "intermediate",
       "demo_priority": 24,
+      "knowledge_units": [],
+      "prerequisites": [],
+      "use_when": [],
+      "avoid_when": [],
       "summary": "梯度提升树；应在线性/森林基线之后作为对照，注意泄漏与调参。"
     }
   ]

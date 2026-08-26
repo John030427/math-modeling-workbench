@@ -15,17 +15,45 @@ function line(text, key) {
   return m[1].replace(/^["']|["']$/g, '').trim()
 }
 
+/** Collect `- item` list entries under a `key:` line (any indent, first occurrence). */
+function listUnder(text, key) {
+  const lines = text.split(/\r?\n/)
+  const start = lines.findIndex((l) => new RegExp(`^\\s*${key}:\\s*$`).test(l))
+  if (start === -1) return []
+  const items = []
+  for (let i = start + 1; i < lines.length; i++) {
+    const l = lines[i]
+    if (/^\s*-\s+/.test(l)) {
+      items.push(l.replace(/^\s*-\s+/, '').replace(/^["']|["']$/g, '').trim())
+    } else if (l.trim() === '') {
+      continue
+    } else {
+      break
+    }
+  }
+  return items
+}
+
 function parseYaml(text) {
   const id = line(text, 'id')
   if (!id) return null
   const difficulty = line(text, 'difficulty')
   const demoPriority = line(text, 'demo_priority')
+  const tasks = listUnder(text, 'task')
+  const family = listUnder(text, 'family')
   return {
     id,
     name: line(text, 'name') ?? id,
     name_zh: line(text, 'name_zh') ?? line(text, 'name') ?? id,
+    task: tasks[0] ?? 'other',
+    tasks,
+    family: family[0] ?? 'other',
     difficulty: difficulty ?? 'unknown',
     demo_priority: demoPriority ? Number(demoPriority) : 99,
+    knowledge_units: listUnder(text, 'knowledge_units'),
+    prerequisites: listUnder(text, 'prerequisites'),
+    use_when: listUnder(text, 'use_when'),
+    avoid_when: listUnder(text, 'avoid_when'),
     summary: line(text, 'summary') ?? '',
   }
 }

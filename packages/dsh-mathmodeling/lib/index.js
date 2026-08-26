@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { makeMathModelingRoutes } from './routes.js'
 import { makeContextRoutes, makeLearningRoutes } from './learning-routes.js'
+import { makeProductRoutes } from './product-routes.js'
 import { MODELING_TUTOR_SKILL } from './skill.js'
 
 const PACKAGE_JSON = fileURLToPath(new URL('../package.json', import.meta.url))
@@ -31,6 +32,7 @@ export function apply(ctx) {
       ...makeMathModelingRoutes({ version: VERSION }).map((route) => ctx.webServer.register(route)),
       ...makeContextRoutes().map((route) => ctx.webServer.register(route)),
       ...makeLearningRoutes().map((route) => ctx.webServer.register(route)),
+      ...makeProductRoutes().map((route) => ctx.webServer.register(route)),
     ]
     return () => {
       for (const dispose of disposers) dispose()
