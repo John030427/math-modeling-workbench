@@ -15,6 +15,10 @@ jobs:
         with:
           node-version: 24
 
+      - name: Install core deps
+        run: npm install --no-audit --no-fund
+        working-directory: packages/core
+
       - name: Build core (shared domain logic)
         run: npm run build
         working-directory: packages/core
@@ -75,3 +79,4 @@ jobs:
   # Live browser E2E (overnight-e2e.mjs + product-ui-gate.mjs) remains a LOCAL
   # release gate: it needs a booted mathmodel profile instance + LLM credentials.
   # Documented honestly in OVERNIGHT_FINAL_REPORT.md.
+
