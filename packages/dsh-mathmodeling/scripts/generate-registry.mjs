@@ -34,13 +34,38 @@ function listUnder(text, key) {
   return items
 }
 
+/** Flow style list: `key: [a, b]` (first occurrence). */
+function flowList(text, key) {
+  const m = text.match(new RegExp(`^\\s*${key}:\\s*\\[([^\\]]*)\\]`, 'm'))
+  if (!m) return []
+  return m[1]
+    .split(',')
+    .map((s) => s.trim().replace(/^["']|["']$/g, ''))
+    .filter(Boolean)
+}
+
+function listAny(text, key) {
+  const flow = flowList(text, key)
+  return flow.length > 0 ? flow : listUnder(text, key)
+}
+
+/** Inline map style: `category: { task: [a, b], ... }` */
+function inlineCategoryTask(text) {
+  const m = text.match(/^category:\s*\{\s*task:\s*\[([^\]]*)\]/m)
+  if (!m) return []
+  return m[1]
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
 function parseYaml(text) {
   const id = line(text, 'id')
   if (!id) return null
   const difficulty = line(text, 'difficulty')
   const demoPriority = line(text, 'demo_priority')
-  const tasks = listUnder(text, 'task')
-  const family = listUnder(text, 'family')
+  const tasks = listAny(text, 'task').length > 0 ? listAny(text, 'task') : inlineCategoryTask(text)
+  const family = listAny(text, 'family')
   return {
     id,
     name: line(text, 'name') ?? id,
@@ -50,8 +75,8 @@ function parseYaml(text) {
     family: family[0] ?? 'other',
     difficulty: difficulty ?? 'unknown',
     demo_priority: demoPriority ? Number(demoPriority) : 99,
-    knowledge_units: listUnder(text, 'knowledge_units'),
-    prerequisites: listUnder(text, 'prerequisites'),
+    knowledge_units: listAny(text, 'knowledge_units'),
+    prerequisites: listAny(text, 'prerequisites'),
     use_when: listUnder(text, 'use_when'),
     avoid_when: listUnder(text, 'avoid_when'),
     summary: line(text, 'summary') ?? '',

@@ -319,6 +319,35 @@ function extraFor(modelId) {
 
 export function makeProductRoutes() {
   return [
+    // resources registry (problems/papers metadata — external links only)
+    {
+      kind: 'exact',
+      path: `${MATHMODELING_API_PREFIX}/resources`,
+      handler: (req, res) => {
+        if (req.method !== 'GET') {
+          json(res, 405, { ok: false, error: 'method-not-allowed' })
+          return
+        }
+        const url = new URL(req.url ?? '/', 'http://localhost')
+        const type = url.searchParams.get('type')
+        let resources = readJson(join(REGISTRY_DIR, 'resources', 'resources.json'))?.resources ?? []
+        if (type) resources = resources.filter((r) => r.type === type)
+        json(res, 200, { ok: true, resources })
+      },
+    },
+
+    // distilled cases registry
+    {
+      kind: 'exact',
+      path: `${MATHMODELING_API_PREFIX}/cases`,
+      handler: (req, res) => {
+        if (req.method !== 'GET') {
+          json(res, 405, { ok: false, error: 'method-not-allowed' })
+          return
+        }
+        json(res, 200, { ok: true, cases: readJson(join(REGISTRY_DIR, 'cases', 'cases.json'))?.cases ?? [] })
+      },
+    },
     // mastery per model (aggregate over model knowledge units)
     {
       kind: 'prefix',
@@ -861,4 +890,5 @@ function readdirSafe(dir) {
     return []
   }
 }
+
 

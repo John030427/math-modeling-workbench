@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-26T04:09:18.331Z",
+  "generatedAt": "2026-08-26T04:33:42.927Z",
   "models": [
     {
       "id": "kmeans",
@@ -46,13 +46,24 @@
       "id": "dbscan",
       "name": "DBSCAN",
       "name_zh": "DBSCAN 密度聚类",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "clustering",
+      "tasks": [
+        "clustering"
+      ],
+      "family": "machine-learning",
       "difficulty": "intermediate",
       "demo_priority": 2,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "density",
+        "eps",
+        "noise-points",
+        "kmeans-vs-dbscan"
+      ],
+      "prerequisites": [
+        "distance",
+        "feature-scaling",
+        "density"
+      ],
       "use_when": [
         "簇形状不规则",
         "需要自动发现噪声点",
@@ -68,13 +79,22 @@
       "id": "ahp",
       "name": "AHP",
       "name_zh": "层次分析法",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "evaluation",
+      "tasks": [
+        "evaluation"
+      ],
+      "family": "operations-research",
       "difficulty": "beginner",
       "demo_priority": 3,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "pairwise-comparison",
+        "consistency-ratio",
+        "weight-derivation"
+      ],
+      "prerequisites": [
+        "pairwise-comparison",
+        "consistency"
+      ],
       "use_when": [
         "多准则决策且专家判断可用",
         "需要可解释权重"
@@ -89,13 +109,22 @@
       "id": "topsis",
       "name": "TOPSIS",
       "name_zh": "TOPSIS",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "evaluation",
+      "tasks": [
+        "evaluation"
+      ],
+      "family": "operations-research",
       "difficulty": "beginner",
       "demo_priority": 4,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "normalization",
+        "ideal-solution",
+        "closeness"
+      ],
+      "prerequisites": [
+        "normalization",
+        "ideal-solution"
+      ],
       "use_when": [
         "多指标综合评价",
         "已有权重或可与熵权/AHP 组合"
@@ -110,13 +139,23 @@
       "id": "linear-regression",
       "name": "Linear Regression",
       "name_zh": "线性回归",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "regression",
+      "tasks": [
+        "regression",
+        "prediction"
+      ],
+      "family": "statistics",
       "difficulty": "beginner",
       "demo_priority": 5,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "ols",
+        "residual-analysis",
+        "multicollinearity"
+      ],
+      "prerequisites": [
+        "correlation",
+        "residual"
+      ],
       "use_when": [
         "关系近似线性",
         "需要可解释系数"
@@ -131,13 +170,24 @@
       "id": "random-forest",
       "name": "Random Forest",
       "name_zh": "随机森林",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "classification",
+      "tasks": [
+        "classification",
+        "regression",
+        "prediction"
+      ],
+      "family": "machine-learning",
       "difficulty": "intermediate",
       "demo_priority": 6,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "ensemble",
+        "feature-importance",
+        "overfitting"
+      ],
+      "prerequisites": [
+        "decision-tree",
+        "bagging"
+      ],
       "use_when": [
         "非线性关系",
         "需要较稳健的 baseline+"
@@ -152,13 +202,24 @@
       "id": "arima",
       "name": "ARIMA",
       "name_zh": "ARIMA",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "time-series",
+      "tasks": [
+        "time-series",
+        "prediction"
+      ],
+      "family": "statistics",
       "difficulty": "intermediate",
       "demo_priority": 7,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "stationarity",
+        "differencing",
+        "acf-pacf",
+        "residual-white-noise"
+      ],
+      "prerequisites": [
+        "stationarity",
+        "acf-pacf"
+      ],
       "use_when": [
         "单变量时间序列",
         "短期预测且结构相对稳定"
@@ -173,13 +234,22 @@
       "id": "pso",
       "name": "PSO",
       "name_zh": "粒子群优化",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "optimization",
+      "tasks": [
+        "optimization"
+      ],
+      "family": "intelligent-optimization",
       "difficulty": "intermediate",
       "demo_priority": 8,
-      "knowledge_units": [],
-      "prerequisites": [],
+      "knowledge_units": [
+        "metaheuristic",
+        "local-optimum",
+        "baseline-vs-exact"
+      ],
+      "prerequisites": [
+        "objective-function",
+        "search-space"
+      ],
       "use_when": [
         "目标非凸、难求导",
         "精确算法不可行且需启发式"
@@ -194,9 +264,11 @@
       "id": "lp",
       "name": "Linear Programming",
       "name_zh": "线性规划",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "optimization",
+      "tasks": [
+        "optimization"
+      ],
+      "family": "operations-research",
       "difficulty": "beginner",
       "demo_priority": 20,
       "knowledge_units": [],
@@ -209,9 +281,11 @@
       "id": "milp",
       "name": "MILP",
       "name_zh": "混合整数线性规划",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "optimization",
+      "tasks": [
+        "optimization"
+      ],
+      "family": "operations-research",
       "difficulty": "intermediate",
       "demo_priority": 21,
       "knowledge_units": [],
@@ -224,9 +298,11 @@
       "id": "hierarchical-clustering",
       "name": "Hierarchical Clustering",
       "name_zh": "层次聚类",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "clustering",
+      "tasks": [
+        "clustering"
+      ],
+      "family": "machine-learning",
       "difficulty": "intermediate",
       "demo_priority": 22,
       "knowledge_units": [],
@@ -239,9 +315,11 @@
       "id": "entropy-weight",
       "name": "Entropy Weight",
       "name_zh": "熵权法",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "evaluation",
+      "tasks": [
+        "evaluation"
+      ],
+      "family": "statistics",
       "difficulty": "beginner",
       "demo_priority": 23,
       "knowledge_units": [],
@@ -254,9 +332,13 @@
       "id": "xgboost",
       "name": "XGBoost",
       "name_zh": "XGBoost",
-      "task": "other",
-      "tasks": [],
-      "family": "other",
+      "task": "classification",
+      "tasks": [
+        "classification",
+        "regression",
+        "prediction"
+      ],
+      "family": "machine-learning",
       "difficulty": "intermediate",
       "demo_priority": 24,
       "knowledge_units": [],

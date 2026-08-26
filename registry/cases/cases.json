@@ -1,0 +1,79 @@
+{
+  "cases": [
+    {
+      "id": "case-evaluation-topsis",
+      "title": "案例 1：城市宜居性评价（评价/决策类）",
+      "problem_type": "evaluation/decision",
+      "problem_ref": "综合评价类赛题（自拟教学案例）",
+      "distillation": {
+        "subproblem_decomposition": "R1 指标体系构建（经济/环境/公共服务/生活便利）→ R2 数据标准化与权重确定 → R3 单指标得分与综合得分 → R4 灵敏度与一致性检验",
+        "data_processing": "极差标准化消除量纲；逆向指标取反向；缺失率 >30% 的指标降权或剔除；检查指标间强相关（|r|>0.9）避免重复计权",
+        "feature_engineering": "由原始指标派生人均/密度类比率指标（如人均绿地 = 绿地面积/常住人口），每张特征卡记录公式与风险",
+        "baseline": "等权重打分排序（作为 baseline，任何加权模型都应优于或解释优于它）",
+        "main_model": "熵权法客观赋权 + TOPSIS 贴近度排序",
+        "alternatives": "AHP 主观赋权（专家两两比较）做组合权重对照",
+        "algorithm": "TOPSIS：正/负理想解距离比；熵权：信息量越大权重越高",
+        "validation": "权重敏感性分析（扰动 ±10% 看排名变化）；与等权 baseline 排名 Spearman 相关；AHP 一致性比率 CR<0.1",
+        "robustness": "去掉任一城市重算排名，检查前三名稳定性",
+        "visualization": "综合得分条形图 + 指标雷达图（每城一张）+ 权重来源对比表",
+        "paper_structure": "问题重述 → 指标体系（附筛选依据）→ 模型（熵权+TOPSIS 公式）→ 结果与敏感性 → 局限（主观性/指标可得性）",
+        "innovation": "组合赋权（客观熵权 70% + 主观 AHP 30%）并报告两套排名差异",
+        "strengths": "客观权重可复现；baseline 对照让改进可信",
+        "weaknesses": "线性标准化对极端值敏感；未做指标间因果讨论",
+        "transferable_lessons": "评价类题第一步永远是定指标体系而非选模型；任何权重都要报告敏感性"
+      },
+      "knowledge_units": ["entropy-weight", "topsis", "ahp", "validation", "feature-engineering"],
+      "gym_drills": ["kmeans-feature-scaling"]
+    },
+    {
+      "id": "case-forecasting-arima",
+      "title": "案例 2：销量预测与季节性（预测/数据类）",
+      "problem_type": "forecasting/data",
+      "problem_ref": "时间序列销售预测（自拟教学案例）",
+      "distillation": {
+        "subproblem_decomposition": "R1 序列平稳性诊断 → R2 模式识别（趋势/季节）→ R3 模型定阶与拟合 → R4 残差诊断 → R5 预测与区间",
+        "data_processing": "缺失值按时间邻域插值；对数变换稳定方差；按时间排序切分（严禁随机切分造成时间泄漏）",
+        "feature_engineering": "月份/星期哑变量、滞后特征（lag-1/lag-12）、滑动均值——每张特征卡标注泄漏风险（滞后特征必须只用历史窗口）",
+        "baseline": "朴素预测（上月值）与移动平均——预测类题必须先跑 baseline",
+        "main_model": "SARIMA(p,d,q)(P,D,Q)[12]：ADF 检验定差分，ACF/PACF 定阶",
+        "alternatives": "Holt-Winters 指数平滑（更简单、可解释）",
+        "algorithm": "极大似然估计参数；AIC/BIC 选择阶数",
+        "validation": "留出最后 12 期做时间外推验证；MAPE/RMSE 对比 baseline；Ljung-Box 残差白噪声检验",
+        "robustness": "不同训练窗口长度（12/24/36 期）看预测稳定性",
+        "visualization": "实际 vs 预测曲线（含置信带）+ 残差 ACF 图",
+        "paper_structure": "序列描述与平稳性 → 模型识别与定阶 → 参数估计与检验 → 预测结果与区间 → 局限（结构突变）",
+        "innovation": "对比 SARIMA 与带季节哑变量的回归，说明何时简单模型更好",
+        "strengths": "完整残差诊断链；baseline 对照",
+        "weaknesses": "对结构突变（政策变化）无能为力；长预测区间快速变宽",
+        "transferable_lessons": "时序题切分必须按时间；残差不是白噪声说明模型没提尽信息"
+      },
+      "knowledge_units": ["arima", "validation", "leakage", "feature-engineering"],
+      "gym_drills": []
+    },
+    {
+      "id": "case-optimization-routing",
+      "title": "案例 3：配送路径优化（优化/路由类）",
+      "problem_type": "optimization/routing",
+      "problem_ref": "多站点配送路线规划（自拟教学案例）",
+      "distillation": {
+        "subproblem_decomposition": "R1 需求与距离矩阵构建 → R2 单车 TSP 基线 → R3 多车 VRP 容量约束 → R4 启发式求解 → R5 收敛与可行性验证",
+        "data_processing": "坐标标准化；距离用 haversine（经纬度）而非欧氏；需求量做异常检查（负值/极端大单）",
+        "feature_engineering": "时间窗特征、装载率约束特征——每卡记录约束含义",
+        "baseline": "最近邻贪心构造（快速可行解）",
+        "main_model": "PSO/遗传启发式优化总里程，约束：每车载重上限 + 站点唯一访问",
+        "alternatives": "MILP 精确解（小规模可解，作最优性参照）",
+        "algorithm": "PSO 离散化编码（路径排列 + 修复算子），多种子运行",
+        "validation": "与贪心 baseline 对比改进 %；与 MILP 小规模最优解对比 gap；多 seed mean/std 报告（不许只报最好种子）",
+        "robustness": "需求 ±20% 扰动后方案仍可行；车辆故障场景重排",
+        "visualization": "路径地图 + 收敛曲线（迭代 vs 总里程）+ 装载率表",
+        "paper_structure": "问题与假设 → 距离/约束建模 → 算法设计（编码/修复/参数）→ 结果与 baseline 对比 → 灵敏度 → 局限",
+        "innovation": "修复算子保证约束可行；报告完整收敛曲线而非只报终点",
+        "strengths": "多 seed 统计诚实；小规模 MILP 参照给出 gap",
+        "weaknesses": "启发式无最优性保证；大规模下运行时间增长",
+        "transferable_lessons": "优化题必须有 baseline 与最优性参照；随机算法必须报告分布"
+      },
+      "knowledge_units": ["pso", "milp", "validation", "run-manifest"],
+      "gym_drills": []
+    }
+  ]
+}
