@@ -12,6 +12,17 @@ Learn → Practice → Solve → Review → Diagnose → Retrain → Learn
 
 不是「上传赛题自动吐论文」，也不是算法 Markdown 堆砌。
 
+## 快速开始（专用 mathmodel profile — 推荐产品形态）
+
+```powershell
+scripts/mathmodel-profile-init.ps1     # 创建/刷新独立 mathmodel profile（幂等，不动 web profile）
+scripts/mathmodel-profile-verify.ps1   # --dump-config 组合校验
+scripts/mathmodel-start.ps1            # 启动 → http://127.0.0.1:3100
+scripts/mathmodel-remove.ps1           # 停止并删除（web profile 永不受影响）
+```
+
+产品闭环：Dashboard（真实状态）→ 模型地图（Task×Family×Algorithm + 掌握度）→ K-Means 课程 → `/modeling-tutor`（上下文感知）→ Quiz→掌握度 → 今日复习（SRS 队列）→ Gym（提案→维度反馈）→ 比赛工作台（契约冻结 / Data Doctor / 特征卡 / B-M-A 选型 / 真实算法实验 + run manifest / 验证 / 12 维评审 → 差距分析）→ 能力画像。移除产品 = `scripts/mathmodel-remove.ps1`，普通 DSH 完全不受影响。
+
 ## 为什么做
 
 目标用户：参加过 0–2 次数模赛、知识碎片化、拿到题不会拆题/预处理/特征/选模/验证/写论文的本科生。
