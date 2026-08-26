@@ -16,6 +16,8 @@ Problem Contract；run manifest（成功 run）；claim ledger；特征卡。
 写入：PUT /api/mathmodeling/projects/:id/claims（新声明）。
 
 ## Allowed tools
+
+GET /api/mathmodeling/projects/:id（contract/runs/claims）；PUT /api/mathmodeling/projects/:id/claims（新声明入库）
 projects API（contract/runs/claims）；visualization 记录。
 
 ## Forbidden
@@ -32,3 +34,4 @@ projects API（contract/runs/claims）；visualization 记录。
 
 ## Tests
 tests/skills.test.mjs — 无证据时输出占位而非编造数值。
+

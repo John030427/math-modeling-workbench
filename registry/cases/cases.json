@@ -28,7 +28,12 @@
         "weaknesses": "品类聚合掩盖单品差异；促销突变难预测",
         "transferable_lessons": "预测类赛题：先 baseline、按时间切分、把不确定性带进下游决策"
       },
-      "knowledge_units": ["arima", "validation", "leakage", "feature-engineering"],
+      "knowledge_units": [
+        "arima",
+        "validation",
+        "leakage",
+        "feature-engineering"
+      ],
       "gym_drills": []
     },
     {
@@ -58,7 +63,12 @@
         "weaknesses": "随机规划规模随场景数膨胀；分布假设敏感",
         "transferable_lessons": "优化赛题：先写清约束与目标，baseline 与最优性参照缺一不可"
       },
-      "knowledge_units": ["lp", "milp", "validation", "run-manifest"],
+      "knowledge_units": [
+        "lp",
+        "milp",
+        "validation",
+        "run-manifest"
+      ],
       "gym_drills": []
     },
     {
@@ -88,7 +98,48 @@
         "weaknesses": "样本量小，结论外推谨慎",
         "transferable_lessons": "小样本统计题：简单模型 + 严格交叉验证优于堆复杂模型"
       },
-      "knowledge_units": ["random-forest", "validation", "feature-engineering", "clustering-basic"],
+      "knowledge_units": [
+        "random-forest",
+        "validation",
+        "feature-engineering",
+        "clustering-basic"
+      ],
+      "gym_drills": []
+    },
+    {
+      "id": "case-mcm2023b-mosaic",
+      "title": "案例 4：马赛克重排优化（MCM/ICM 2023 B · 国际赛）",
+      "problem_type": "optimization / image reconstruction",
+      "problem_ref": {
+        "contest": "MCM/ICM 2023 Problem B",
+        "title": "Reimagining Mars? Rethinking Mosaics（马赛克重排）",
+        "official_link": "https://www.comap.com/",
+        "paper_discovery": "https://github.com/zhanwen/MathModel"
+      },
+      "distillation": {
+        "subproblem_decomposition": "R1 碎片图像特征提取与相似度度量 → R2 初始匹配与放置策略 → R3 全局一致性优化（消除累积错位）→ R4 修复质量评估与残片处理",
+        "data_processing": "图像灰度/边缘特征标准化；碎片尺寸归一；邻接关系的图结构表示",
+        "feature_engineering": "边缘方向直方图、色彩分布、纹理特征——每张特征卡记录区分度与计算代价",
+        "baseline": "贪心最近邻匹配（逐碎片找最相似邻居）",
+        "main_model": "图优化/启发式（模拟退火或遗传）最小化全局拼接误差",
+        "alternatives": "MILP 小规模精确解作最优性参照",
+        "algorithm": "相似度矩阵 → 匹配优化；多 seed 启发式",
+        "validation": "与已知答案的子集对照；视觉检查拼接缝；目标函数收敛曲线",
+        "robustness": "碎片旋转/噪声扰动下的稳定性",
+        "visualization": "重建结果图 + 误差热力图 + 收敛曲线",
+        "paper_structure": "问题理解 → 特征与相似度 → 优化模型 → 算法 → 结果与评估 → 局限",
+        "innovation": "局部特征 + 全局一致性两阶段策略",
+        "strengths": "可复现、baseline 对照清晰",
+        "weaknesses": "对严重破损残片处理有限",
+        "transferable_lessons": "图像重建类题：局部相似度 + 全局优化两段式；评估必须含视觉检查"
+      },
+      "knowledge_units": [
+        "sa",
+        "ga",
+        "hungarian",
+        "validation",
+        "feature-engineering"
+      ],
       "gym_drills": []
     }
   ]

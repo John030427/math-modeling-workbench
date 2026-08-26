@@ -15,6 +15,8 @@
 最多 3 个引导问题 → 维度提示 → （用户明确要求后）完整推理。
 
 ## Allowed tools
+
+GET /api/mathmodeling/gym/cases；POST /api/mathmodeling/gym/submit/:id；GET /api/mathmodeling/context?session_id=…
 context API；gym 案例接口。
 
 ## Forbidden
@@ -28,3 +30,4 @@ context API；gym 案例接口。
 
 ## Tests
 tests/skills.test.mjs — 输出含提问且不含完整数值解。
+

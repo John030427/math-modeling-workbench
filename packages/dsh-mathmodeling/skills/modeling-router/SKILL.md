@@ -15,6 +15,8 @@
 一段路由说明：选中技能 + 理由 + 需要用户补充的输入。
 
 ## Allowed tools
+
+context API：GET /api/mathmodeling/context?session_id=…；registry API：GET /api/mathmodeling/registry。
 context/registry 查询 API。
 
 ## Forbidden
@@ -25,3 +27,4 @@ context/registry 查询 API。
 
 ## Tests
 tests/skills.test.mjs — router 提及目标技能名且不输出完整解题。
+

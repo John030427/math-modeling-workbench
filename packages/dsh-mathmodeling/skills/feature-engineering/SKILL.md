@@ -16,6 +16,8 @@ Feature Cards 数组：name/formula/meaning/why/risk/leakage_risk/validation/sta
 写入：PUT /api/mathmodeling/projects/:id/features。
 
 ## Allowed tools
+
+PUT /api/mathmodeling/projects/:id/features（写入特征卡）；GET /api/mathmodeling/projects/:id（读取 datadoctor 结果）
 datadoctor 读取；features API。
 
 ## Forbidden
@@ -32,3 +34,4 @@ datadoctor 读取；features API。
 
 ## Tests
 tests/skills.test.mjs — 时序特征卡必须包含历史窗口说明。
+

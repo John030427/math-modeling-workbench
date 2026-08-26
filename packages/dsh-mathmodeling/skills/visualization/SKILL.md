@@ -15,6 +15,8 @@ run manifest 条目（labels/residuals/convergence 等 artifacts）。
 图形 + figure 记录（写入项目 artifacts）。
 
 ## Allowed tools
+
+GET /api/mathmodeling/projects/:id/figures；POST /api/mathmodeling/projects/:id/figures（保存 figure 记录）
 runs API 读取；项目 artifacts 写入。
 
 ## Forbidden
@@ -31,3 +33,4 @@ artifacts 缺失时说明需要先跑哪个实验。
 
 ## Tests
 tests/skills.test.mjs — 图记录必须含 run_id。
+

@@ -1,0 +1,29 @@
+{
+  "metrics": {
+    "methods_total": 54,
+    "methods_with_execution": 0,
+    "deep_lessons": 11,
+    "executable_algorithms": 51,
+    "algorithm_families": 11,
+    "executable_skills": 12,
+    "skills_total": 12,
+    "resource_records_curated": 10,
+    "resource_records_archive": 5244,
+    "deep_cases_total": 5,
+    "flagship_cases": 1,
+    "gym_drills": 10,
+    "placeholder_hits": 0
+  },
+  "min": {
+    "methods_total": 50,
+    "deep_lessons": 10,
+    "executable_algorithms": 30,
+    "algorithm_families": 8,
+    "executable_skills": 10,
+    "resource_records_archive": 100,
+    "deep_cases_total": 5,
+    "flagship_cases": 1,
+    "gym_drills": 10
+  },
+  "pass": true
+}

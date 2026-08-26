@@ -16,6 +16,8 @@ reviewer findings；gym attempts；mastery 记录。
 后端：GET /api/mathmodeling/projects/:id/gap；队列已自动进入 /review/queue。
 
 ## Allowed tools
+
+GET /api/mathmodeling/profile?user_id=…；GET /api/mathmodeling/review/queue；GET /api/mathmodeling/projects/:id/gap。
 review/profile/review-queue API。
 
 ## Forbidden
@@ -32,3 +34,4 @@ review/profile/review-queue API。
 
 ## Tests
 tests/skills.test.mjs — 弱项必须带来源标注。
+
