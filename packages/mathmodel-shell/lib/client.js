@@ -61,6 +61,7 @@ var NAV = [
     group: "\u8BBA\u6587",
     items: [
       { id: "paper", label: "Paper Lab", icon: "\u270D\uFE0F" },
+      { id: "literature", label: "\u6587\u732E\u7814\u7A76", icon: "\u{1F4D6}" },
       { id: "reviewer", label: "\u8BBA\u6587\u8BC4\u5BA1", icon: "\u{1F50D}" }
     ]
   },
@@ -78,6 +79,7 @@ var SECTION_META = {
   cases: { title: "\u4F18\u79C0\u6848\u4F8B", sub: "\u7ED3\u6784\u5316\u84B8\u998F\u6848\u4F8B" },
   lab: { title: "Algorithm Lab", sub: "\u72EC\u7ACB\u7B97\u6CD5\u5B9E\u9A8C\u53F0" },
   paper: { title: "Paper Lab", sub: "\u63D0\u7EB2 \xB7 \u8BC1\u636E\u58F0\u660E\uFF08claim \u2192 run \u94FE\uFF09" },
+  literature: { title: "\u6587\u732E\u7814\u7A76", sub: "\u771F\u5B9E\u6587\u732E\u68C0\u7D22 \xB7 \u622A\u6B62\u65E5\u9694\u79BB \xB7 \u65B9\u6CD5\u65CF\u7EFC\u5408" },
   reviewer: { title: "\u8BBA\u6587\u8BC4\u5BA1", sub: "12 \u7EF4 Rubric \u2192 \u53D1\u73B0 \u2192 \u5DEE\u8DDD\u5206\u6790" },
   profile: { title: "\u80FD\u529B\u753B\u50CF", sub: "\u638C\u63E1\u5EA6 \xB7 \u9519\u9898 \xB7 \u8BC4\u5BA1\u5F31\u70B9 \xB7 \u8BAD\u7EC3\u8BB0\u5F55" }
 };
@@ -1330,6 +1332,94 @@ function Reviewer({ pal }) {
     ] })
   ] });
 }
+function LiteratureResearch({ pal }) {
+  const [question, setQuestion] = (0, import_react.useState)("");
+  const [cutoff, setCutoff] = (0, import_react.useState)("");
+  const [extra, setExtra] = (0, import_react.useState)("");
+  const [result, setResult] = (0, import_react.useState)(null);
+  const [busy, setBusy] = (0, import_react.useState)(false);
+  const search = async () => {
+    if (!question.trim()) return;
+    setBusy(true);
+    const r = await jsend("POST", `${API}/literature/search`, {
+      question,
+      cutoff_at: cutoff || null,
+      extra_queries: extra.split("\n").map((s) => s.trim()).filter(Boolean)
+    });
+    setResult(r);
+    setBusy(false);
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { padding: "18px 22px", height: "100%", overflow: "auto" }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { style: { fontSize: 12.5, color: pal.muted, marginTop: 0 }, children: "\u8D5B\u9898\u53D1\u5E03\u65F6\u95F4\u662F\u786C\u622A\u6B62\uFF1A\u622A\u6B62\u65E5\u540E\u7684\u6587\u732E\u88AB\u9694\u79BB\uFF08\u4EC5\u4F9B\u8D5B\u540E\u590D\u76D8\u5BF9\u7167\uFF09\u3002\u6570\u636E\u6E90\uFF1AOpenAlex \u771F\u5B9E\u6587\u732E\u5143\u6570\u636E\u3002" }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, { label: "\u7814\u7A76\u95EE\u9898\uFF08\u82F1\u6587\u68C0\u7D22\u6548\u679C\u66F4\u4F73\uFF0C\u53EF\u4E2D\u6587\uFF09", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { style: inputStyle(pal), value: question, onChange: (e) => setQuestion(e.target.value), placeholder: "heliostat field layout optimization solar thermal power" }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { display: "flex", gap: 8, alignItems: "end", marginBottom: 10, flexWrap: "wrap" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, { label: "\u622A\u6B62\u65E5\uFF08\u8D5B\u9898\u53D1\u5E03\u65E5\uFF09", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { type: "date", style: inputStyle(pal), value: cutoff, onChange: (e) => setCutoff(e.target.value) }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Btn, { pal, primary: true, onClick: search, disabled: busy, children: busy ? "\u68C0\u7D22\u4E2D\u2026" : "\u7814\u7A76\u76F8\u5173\u6587\u732E" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Field, { label: "\u6269\u5C55\u68C0\u7D22\u8BCD\uFF08\u6BCF\u884C\u4E00\u4E2A\uFF0C\u53EF\u9009\uFF09", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", { rows: 2, style: inputStyle(pal), value: extra, onChange: (e) => setExtra(e.target.value) }) }),
+    result && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5, marginBottom: 10 }, children: [
+        "\u622A\u6B62\u6A21\u5F0F\uFF1A",
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: result.cutoff_mode }),
+        " \xB7 \u622A\u6B62\u65E5\u524D\u6587\u732E ",
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: result.pre_cutoff.length }),
+        " \u7BC7 \xB7 \u5DF2\u9694\u79BB ",
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { style: { color: pal.warn }, children: result.quarantined.length }),
+        " \u7BC7",
+        result.warnings?.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { color: pal.warn }, children: [
+          "\uFF08",
+          result.warnings.length,
+          " \u6761\u68C0\u7D22\u8B66\u544A\uFF09"
+        ] })
+      ] }),
+      result.method_families.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, margin: "10px 0 6px" }, children: "\u65B9\u6CD5\u65CF\uFF08\u622A\u6B62\u65E5\u524D\u6587\u732E\uFF09" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }, children: result.method_families.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { fontSize: 12, padding: "4px 10px", borderRadius: 999, background: pal.accentSoft, color: pal.accent }, children: [
+          f.family,
+          " \xB7 ",
+          f.papers,
+          " \u7BC7"
+        ] }, f.family)) })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, margin: "10px 0 6px" }, children: "\u622A\u6B62\u65E5\u524D\u6587\u732E\u65F6\u95F4\u7EBF" }),
+      [...result.pre_cutoff].sort((a, b) => (a.date ?? "").localeCompare(b.date ?? "")).map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 6, padding: "8px 12px" }, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12.5 }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { color: pal.muted }, children: [
+            "[",
+            p.date,
+            "]"
+          ] }),
+          " ",
+          p.title,
+          p.method_families.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { fontSize: 11, color: pal.accent }, children: [
+            " \xB7 ",
+            p.method_families.join("/")
+          ] })
+        ] }),
+        p.doi && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", { href: p.doi, target: "_blank", rel: "noreferrer", style: { fontSize: 11, color: pal.accent }, children: p.doi })
+      ] }, p.id)),
+      result.quarantined.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, margin: "12px 0 6px", color: pal.warn }, children: "\u5DF2\u9694\u79BB\uFF08\u622A\u6B62\u65E5\u540E \u2014 \u4EC5\u8D5B\u540E\u590D\u76D8\u53EF\u7528\uFF09" }),
+        result.quarantined.map((p) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Card, { pal, style: { marginBottom: 6, padding: "8px 12px", opacity: 0.65 }, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { style: { fontSize: 12 }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { style: { color: pal.warn }, children: [
+            "[",
+            p.date,
+            "]"
+          ] }),
+          " ",
+          p.title
+        ] }) }, p.id))
+      ] }),
+      result.hypotheses.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 13, fontWeight: 700, margin: "12px 0 6px" }, children: "\u5EFA\u6A21\u5047\u8BBE\uFF08\u7531\u771F\u5B9E\u6587\u732E\u65B9\u6CD5\u65CF\u751F\u6210\uFF09" }),
+        result.hypotheses.map((h, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { pal, style: { marginBottom: 6, padding: "9px 12px" }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 12.5 }, children: h.hypothesis }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: { fontSize: 11, color: pal.muted, marginTop: 3 }, children: h.next })
+        ] }, i))
+      ] })
+    ] })
+  ] });
+}
 function Profile({ pal }) {
   const [data, setData] = (0, import_react.useState)(null);
   (0, import_react.useEffect)(() => {
@@ -1809,6 +1899,7 @@ function ShellFrame({ renderSlot }) {
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "cases"), "data-mm-section": "cases", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cases, { pal }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "lab"), "data-mm-section": "lab", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lab, { pal }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "paper"), "data-mm-section": "paper", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PaperLab, { pal }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "literature"), "data-mm-section": "literature", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LiteratureResearch, { pal }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "reviewer"), "data-mm-section": "reviewer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Reviewer, { pal }) }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: S.pane(active === "profile"), "data-mm-section": "profile", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Profile, { pal }) })
       ] })

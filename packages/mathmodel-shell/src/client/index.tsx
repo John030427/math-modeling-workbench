@@ -30,6 +30,7 @@ type SectionId =
   | 'cases'
   | 'lab'
   | 'paper'
+  | 'literature'
   | 'reviewer'
   | 'profile'
 
@@ -59,6 +60,7 @@ const NAV: NavGroup[] = [
     group: '论文',
     items: [
       { id: 'paper', label: 'Paper Lab', icon: '✍️' },
+      { id: 'literature', label: '文献研究', icon: '📖' },
       { id: 'reviewer', label: '论文评审', icon: '🔍' },
     ],
   },
@@ -78,6 +80,7 @@ const SECTION_META: Record<SectionId, { title: string; sub: string }> = {
   cases: { title: '优秀案例', sub: '结构化蒸馏案例' },
   lab: { title: 'Algorithm Lab', sub: '独立算法实验台' },
   paper: { title: 'Paper Lab', sub: '提纲 · 证据声明（claim → run 链）' },
+  literature: { title: '文献研究', sub: '真实文献检索 · 截止日隔离 · 方法族综合' },
   reviewer: { title: '论文评审', sub: '12 维 Rubric → 发现 → 差距分析' },
   profile: { title: '能力画像', sub: '掌握度 · 错题 · 评审弱点 · 训练记录' },
 }
@@ -1702,6 +1705,115 @@ function Reviewer({ pal }: { pal: Palette }) {
   )
 }
 
+
+/* ---------------- literature research ---------------- */
+
+function LiteratureResearch({ pal }: { pal: Palette }) {
+  const [question, setQuestion] = useState('')
+  const [cutoff, setCutoff] = useState('')
+  const [extra, setExtra] = useState('')
+  const [result, setResult] = useState<any>(null)
+  const [busy, setBusy] = useState(false)
+
+  const search = async () => {
+    if (!question.trim()) return
+    setBusy(true)
+    const r = await jsend('POST', `${API}/literature/search`, {
+      question,
+      cutoff_at: cutoff || null,
+      extra_queries: extra.split('\n').map((s) => s.trim()).filter(Boolean),
+    })
+    setResult(r)
+    setBusy(false)
+  }
+
+  return (
+    <div style={{ padding: '18px 22px', height: '100%', overflow: 'auto' }}>
+      <p style={{ fontSize: 12.5, color: pal.muted, marginTop: 0 }}>
+        赛题发布时间是硬截止：截止日后的文献被隔离（仅供赛后复盘对照）。数据源：OpenAlex 真实文献元数据。
+      </p>
+      <Field label="研究问题（英文检索效果更佳，可中文）">
+        <input style={inputStyle(pal)} value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="heliostat field layout optimization solar thermal power" />
+      </Field>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'end', marginBottom: 10, flexWrap: 'wrap' }}>
+        <Field label="截止日（赛题发布日）">
+          <input type="date" style={inputStyle(pal)} value={cutoff} onChange={(e) => setCutoff(e.target.value)} />
+        </Field>
+        <Btn pal={pal} primary onClick={search} disabled={busy}>
+          {busy ? '检索中…' : '研究相关文献'}
+        </Btn>
+      </div>
+      <Field label="扩展检索词（每行一个，可选）">
+        <textarea rows={2} style={inputStyle(pal)} value={extra} onChange={(e) => setExtra(e.target.value)} />
+      </Field>
+
+      {result && (
+        <div>
+          <div style={{ fontSize: 12.5, marginBottom: 10 }}>
+            截止模式：<strong>{result.cutoff_mode}</strong> · 截止日前文献 <strong>{result.pre_cutoff.length}</strong> 篇 ·
+            已隔离 <strong style={{ color: pal.warn }}>{result.quarantined.length}</strong> 篇
+            {result.warnings?.length > 0 && <span style={{ color: pal.warn }}>（{result.warnings.length} 条检索警告）</span>}
+          </div>
+
+          {result.method_families.length > 0 && (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 700, margin: '10px 0 6px' }}>方法族（截止日前文献）</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                {result.method_families.map((f: any) => (
+                  <span key={f.family} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: pal.accentSoft, color: pal.accent }}>
+                    {f.family} · {f.papers} 篇
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div style={{ fontSize: 13, fontWeight: 700, margin: '10px 0 6px' }}>截止日前文献时间线</div>
+          {[...result.pre_cutoff].sort((a: any, b: any) => (a.date ?? '').localeCompare(b.date ?? '')).map((p: any) => (
+            <Card key={p.id} pal={pal} style={{ marginBottom: 6, padding: '8px 12px' }}>
+              <div style={{ fontSize: 12.5 }}>
+                <span style={{ color: pal.muted }}>[{p.date}]</span> {p.title}
+                {p.method_families.length > 0 && <span style={{ fontSize: 11, color: pal.accent }}> · {p.method_families.join('/')}</span>}
+              </div>
+              {p.doi && (
+                <a href={p.doi} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: pal.accent }}>
+                  {p.doi}
+                </a>
+              )}
+            </Card>
+          ))}
+
+          {result.quarantined.length > 0 && (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 700, margin: '12px 0 6px', color: pal.warn }}>
+                已隔离（截止日后 — 仅赛后复盘可用）
+              </div>
+              {result.quarantined.map((p: any) => (
+                <Card key={p.id} pal={pal} style={{ marginBottom: 6, padding: '8px 12px', opacity: 0.65 }}>
+                  <div style={{ fontSize: 12 }}>
+                    <span style={{ color: pal.warn }}>[{p.date}]</span> {p.title}
+                  </div>
+                </Card>
+              ))}
+            </>
+          )}
+
+          {result.hypotheses.length > 0 && (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 700, margin: '12px 0 6px' }}>建模假设（由真实文献方法族生成）</div>
+              {result.hypotheses.map((h: any, i: number) => (
+                <Card key={i} pal={pal} style={{ marginBottom: 6, padding: '9px 12px' }}>
+                  <div style={{ fontSize: 12.5 }}>{h.hypothesis}</div>
+                  <div style={{ fontSize: 11, color: pal.muted, marginTop: 3 }}>{h.next}</div>
+                </Card>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 /* ---------------- profile ---------------- */
 
 function Profile({ pal }: { pal: Palette }) {
@@ -2250,6 +2362,9 @@ function ShellFrame({ renderSlot }: FrameProps) {
           <div style={S.pane(active === 'paper')} data-mm-section="paper">
             <PaperLab pal={pal} />
           </div>
+          <div style={S.pane(active === 'literature')} data-mm-section="literature">
+            <LiteratureResearch pal={pal} />
+          </div>
           <div style={S.pane(active === 'reviewer')} data-mm-section="reviewer">
             <Reviewer pal={pal} />
           </div>
@@ -2343,5 +2458,7 @@ export function apply(ctx: ClientContext): void {
     'mathmodel-shell: dispose',
   )
 }
+
+
 
 

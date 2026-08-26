@@ -385,6 +385,135 @@ export function makeProductRoutes() {
       },
     },
 
+    // CUMCM archive index (5244 real records from yushugulao/CUMCM-Archive, link-only)
+    {
+      kind: 'exact',
+      path: `${MATHMODELING_API_PREFIX}/resources/archive`,
+      handler: (req, res) => {
+        if (req.method !== 'GET') {
+          json(res, 405, { ok: false, error: 'method-not-allowed' })
+          return
+        }
+        const url = new URL(req.url ?? '/', 'http://localhost')
+        const year = url.searchParams.get('year')
+        const problem = url.searchParams.get('problem')
+        const kind = url.searchParams.get('kind')
+        const q = (url.searchParams.get('q') ?? '').toLowerCase()
+        const pageNum = Math.max(1, Number(url.searchParams.get('page') ?? 1))
+        const pageSize = Math.min(100, Math.max(5, Number(url.searchParams.get('page_size') ?? 30)))
+        const archivePath = join(LIB_DIR, '../../../registry/resources/cumcm-archive.json')
+        const all = readJson(archivePath)?.records ?? []
+        let rows = all
+        if (year) rows = rows.filter((r) => String(r.year) === String(year))
+        if (problem) rows = rows.filter((r) => r.problem === problem)
+        if (kind) rows = rows.filter((r) => r.kind === kind)
+        if (q) rows = rows.filter((r) => r.title.toLowerCase().includes(q))
+        const total = rows.length
+        const page = rows.slice((pageNum - 1) * pageSize, pageNum * pageSize)
+        json(res, 200, {
+          ok: true,
+          total,
+          page: pageNum,
+          page_size: pageSize,
+          years: [...new Set(all.map((r) => r.year))].sort((a, b) => b - a),
+          problems: [...new Set(all.map((r) => r.problem))].sort(),
+          kinds: [...new Set(all.map((r) => r.kind))],
+          records: page,
+        })
+      },
+    },
+    // Literature Research — real search (OpenAlex) + date-cutoff guard + method synthesis
+    {
+      kind: 'exact',
+      path: `${MATHMODELING_API_PREFIX}/literature/search`,
+      handler: (req, res) => {
+        if (req.method !== 'POST') {
+          json(res, 405, { ok: false, error: 'method-not-allowed' })
+          return
+        }
+        void (async () => {
+          try {
+            const body = await readJsonBody(req)
+            const question = String(body.question ?? '').trim()
+            const cutoffAt = body.cutoff_at ? new Date(body.cutoff_at) : null
+            if (!question) {
+              json(res, 400, { ok: false, error: 'question-required' })
+              return
+            }
+            if (cutoffAt && Number.isNaN(cutoffAt.getTime())) {
+              json(res, 400, { ok: false, error: 'bad cutoff_at' })
+              return
+            }
+            const queries = [question, ...(Array.isArray(body.extra_queries) ? body.extra_queries : [])].slice(0, 4)
+            const seen = new Map()
+            const warnings = []
+            for (const q of queries) {
+              try {
+                const api = `https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=10&select=id,title,publication_date,doi`
+                const r = await fetch(api, { headers: { 'User-Agent': 'mathmodel-harness/0.1 (educational)' } })
+                if (!r.ok) {
+                  warnings.push(`OpenAlex ${q.slice(0, 20)}: http ${r.status}`)
+                  continue
+                }
+                const d = await r.json()
+                for (const w of d.results ?? []) {
+                  if (!seen.has(w.id)) seen.set(w.id, w)
+                }
+              } catch (e) {
+                warnings.push(`OpenAlex ${q.slice(0, 20)}: ${String(e).slice(0, 80)}`)
+              }
+            }
+            const METHOD_BUCKETS = [
+              { family: '回归/预测', kw: ['regression', 'forecast', 'prediction', 'arima'] },
+              { family: '优化/规划', kw: ['optimization', 'programming', 'scheduling', 'routing'] },
+              { family: '评价/决策', kw: ['evaluation', 'topsis', 'ahp', 'multi-criteria', 'entropy'] },
+              { family: '聚类/分类', kw: ['cluster', 'classification', 'k-means'] },
+              { family: '仿真/蒙特卡洛', kw: ['simulation', 'monte carlo', 'queu'] },
+              { family: '图论/网络', kw: ['graph', 'network', 'shortest path', 'flow'] },
+              { family: '机器学习', kw: ['machine learning', 'neural', 'random forest', 'xgboost'] },
+            ]
+            const papers = [...seen.values()].map((w) => {
+              const title = (w.title ?? '').toLowerCase()
+              const fams = METHOD_BUCKETS.filter((b) => b.kw.some((k) => title.includes(k))).map((b) => b.family)
+              const date = w.publication_date ?? null
+              const afterCutoff = cutoffAt && date ? new Date(date).getTime() > cutoffAt.getTime() : false
+              return {
+                id: w.id,
+                title: w.title,
+                date,
+                doi: w.doi,
+                method_families: fams,
+                quarantine: afterCutoff,
+              }
+            })
+            const pre = papers.filter((p) => !p.quarantine && p.date)
+            const quarantined = papers.filter((p) => p.quarantine)
+            const familyCount = new Map()
+            for (const p of pre) for (const f of p.method_families) familyCount.set(f, (familyCount.get(f) ?? 0) + 1)
+            const method_families = [...familyCount.entries()].sort((a, b) => b[1] - a[1]).map(([f, n]) => ({ family: f, papers: n }))
+            const hypotheses = method_families.slice(0, 3).map((f) => ({
+              hypothesis: `针对「${question.slice(0, 40)}」，可考察 ${f.family} 类方法（${f.papers} 篇截止日前文献使用）`,
+              method_family: f.family,
+              next: '在模型地图学习该方法 → Algorithm Lab 用真实数据试跑',
+            }))
+            json(res, 200, {
+              ok: true,
+              research_question: question,
+              cutoff_at: body.cutoff_at ?? null,
+              cutoff_mode: cutoffAt ? 'enforced' : 'off',
+              pre_cutoff: pre,
+              quarantined,
+              method_families,
+              hypotheses,
+              warnings,
+            })
+          } catch (e) {
+            json(res, 400, { ok: false, error: String(e instanceof Error ? e.message : e) })
+          }
+        })()
+      },
+    },
+
     // distilled cases registry
     {
       kind: 'exact',
@@ -394,7 +523,10 @@ export function makeProductRoutes() {
           json(res, 405, { ok: false, error: 'method-not-allowed' })
           return
         }
-        json(res, 200, { ok: true, cases: readJson(join(REGISTRY_DIR, 'cases', 'cases.json'))?.cases ?? [] })
+        const flagship = readJson(join(REGISTRY_DIR, 'cases', 'flagship-2023a.json'))
+        const base = readJson(join(REGISTRY_DIR, 'cases', 'cases.json'))?.cases ?? []
+        const cases = flagship ? [flagship, ...base] : base
+        json(res, 200, { ok: true, cases })
       },
     },
     // mastery per model (aggregate over model knowledge units)
@@ -974,6 +1106,9 @@ function readdirSafe(dir) {
     return []
   }
 }
+
+
+
 
 
 

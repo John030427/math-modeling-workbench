@@ -1,0 +1,116 @@
+{
+  "id": "flagship-2023a-heliostat",
+  "title": "旗舰案例：定日镜场优化设计（CUMCM 2023 A · 国家级一等奖）",
+  "flagship": true,
+  "problem_type": "optimization / physical-geometry modeling",
+  "award": { "level": "国家级一等奖", "rate": "0.5%（本科组 299/59611 队）", "source": "repo README.md" },
+  "source": {
+    "repo": "linggm3/2023_CUMCM_National-First-Prize",
+    "url": "https://github.com/linggm3/2023_CUMCM_National-First-Prize",
+    "files": {
+      "problem": "A题.pdf",
+      "paper": "定日镜场优化设计模型.pdf",
+      "defense": "答辩ppt.pptx",
+      "supporting": "支撑材料/",
+      "readme": "README.md"
+    },
+    "license_note": "方案版权归原作者所有；本案例为教学蒸馏并逐条标注来源文件，使用请遵循仓库 LICENSE"
+  },
+  "overview": "塔式太阳能光热电站中，定日镜随太阳运动调整姿态将光线汇聚到吸收塔。赛题要求在给定镜场参数下建立光学效率与输出功率模型，并优化定日镜的布局与尺寸以最大化年发电量。该团队方案获国家级一等奖（README.md）。",
+  "problem_decomposition": [
+    {
+      "req_id": "R1",
+      "subproblem": "建立定日镜光学效率与输出功率计算模型",
+      "evidence": "README.md『如何解决问题』首段：先建立光学效率与输出功率模型作为优化基础"
+    },
+    {
+      "req_id": "R2",
+      "subproblem": "问题一：给定吸收塔高度与镜场尺寸，确定定日镜位置/尺寸并计算年发电总量与单位镜面功率",
+      "evidence": "A题.pdf 问题一；README.md 问题拆分图 fig3"
+    },
+    {
+      "req_id": "R3",
+      "subproblem": "问题二/三：改变塔高或自由度限制，重新优化布局并对比效率",
+      "evidence": "README.md『限制自由度进行优化』"
+    }
+  ],
+  "data_inputs": [
+    { "name": "太阳高度角/方位角（典型日时刻表）", "source": "A题.pdf 附表", "locator": "A题.pdf 附表" },
+    { "name": "镜场几何参数（塔位置、镜尺寸上限、吸收塔功率基准）", "source": "A题.pdf 题设", "locator": "A题.pdf" },
+    { "name": "大气透射率/余弦效率等光学公式", "source": "A题.pdf 说明", "locator": "A题.pdf" }
+  ],
+  "assumptions": [
+    { "text": "忽略镜面间遮挡以外的次要光学损失或按题给公式计入", "evidence": "A题.pdf 光学效率定义" },
+    { "text": "典型日代表全年发电性能（题目指定计算日）", "evidence": "A题.pdf" },
+    { "text": "定日镜可离散化为网格布局并限制自由度以简化优化", "evidence": "README.md『限制自由度进行优化』" }
+  ],
+  "method_map": [
+    { "atlas_ref": "czy-nlp", "role": "连续布局参数优化（非线性规划/SLSQP 类方法）" },
+    { "atlas_ref": "czy-ga", "role": "布局组合搜索的全局寻优对照" },
+    { "atlas_ref": "czy-mc-integration", "role": "光学遮挡/阴影效应的随机采样近似思路对照" },
+    { "atlas_ref": "czy-lp", "role": "线性化子问题的基线思路" }
+  ],
+  "method_cards": [
+    {
+      "card_id": "MC1",
+      "title": "余弦效率与大气透射率建模",
+      "math": "η_cos = cos θ_i（入射角余弦）；η_atm = 0.99321 − 0.0001176 d + 1.97e-8 d²（题给经验式）",
+      "why": "定日镜姿态决定入射角，传输距离决定大气衰减，两者直接乘在总效率上",
+      "evidence": { "source": "A题.pdf", "locator": "光学效率公式部分" }
+    },
+    {
+      "card_id": "MC2",
+      "title": "阴影遮挡效率的几何计算",
+      "math": "阴影/遮挡区域投影交叠判定（几何投影 + 网格离散采样）",
+      "why": "相邻镜或塔的投影会遮挡入射/反射光，是布局密度的核心限制",
+      "evidence": { "source": "定日镜场优化设计模型.pdf", "locator": "阴影遮挡模型章节" }
+    },
+    {
+      "card_id": "MC3",
+      "title": "布局离散化 + 自由度限制优化",
+      "math": "镜心坐标网格化，分圈/分块固定部分自由度，降低变量维度",
+      "why": "全自由度非凸优化难以稳定求解；限制自由度后可分层搜索",
+      "evidence": { "source": "README.md", "locator": "『为了简化问题，限制自由度进行优化』" }
+    },
+    {
+      "card_id": "MC4",
+      "title": "输出功率与单位镜面年发电量目标",
+      "math": "P = Σ η_i · DNI · A_i · cosθ_i（逐镜功率求和）；目标 max 年发电量 / 单位镜面面积发电量",
+      "why": "题目两个优化目标分别对应问题一与问题二/三的输出",
+      "evidence": { "source": "A题.pdf", "locator": "输出功率定义" }
+    }
+  ],
+  "decision_variables": ["各定日镜位置（极径/极角或网格坐标）", "定日镜尺寸（问题二/三允许变化）"],
+  "objective": "max 年发电总量（问题一）；max 单位镜面面积年发电量（问题二/三）",
+  "constraints": ["镜间不碰撞（最小间距）", "镜场边界范围", "吸收塔位置给定/可变（分问题）", "镜尺寸上限"],
+  "algorithms_solver": "几何效率计算 + 网格离散搜索与非线性优化结合（支撑材料/ 内含代码实现）",
+  "code_paper_mapping": [
+    { "paper": "光学效率模型", "code": "支撑材料/ 效率计算脚本", "artifact": "论文效率表格/曲线", "figure": "figs/ 效率相关图" },
+    { "paper": "布局优化结果", "code": "支撑材料/ 优化主程序", "artifact": "最优布局坐标", "figure": "figs/ 布局俯视图" }
+  ],
+  "results_summary": "方案给出满足题设的镜场布局与年发电量结果，获国家级一等奖（具体数值见论文 PDF 与支撑材料，本案例不复制论文数值以避免转述误差）。",
+  "validation": [
+    "与题给基准参数下的效率公式逐项核对",
+    "遮挡/阴影效率在极端布局下退化为 0 的合理性检查",
+    "多组典型日时刻的输出稳定性"
+  ],
+  "sensitivity": "塔高/镜尺寸变化（问题二/三）本身即题目设计的敏感性实验",
+  "figures": ["figs/fig1-3 背景与问题拆分图", "论文中效率曲线与布局俯视图（见 定日镜场优化设计模型.pdf）"],
+  "paper_structure": ["摘要（目标-模型-结果一句话链）", "问题重述", "模型假设", "符号说明", "光学效率模型", "布局优化模型与求解", "结果与分析", "模型评价与推广"],
+  "writing_patterns": ["每个子问题独立成节但共享效率模型骨架", "公式先给物理含义再给数学形式", "图表紧贴结论段落"],
+  "innovation": "限制自由度的分层优化策略 + 几何效率的网格化精确计算（README.md + 论文）",
+  "strengths": ["建模链条完整：物理公式 → 几何计算 → 优化", "支撑材料齐全可复现", "答辩 PPT 展示清晰"],
+  "weaknesses": ["自由度限制牺牲部分解空间", "计算量大，采样精度与耗时的权衡"],
+  "transferable_lessons": [
+    "物理-几何类赛题：先把物理量拆成可乘的效率因子，再谈优化",
+    "高维非凸布局问题：限制自由度/分层搜索是实用的降维手段",
+    "论文与支撑材料一一对应（代码↔公式↔图表）是国一级别的加分习惯"
+  ],
+  "evidence_policy": "以上每条 claim 标注来源文件；未标注页码的条目定位到文件级。论文具体数值请直接查阅 定日镜场优化设计模型.pdf。",
+  "related_atlas": ["czy-nlp", "czy-ga", "czy-mc-integration", "czy-lp"],
+  "related_gym": ["drill-2023a-p2-strategy", "drill-2023a-validation-gap"],
+  "reverse_training": {
+    "button": "用这篇论文训练我",
+    "flow": "隐藏方案 → 只给 A 题原文 → 学生提交 拆解/数据计划/特征/模型/验证 → 按维度对比旗舰方案 → 差距 → 训练链接"
+  }
+}

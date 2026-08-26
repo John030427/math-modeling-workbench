@@ -2,48 +2,147 @@
   "cases": [
     {
       "id": "kmeans-feature-scaling",
-      "title": "Gym 案例 1：客户分群的特征准备与 K-Means 使用判断",
-      "problem": "某商场有 500 名会员的消费记录：月均消费金额（元，范围 200–20000）、到店频次（次/月，范围 0–30）、会员年龄（岁，范围 18–70）、最近一次消费距今天数（天，范围 0–400）。运营希望把会员分成 3–5 个可解释的群体用于精准营销。请给出你的建模提案：需要哪些变量、目标是什么、数据要做什么预处理、用什么方法、如何验证分群质量。",
+      "title": "Gym 1 · 拆题训练：客户分群的特征准备（K-Means）",
+      "drill_type": "problem decomposition",
+      "problem": "某商场 500 名会员：月均消费（200–20000 元）、到店频次（0–30 次/月）、年龄（18–70）、最近消费距今天数（0–400）。要求分成 3–5 个可解释群体用于精准营销。给出建模提案：变量、目标、预处理、方法、验证。",
       "dimensions": [
-        {
-          "name": "变量选择与目标定义",
-          "reference_keywords": ["消费", "频次", "聚类", "分群", "无监督"],
-          "hint": "先明确这是无监督分群任务：目标不是预测，而是找到群体结构。变量应围绕消费行为，剔除与行为无关的标识列。",
-          "knowledge_units": ["clustering-basic", "decomposition"]
-        },
-        {
-          "name": "数据预处理（量纲）",
-          "reference_keywords": ["标准化", "z-score", "量纲", "归一化", "standardiz"],
-          "hint": "金额（200–20000）与频次（0–30）量纲差距悬殊。K-Means 基于欧氏距离，不标准化时金额会主导距离，年龄和频次几乎不起作用。",
-          "knowledge_units": ["feature-scaling", "distance"]
-        },
-        {
-          "name": "异常值与分布检查",
-          "reference_keywords": ["异常值", "离群", "outlier", "对数", "分布"],
-          "hint": "消费金额通常右偏且有高额会员离群点。K-Means 对离群敏感（质心被拉偏）。先检查分布，必要时做对数变换或剔除/分箱。",
-          "knowledge_units": ["outlier-sensitivity"]
-        },
-        {
-          "name": "方法选择与 K 的确定",
-          "reference_keywords": ["k-means", "kmeans", "肘部", "elbow", "轮廓", "silhouette", "k 值"],
-          "hint": "选 K-Means 合理，但要说明 K 如何定：肘部法（SSE-K 曲线）+ 轮廓系数相互印证；同时说明 K-Means 假设球形簇。",
-          "knowledge_units": ["k-selection", "sse", "silhouette", "initialization"]
-        },
-        {
-          "name": "验证与可解释性",
-          "reference_keywords": ["轮廓", "silhouette", "画像", "解释", "质心", "稳定", "多"],
-          "hint": "分群质量验证：轮廓系数 + 多次随机初始化看结果稳定性 + 给每个簇写业务画像（质心反推）。无监督任务没有标签，稳定性与可解释性就是验证。",
-          "knowledge_units": ["silhouette", "initialization", "local-optimum", "centroid"]
-        }
+        { "name": "变量选择与目标定义", "reference_keywords": ["消费", "频次", "聚类", "分群", "无监督"], "hint": "无监督分群：目标不是预测而是找群体结构；剔除标识列。", "knowledge_units": ["clustering-basic", "decomposition"] },
+        { "name": "数据预处理（量纲）", "reference_keywords": ["标准化", "z-score", "量纲", "归一化"], "hint": "金额与频次量纲悬殊，欧氏距离会被金额主导。", "knowledge_units": ["feature-scaling", "distance"] },
+        { "name": "异常值与分布", "reference_keywords": ["异常值", "离群", "对数", "分布"], "hint": "消费右偏 + 高额离群会员，K-Means 质心会被拉偏。", "knowledge_units": ["outlier-sensitivity"] },
+        { "name": "方法与 K 的确定", "reference_keywords": ["k-means", "肘部", "轮廓", "k 值"], "hint": "肘部法 + 轮廓系数联合定 K；说明球形簇假设。", "knowledge_units": ["k-selection", "sse", "silhouette"] },
+        { "name": "验证与可解释性", "reference_keywords": ["轮廓", "画像", "质心", "稳定", "多"], "hint": "轮廓系数 + 多种子稳定性 + 簇业务画像。", "knowledge_units": ["silhouette", "initialization", "centroid"] }
       ],
-      "reference_outline": {
-        "变量与目标": "无监督分群：月均消费、到店频次（行为变量）为主，年龄可作辅助；剔除会员 ID 等标识列。",
-        "预处理": "Z-score 标准化消除量纲；金额右偏可先取对数；检查并处理离群会员。",
-        "方法": "K-Means（K=3~5），kmeans++ 初始化、多种子运行看稳定性。",
-        "定 K": "肘部法 SSE 曲线 + 轮廓系数联合选择。",
-        "验证": "轮廓系数、簇大小均衡性、质心业务画像可解释性、跨种子标签稳定性（如 ARI）。"
-      },
-      "knowledge_units": ["feature-scaling", "k-selection", "silhouette", "outlier-sensitivity", "initialization"]
+      "reference_outline": { "变量与目标": "无监督分群：行为变量为主，剔除标识列。", "预处理": "Z-score 标准化；金额对数化；离群处理。", "方法": "K-Means + kmeans++，多种子。", "定K": "肘部 + 轮廓。", "验证": "轮廓系数、稳定性、业务画像。" },
+      "knowledge_units": ["feature-scaling", "k-selection", "silhouette", "outlier-sensitivity", "initialization"],
+      "source_case": null
+    },
+    {
+      "id": "drill-2023a-p2-strategy",
+      "title": "Gym 2 · 旗舰反向训练：2023 A 问题二布局优化策略（优化）",
+      "drill_type": "excellent-paper reverse training",
+      "problem": "CUMCM 2023 A（定日镜场）：在问题一效率模型基础上，问题二允许重新设计镜场布局以最大化单位镜面面积年发电量。请给出你的优化策略：决策变量怎么选、目标函数怎么写、用什么算法、如何处理遮挡计算的代价。",
+      "dimensions": [
+        { "name": "决策变量设计", "reference_keywords": ["网格", "极坐标", "自由度", "离散", "坐标"], "hint": "全自由度非凸难解；限制自由度/网格离散是实用降维。", "knowledge_units": ["decomposition", "nlp"] },
+        { "name": "目标与约束", "reference_keywords": ["单位镜面", "发电量", "间距", "边界", "碰撞"], "hint": "目标换为单位镜面面积发电量；间距/边界约束必须显式。", "knowledge_units": ["constraints"] },
+        { "name": "算法选择与代价控制", "reference_keywords": ["采样", "启发式", "效率", "计算量", "分层"], "hint": "遮挡计算昂贵——分层搜索/代理模型/减少评价次数。", "knowledge_units": ["algorithm-selection"] },
+        { "name": "对比与验证", "reference_keywords": ["问题一", "对比", "提升", "稳定"], "hint": "与问题一基准布局对比提升幅度并报告稳定性。", "knowledge_units": ["validation"] }
+      ],
+      "reference_outline": { "策略": "网格离散 + 分圈限制自由度 + 分层搜索。", "目标": "max 单位镜面面积年发电量。", "算法": "非线性优化/启发式混合，控制光学计算次数。", "验证": "与问题一对比 + 多时刻稳定性。" },
+      "knowledge_units": ["nlp", "decomposition", "algorithm-selection", "validation"],
+      "source_case": "flagship-2023a-heliostat"
+    },
+    {
+      "id": "drill-2023a-validation-gap",
+      "title": "Gym 3 · 错误诊断：找出该方案验证环节的不足（2023 A）",
+      "drill_type": "error diagnosis",
+      "problem": "某队 2023 A 方案：只用 3 个典型日的正午时刻计算年发电量；遮挡效率用固定 0.9 常数代替几何计算；优化后未与任何基准布局对比。请指出该方案验证与建模的至少三处不足，并给出改进。",
+      "dimensions": [
+        { "name": "时刻代表性", "reference_keywords": ["典型日", "正午", "全年", "时刻表", "季节"], "hint": "正午单时刻无法代表全年入射几何，需按题给时刻表覆盖季节。", "knowledge_units": ["assumptions"] },
+        { "name": "遮挡处理", "reference_keywords": ["几何", "投影", "常数", "0.9"], "hint": "常数近似会系统性偏差，遮挡应随布局变化几何计算。", "knowledge_units": ["assumptions", "algorithm-selection"] },
+        { "name": "基准对比缺失", "reference_keywords": ["基准", "baseline", "对比", "均匀"], "hint": "无 baseline 的提升不可信：至少与均匀圆环布局对比。", "knowledge_units": ["validation"] }
+      ],
+      "reference_outline": { "不足1": "时刻覆盖不足。", "不足2": "遮挡常数化。", "不足3": "无基准对比。", "改进": "题给时刻表 + 几何遮挡 + 基准对比与多布局稳定性。" },
+      "knowledge_units": ["assumptions", "validation"],
+      "source_case": "flagship-2023a-heliostat"
+    },
+    {
+      "id": "drill-data-doctor-leakage",
+      "title": "Gym 4 · 数据诊断：找出混入目标的信息（数据诊断）",
+      "drill_type": "data diagnosis",
+      "problem": "给你一份房价数据（面积、房龄、地铁距离、单价、总价），目标列是总价。其中『单价』= 总价/面积。请诊断该数据集的问题并给出处理方案。",
+      "dimensions": [
+        { "name": "泄漏识别", "reference_keywords": ["单价", "泄漏", "总价", "除以", "衍生"], "hint": "单价 = 总价/面积，是目标直接衍生的特征——严重泄漏。", "knowledge_units": ["leakage"] },
+        { "name": "处理方案", "reference_keywords": ["删除", "剔除", "重定义", "预测单价"], "hint": "删单价列，或把问题重定义为『预测单价再乘面积』并说明一致性。", "knowledge_units": ["leakage", "decomposition"] },
+        { "name": "预防机制", "reference_keywords": ["诊断", "自动化", "审查", "来源"], "hint": "特征卡记录来源与公式，Data Doctor 自动查目标衍生列。", "knowledge_units": ["feature-engineering"] }
+      ],
+      "reference_outline": { "泄漏": "单价由目标衍生。", "处理": "删除或重定义任务。", "预防": "特征来源审查 + 自动诊断。" },
+      "knowledge_units": ["leakage", "feature-engineering"],
+      "source_case": null
+    },
+    {
+      "id": "drill-model-choice-evaluation",
+      "title": "Gym 5 · 模型选择：评价类赛题的方法组合（评价/决策）",
+      "drill_type": "model choice",
+      "problem": "对 20 个城市 8 项指标做宜居性排名。指标量纲不一、部分负向；专家给了主观偏好但担心主观性。请给出完整的方法组合与理由（含权重方案、排序模型、验证）。",
+      "dimensions": [
+        { "name": "预处理", "reference_keywords": ["标准化", "负向", "正向化", "极差"], "hint": "负向指标先正向化，极差/z-score 标准化。", "knowledge_units": ["normalization"] },
+        { "name": "权重方案", "reference_keywords": ["熵权", "AHP", "组合", "客观", "主观"], "hint": "熵权客观 + AHP 主观组合赋权并报告敏感性。", "knowledge_units": ["entropy-weight", "ahp", "combined-weighting"] },
+        { "name": "排序模型与验证", "reference_keywords": ["topsis", "排序", "敏感", "稳定", "对照"], "hint": "TOPSIS 排序 + 权重扰动敏感性 + 等权 baseline 对照。", "knowledge_units": ["topsis", "validation"] }
+      ],
+      "reference_outline": { "预处理": "正向化+标准化。", "权重": "组合赋权。", "模型": "TOPSIS。", "验证": "敏感性 + baseline 对照。" },
+      "knowledge_units": ["normalization", "entropy-weight", "topsis", "validation"],
+      "source_case": "case-evaluation-topsis"
+    },
+    {
+      "id": "drill-feature-engineering-sales",
+      "title": "Gym 6 · 特征工程：销量预测的特征设计（预测）",
+      "drill_type": "feature engineering",
+      "problem": "日度销量序列（3 年），含节假日促销尖峰与年度季节性。目标：预测未来 4 周。请设计特征集（每张特征卡：公式/含义/泄漏风险/验证）。",
+      "dimensions": [
+        { "name": "日历特征", "reference_keywords": ["星期", "节假日", "哑变量", "季节"], "hint": "星期/月份/节假日哑变量——无泄漏风险。", "knowledge_units": ["feature-engineering"] },
+        { "name": "滞后与滑窗", "reference_keywords": ["lag", "滞后", "滑动", "窗口", "历史"], "hint": "滞后/滑动均值必须只用预测点之前的数据——防时间泄漏。", "knowledge_units": ["leakage"] },
+        { "name": "促销特征", "reference_keywords": ["促销", "尖峰", "标记", "剔除"], "hint": "促销标记特征；尖峰是否计入训练要分场景讨论。", "knowledge_units": ["feature-engineering"] }
+      ],
+      "reference_outline": { "日历": "哑变量无泄漏。", "滞后": "严格历史窗口。", "促销": "标记 + 分场景。" },
+      "knowledge_units": ["feature-engineering", "leakage"],
+      "source_case": "case-cumcm2023c-forecasting"
+    },
+    {
+      "id": "drill-validation-design",
+      "title": "Gym 7 · 验证设计：为四种任务各设计验证方案（验证）",
+      "drill_type": "validation design",
+      "problem": "分别给出以下四种任务的验证方案：(a) 时间序列预测；(b) 带随机种子的启发式优化；(c) 多指标综合评价排序；(d) 无监督聚类。",
+      "dimensions": [
+        { "name": "预测验证", "reference_keywords": ["时间", "外推", "留出", "残差", "mape"], "hint": "按时间留出外推 + MAPE/RMSE + 残差检验。", "knowledge_units": ["validation"] },
+        { "name": "优化验证", "reference_keywords": ["多种子", "baseline", "可行", "收敛", "gap"], "hint": "多 seed 分布 + 可行性 + baseline 改进 + 小规模最优参照。", "knowledge_units": ["validation", "run-manifest"] },
+        { "name": "评价验证", "reference_keywords": ["敏感", "权重", "排名", "稳定", "等权"], "hint": "权重扰动 + 排名稳定性 + 等权对照。", "knowledge_units": ["validation"] },
+        { "name": "聚类验证", "reference_keywords": ["轮廓", "稳定", "多种子", "画像"], "hint": "内部指标 + 多种子稳定性 + 业务画像可解释。", "knowledge_units": ["silhouette", "validation"] }
+      ],
+      "reference_outline": { "预测": "时间外推+误差。", "优化": "多seed+baseline。", "评价": "敏感性。", "聚类": "指标+稳定性+解释。" },
+      "knowledge_units": ["validation"],
+      "source_case": null
+    },
+    {
+      "id": "drill-error-diagnosis-regression",
+      "title": "Gym 8 · 误差诊断：回归预测为何在高端失准（回归）",
+      "drill_type": "error diagnosis",
+      "problem": "房价回归模型整体 R²=0.85，但高价房（前 10%）预测普遍偏低、残差系统性为负。诊断原因并给出至少三种改进。",
+      "dimensions": [
+        { "name": "原因诊断", "reference_keywords": ["右偏", "对数", "异方差", "样本", "少"], "hint": "价格右偏+高端样本少 → 模型向均值回归、异方差。", "knowledge_units": ["interpretation"] },
+        { "name": "变换类改进", "reference_keywords": ["对数", "log", "变换"], "hint": "对数目标训练后还原，缓解右偏与异方差。", "knowledge_units": ["regression"] },
+        { "name": "模型与样本改进", "reference_keywords": ["分段", "分位", "加权", "高端", "样本"], "hint": "高端分段模型/分位数回归/高端样本加权。", "knowledge_units": ["regression", "validation"] }
+      ],
+      "reference_outline": { "原因": "右偏+样本少+异方差。", "改进": "log 变换、分位数/分段、加权。" },
+      "knowledge_units": ["regression", "interpretation"],
+      "source_case": null
+    },
+    {
+      "id": "drill-paper-interpretation",
+      "title": "Gym 9 · 论文解读：摘要里缺了什么（论文解读）",
+      "drill_type": "paper interpretation",
+      "problem": "某摘要写道：『本文建立了模型解决了问题，得到了较好的结果，方法有一定创新。』请指出这条摘要的四点缺陷，并按 CUMCM 摘要规范改写框架。",
+      "dimensions": [
+        { "name": "要素缺失", "reference_keywords": ["模型", "方法", "结果", "数值", "具体"], "hint": "没有说清用了什么模型、求解了什么、结果数值。", "knowledge_units": ["writing"] },
+        { "name": "结果表述", "reference_keywords": ["较好", "数值", "误差", "对比"], "hint": "『较好』无信息量——要给关键数值与对比对象。", "knowledge_units": ["writing", "interpretation"] },
+        { "name": "规范框架", "reference_keywords": ["背景", "模型", "方法", "结果", "关键词"], "hint": "背景一句 + 逐问模型/方法 + 关键数值结果 + 关键词。", "knowledge_units": ["writing"] }
+      ],
+      "reference_outline": { "缺陷": "模型不明/结果无数值/无对比/创新空泛。", "框架": "背景→逐问模型→数值结果→关键词。" },
+      "knowledge_units": ["writing"],
+      "source_case": "flagship-2023a-heliostat"
+    },
+    {
+      "id": "drill-graph-routing",
+      "title": "Gym 10 · 图论应用：配送网络的三问建模（图论）",
+      "drill_type": "problem decomposition",
+      "problem": "1 个配送中心、12 个站点（坐标+需求量）、3 辆车（载重上限）。问：(a) 每车配送哪些站点总里程最短；(b) 若某站需求翻倍方案如何变；(c) 给出验证方案。请选图论/优化方法并说明。",
+      "dimensions": [
+        { "name": "问题建模", "reference_keywords": ["vrp", "路径", "载重", "容量", "tsp"], "hint": "带容量约束的路径问题（CVRP）——TSP 的容量扩展。", "knowledge_units": ["decomposition", "algorithm-selection"] },
+        { "name": "方法与扩展", "reference_keywords": ["启发式", "aco", "贪心", "milp", "翻倍"], "hint": "贪心/ACO 启发式 + 小规模 MILP 参照；需求翻倍做灵敏度。", "knowledge_units": ["aco", "milp", "validation"] },
+        { "name": "验证", "reference_keywords": ["可行", "载重", "baseline", "多"], "hint": "载重可行性核查 + 贪心 baseline + 多 seed。", "knowledge_units": ["validation"] }
+      ],
+      "reference_outline": { "建模": "CVRP。", "方法": "启发式+MILP 参照。", "验证": "可行性+baseline+多 seed。" },
+      "knowledge_units": ["aco", "milp", "dijkstra", "validation"],
+      "source_case": "case-cumcm2021c-optimization"
     }
   ]
 }
