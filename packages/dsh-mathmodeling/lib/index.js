@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { makeMathModelingRoutes } from './routes.js'
 import { makeContextRoutes, makeLearningRoutes } from './learning-routes.js'
 import { makeProductRoutes } from './product-routes.js'
-import { MODELING_TUTOR_SKILL } from './skill.js'
+import { loadSkills } from './skills.js'
 
 const PACKAGE_JSON = fileURLToPath(new URL('../package.json', import.meta.url))
 const VERSION = JSON.parse(readFileSync(PACKAGE_JSON, 'utf8')).version ?? '0.0.0'
@@ -20,12 +20,12 @@ export function apply(ctx) {
   let unregisterSkill
 
   ctx.effect(() => {
-    unregisterSkill = ctx.skills.register(MODELING_TUTOR_SKILL)
+    const skills = loadSkills()
+    const unregisterFns = skills.map((s) => ctx.skills.register(s))
     return () => {
-      unregisterSkill?.()
-      unregisterSkill = undefined
+      for (const fn of unregisterFns) fn?.()
     }
-  }, 'dsh-mathmodeling: skill')
+  }, 'dsh-mathmodeling: skills')
 
   ctx.effect(() => {
     const disposers = [
@@ -41,3 +41,4 @@ export function apply(ctx) {
 
   ctx.logger.info('[dsh-mathmodeling] mounted v%s (session context + mastery + modeling-tutor)', VERSION)
 }
+
