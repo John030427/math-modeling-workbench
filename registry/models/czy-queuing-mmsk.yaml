@@ -1,0 +1,18 @@
+id: czy-queuing-mmsk
+name: M/M/s/k Queue Simulation
+name_zh: M/M/s/k 排队仿真
+category: { task: [simulation] }
+family: [simulation]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [queuing, mmk]
+knowledge_units: [queuing, mmk, service-level]
+use_when:
+  - 窗口/床位/通道等排队系统评估
+avoid_when:
+  - 解析公式可精确计算的简单 M/M/1
+summary: 事件驱动仿真估计等待/队长/服务水平指标。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-queuing-mmsk, upstream_commit: 33cb0440 }

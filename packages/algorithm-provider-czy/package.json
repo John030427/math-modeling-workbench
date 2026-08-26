@@ -1,0 +1,16 @@
+{
+  "name": "@math-modeling/algorithm-provider-czy",
+  "version": "0.1.0",
+  "description": "AlgorithmProvider adapter over chengziyue1222/math-model-agent (pinned, MIT) via a Python JSON bridge",
+  "private": true,
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": { "default": "./lib/index.js" },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dsh": {}
+}

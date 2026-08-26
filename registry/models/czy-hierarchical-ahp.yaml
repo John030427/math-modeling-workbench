@@ -1,0 +1,18 @@
+id: czy-hierarchical-ahp
+name: Hierarchical AHP
+name_zh: 多层次 AHP
+category: { task: [evaluation] }
+family: [evaluation]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [hierarchical-ahp, criteria-layer]
+knowledge_units: [hierarchical-ahp, criteria-layer, composite-weight]
+use_when:
+  - 目标-准则-方案多层结构综合权重
+avoid_when:
+  - 层次结构不清晰
+summary: 自上而下合成各层判断矩阵权重，得到方案层综合权重。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-hierarchical-ahp, upstream_commit: 33cb0440 }

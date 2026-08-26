@@ -1,0 +1,20 @@
+id: czy-pca
+name: PCA
+name_zh: 主成分分析
+category: { task: [dimension-reduction] }
+family: [evaluation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [pca, eigenvalue]
+knowledge_units: [pca, eigenvalue, variance-explained, loading]
+use_when:
+  - 高维相关指标降维
+  - 构造综合评价主成分得分
+avoid_when:
+  - 指标都需要保留原始业务含义
+  - 样本量远小于指标数
+summary: 正交变换把相关指标压缩为少数主成分，按方差贡献率保留信息。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-pca, upstream_commit: 33cb0440 }

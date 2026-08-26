@@ -1,0 +1,18 @@
+id: czy-mc-integration
+name: Monte Carlo Integration
+name_zh: 蒙特卡洛积分
+category: { task: [simulation] }
+family: [simulation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [monte-carlo, integration]
+knowledge_units: [monte-carlo, integration]
+use_when:
+  - 高维难解析积分
+avoid_when:
+  - 低维可解析
+summary: 随机采样估计积分值，误差随样本数平方根下降。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-mc-integration, upstream_commit: 33cb0440 }

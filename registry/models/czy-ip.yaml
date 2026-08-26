@@ -1,0 +1,18 @@
+id: czy-ip
+name: Integer Programming
+name_zh: 整数规划
+category: { task: [optimization] }
+family: [programming]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [integer-variables, branch-and-bound]
+knowledge_units: [integer-variables, branch-and-bound]
+use_when:
+  - 决策变量必须整数（选点/指派/开闭）
+avoid_when:
+  - 变量连续即可
+summary: 带整数约束的线性优化，分支定界求解。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-ip, upstream_commit: 33cb0440 }

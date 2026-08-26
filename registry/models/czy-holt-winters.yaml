@@ -1,0 +1,18 @@
+id: czy-holt-winters
+name: Holt-Winters
+name_zh: Holt-Winters 三次指数平滑
+category: { task: [time-series] }
+family: [time-series]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [holt-winters, seasonality]
+knowledge_units: [holt-winters, seasonality, trend]
+use_when:
+  - 带趋势+季节的序列预测
+avoid_when:
+  - 序列太短不足以估计季节
+summary: 水平/趋势/季节三组分平滑，支持加法与乘法。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-holt-winters, upstream_commit: 33cb0440 }

@@ -22,5 +22,8 @@ limitations: [无最优保证, 参数敏感]
 common_mistakes: [using_pso_when_lp_suffices, no_multi_seed]
 validation: [multi-seed, sensitivity, compare-baseline]
 alternatives: [ga, sa, differential-evolution, lp]
+execution_supported: czy
+provider: czy
+execution: { provider: czy, method_id: czy-pso }
 summary: 群体启发式搜索；能用精确优化时不要默认上 PSO。
 demo_priority: 8

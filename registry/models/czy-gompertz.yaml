@@ -1,0 +1,18 @@
+id: czy-gompertz
+name: Gompertz Curve
+name_zh: Gompertz 成长曲线
+category: { task: [time-series] }
+family: [time-series]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [gompertz, growth-curve]
+knowledge_units: [gompertz, growth-curve]
+use_when:
+  - 产品普及/生物生长等非对称 S 增长
+avoid_when:
+  - 对称 S 形（用 Logistic/Verhulst）
+summary: 双指数形态的成长曲线拟合与预测。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-gompertz, upstream_commit: 33cb0440 }

@@ -1,0 +1,18 @@
+id: czy-prim-mst
+name: Prim MST
+name_zh: Prim 最小生成树
+category: { task: [graph] }
+family: [graph]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [mst, prim]
+knowledge_units: [mst, prim, greedy]
+use_when:
+  - 最小成本连通（管网/电网铺设）
+avoid_when:
+  - 需要次优或约束树形
+summary: 贪心扩张构造最小总权连通树。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-prim-mst, upstream_commit: 33cb0440 }

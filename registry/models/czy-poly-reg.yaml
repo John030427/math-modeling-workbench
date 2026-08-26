@@ -1,0 +1,18 @@
+id: czy-poly-reg
+name: Polynomial Regression
+name_zh: 多项式回归
+category: { task: [regression] }
+family: [regression]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [polynomial, curve-fitting]
+knowledge_units: [polynomial, curve-fitting]
+use_when:
+  - 单变量明显非线性且光滑
+avoid_when:
+  - 高阶易过拟合外推
+summary: 多项式基最小二乘拟合，注意阶数选择。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-poly-reg, upstream_commit: 33cb0440 }

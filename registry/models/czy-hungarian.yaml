@@ -1,0 +1,18 @@
+id: czy-hungarian
+name: Hungarian Matching
+name_zh: 匈牙利指派法
+category: { task: [graph] }
+family: [graph]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [hungarian, assignment-problem]
+knowledge_units: [hungarian, assignment-problem]
+use_when:
+  - 人-任务一一指派最小化总成本
+avoid_when:
+  - 多人多任务非一一匹配
+summary: 多项式时间求解指派问题的最优匹配。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-hungarian, upstream_commit: 33cb0440 }

@@ -1,0 +1,18 @@
+id: czy-rsr
+name: RSR
+name_zh: 秩和比综合评价
+category: { task: [evaluation] }
+family: [evaluation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [rsr, rank-based]
+knowledge_units: [rsr, rank-based, probit]
+use_when:
+  - 多指标分档排序（医院质量、地区评价）
+avoid_when:
+  - 指标极少或需要精确数值差距
+summary: 按秩次计算秩和比并分档，配合 Probit 回归做分档排序。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-rsr, upstream_commit: 33cb0440 }

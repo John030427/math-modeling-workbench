@@ -1,0 +1,18 @@
+id: czy-random-walk
+name: Random Walk
+name_zh: 随机游走
+category: { task: [simulation] }
+family: [simulation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [random-walk, stochastic-process]
+knowledge_units: [random-walk, stochastic-process]
+use_when:
+  - 随机过程演示/价格与扩散原型
+avoid_when:
+  - 需要真实动力学模型
+summary: 多游走者多步随机游走轨迹与统计。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-random-walk, upstream_commit: 33cb0440 }

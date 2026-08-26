@@ -1,0 +1,18 @@
+id: czy-fahp
+name: FAHP
+name_zh: 模糊层次分析法
+category: { task: [evaluation] }
+family: [evaluation]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [fahp, fuzzy-consistency]
+knowledge_units: [fahp, fuzzy-consistency]
+use_when:
+  - 专家两两比较难以精确给出比例标度时
+avoid_when:
+  - 可精确构造 1-9 标度判断矩阵
+summary: 用模糊一致矩阵替代严格判断矩阵，降低一致性调整成本。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-fahp, upstream_commit: 33cb0440 }

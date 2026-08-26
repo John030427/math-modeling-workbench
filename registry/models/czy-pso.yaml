@@ -1,0 +1,18 @@
+id: czy-pso
+name: Particle Swarm (upstream)
+name_zh: 粒子群（上游实现）
+category: { task: [metaheuristic] }
+family: [metaheuristic]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [pso, swarm]
+knowledge_units: [pso, swarm, inertia-weight]
+use_when:
+  - 连续优化与本地 PSO 交叉验证
+avoid_when:
+  - 确定性算法足够
+summary: 上游粒子群实现，可与本地 PSO 互为对照。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-pso, upstream_commit: 33cb0440 }

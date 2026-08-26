@@ -1,0 +1,18 @@
+id: czy-lagrange
+name: Lagrange Interpolation
+name_zh: 拉格朗日插值
+category: { task: [interpolation] }
+family: [interpolation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [lagrange, interpolation-polynomial]
+knowledge_units: [lagrange, interpolation-polynomial]
+use_when:
+  - 少节点精确插值
+avoid_when:
+  - 节点多（龙格现象）
+summary: 构造过所有节点的多项式插值。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-lagrange, upstream_commit: 33cb0440 }

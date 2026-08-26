@@ -1,0 +1,19 @@
+id: czy-ahp-topsis
+name: AHP-TOPSIS Combined Weighting
+name_zh: AHP+熵权组合赋权 TOPSIS
+category: { task: [evaluation] }
+family: [evaluation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [topsis, ahp]
+knowledge_units: [topsis, ahp, entropy-weight, combined-weighting]
+use_when:
+  - 既想要专家经验又想要客观信息的组合权重
+  - 指标较多且量纲不一
+avoid_when:
+  - 指标间强相关导致权重重复计算
+summary: 主观 AHP 权重与客观熵权按比例融合后做 TOPSIS 排序，兼顾经验与数据。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-ahp-topsis, upstream_commit: 33cb0440 }

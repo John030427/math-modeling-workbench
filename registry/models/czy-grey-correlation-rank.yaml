@@ -1,0 +1,18 @@
+id: czy-grey-correlation-rank
+name: Grey Relational Ranking
+name_zh: 灰色关联排序
+category: { task: [grey] }
+family: [grey]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [grey-correlation, ranking]
+knowledge_units: [grey-correlation, ranking]
+use_when:
+  - 小样本方案与理想序列的贴近排序
+avoid_when:
+  - 大样本统计显著性问题
+summary: 以关联度大小对方案/因素排序，是灰色关联分析的排序应用。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-grey-correlation-rank, upstream_commit: 33cb0440 }

@@ -1,0 +1,18 @@
+id: czy-ridge
+name: Ridge Regression
+name_zh: 岭回归
+category: { task: [regression] }
+family: [regression]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [ridge, regularization]
+knowledge_units: [ridge, regularization, multicollinearity]
+use_when:
+  - 特征共线严重或 n<p
+avoid_when:
+  - 需要稀疏变量选择（用 Lasso 类）
+summary: L2 正则化最小二乘，稳定共线系数。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-ridge, upstream_commit: 33cb0440 }

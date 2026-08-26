@@ -1,0 +1,18 @@
+id: czy-grey-relational
+name: Grey Relational Analysis
+name_zh: 灰色关联分析
+category: { task: [evaluation] }
+family: [grey]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [grey-correlation, reference-sequence]
+knowledge_units: [grey-correlation, reference-sequence]
+use_when:
+  - 小样本序列与参考序列的关联程度排序
+avoid_when:
+  - 大样本且分布已知时可用相关系数
+summary: 计算各比较序列与参考序列的关联系数与关联度，用于因素分析和方案排序。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-grey-relational, upstream_commit: 33cb0440 }

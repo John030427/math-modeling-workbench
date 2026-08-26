@@ -1,0 +1,18 @@
+id: czy-critical-path
+name: Critical Path (CPM)
+name_zh: 关键路径法
+category: { task: [graph] }
+family: [graph]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [cpm, aoe-network]
+knowledge_units: [cpm, aoe-network, slack]
+use_when:
+  - 工程工期与工序调度
+avoid_when:
+  - 工序可任意并行的柔性项目
+summary: AOE 网上求最长路径，识别决定总工期的关键工序。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-critical-path, upstream_commit: 33cb0440 }

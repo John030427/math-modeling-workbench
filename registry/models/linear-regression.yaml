@@ -22,5 +22,8 @@ limitations: [线性假设]
 common_mistakes: [skip_residual_check, data_leakage]
 validation: [r2, residual-plot, cross-validation]
 alternatives: [polynomial-regression, random-forest, xgboost]
+execution_supported: czy
+provider: czy
+execution: { provider: czy, method_id: czy-linreg }
 summary: 用线性函数拟合目标，是预测任务的重要 baseline。
 demo_priority: 5

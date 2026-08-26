@@ -1,0 +1,18 @@
+id: czy-grey-auto-predict
+name: Grey Auto Predict
+name_zh: 灰色预测自动选型
+category: { task: [grey] }
+family: [grey]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [gm11, gm21]
+knowledge_units: [gm11, gm21, verhulst, model-selection]
+use_when:
+  - 不确定哪种灰色模型合适，让程序按误差自动选
+avoid_when:
+  - 需要指定单一模型做论文公式推导
+summary: 自动拟合 GM(1,1)/GM(2,1)/Verhulst，按平均相对误差择优并给出检验指标。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-grey-auto-predict, upstream_commit: 33cb0440 }

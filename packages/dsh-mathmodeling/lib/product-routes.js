@@ -21,6 +21,7 @@ import {
 import { MATHMODELING_API_PREFIX } from './routes.js'
 import * as algo from './algorithms.js'
 import { diagnose } from './datadoctor.js'
+import { listMethods as czyListMethods, findMethod as czyFindMethod, runMethod as czyRunMethod } from '../../algorithm-provider-czy/lib/index.js'
 
 const LIB_DIR = fileURLToPath(new URL('.', import.meta.url))
 const REGISTRY_DIR = resolve(LIB_DIR, '../../../registry')
@@ -109,6 +110,36 @@ function executeAlgorithm(algorithm, parameters) {
     default:
       return { error: 'unknown-algorithm', metrics: {} }
   }
+}
+
+function inventoryCommit() {
+  try {
+    return JSON.parse(readFileSync(join(LIB_DIR, '../../../registry/upstream/chengziyue_algorithms.json'), 'utf8')).upstream_commit
+  } catch {
+    return '33cb044009d2dc12e7fa86e4ded6138ddb790d9a'
+  }
+}
+
+async function dispatchRun(algorithm, parameters, projectDir, session_id) {
+  if (czyFindMethod(algorithm)) {
+    const started = Date.now()
+    const r = await czyRunMethod({ method_id: algorithm, parameters })
+    const run = {
+      ...(r.run ?? {}),
+      run_id: randomUUID(),
+      started_at: new Date(started).toISOString(),
+      session_id,
+      stale: false,
+    }
+    if (projectDir) {
+      const manifestPath = join(projectDir, 'experiments', 'run-manifest.json')
+      const manifest = readJson(manifestPath) ?? { runs: [] }
+      manifest.runs.push(run)
+      writeJson(manifestPath, manifest)
+    }
+    return run
+  }
+  return runWithManifest({ algorithm, parameters, projectDir, session_id })
 }
 
 function runWithManifest({ algorithm, parameters, projectDir = null, session_id = null }) {
@@ -560,7 +591,15 @@ export function makeProductRoutes() {
           json(res, 405, { ok: false, error: 'method-not-allowed' })
           return
         }
-        json(res, 200, { ok: true, provider: 'local', version: PROVIDER_VERSION, algorithms: ALGORITHMS })
+        const czy = czyListMethods().map((m) => ({ id: m.method_id, name: m.title, family: m.family, provider: 'czy', task: m.task, stochastic: !m.deterministic, seed: m.seed }))
+        json(res, 200, {
+          ok: true,
+          providers: [
+            { provider: 'local', version: PROVIDER_VERSION, algorithms: ALGORITHMS },
+            { provider: 'czy', version: 'czy-0.1.0', upstream_commit: inventoryCommit(), algorithms: czy },
+          ],
+          algorithms: [...ALGORITHMS.map((a) => ({ ...a, provider: 'local' })), ...czy],
+        })
       },
     },
     {
@@ -578,12 +617,12 @@ export function makeProductRoutes() {
               json(res, 400, { ok: false, error: 'algorithm-required' })
               return
             }
-            const run = runWithManifest({
-              algorithm: body.algorithm,
-              parameters: body.parameters ?? {},
-              projectDir: body.project_id ? projectDir(body.project_id) : null,
-              session_id: body.session_id ?? null,
-            })
+            const run = await dispatchRun(
+              body.algorithm,
+              body.parameters ?? {},
+              body.project_id ? projectDir(body.project_id) : null,
+              body.session_id ?? null,
+            )
             json(res, 200, { ok: !run.error, run })
           } catch (e) {
             json(res, 400, { ok: false, error: String(e instanceof Error ? e.message : e) })
@@ -771,12 +810,12 @@ export function makeProductRoutes() {
                 json(res, 400, { ok: false, error: 'algorithm-required' })
                 return
               }
-              const run = runWithManifest({
-                algorithm: body.algorithm,
-                parameters: body.parameters ?? {},
-                projectDir: dir,
-                session_id: project.session_id,
-              })
+              const run = await dispatchRun(
+                body.algorithm,
+                body.parameters ?? {},
+                dir,
+                project.session_id,
+              )
               touchProject(dir, { stage: maxStage(project.stage, 'lab'), artifacts: [...new Set([...(project.artifacts ?? []), 'runs'])] })
               json(res, 200, { ok: !run.error, run })
               return
@@ -935,6 +974,9 @@ function readdirSafe(dir) {
     return []
   }
 }
+
+
+
 
 
 

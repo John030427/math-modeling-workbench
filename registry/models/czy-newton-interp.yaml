@@ -1,0 +1,18 @@
+id: czy-newton-interp
+name: Newton Interpolation
+name_zh: 牛顿插值
+category: { task: [interpolation] }
+family: [interpolation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [newton-divided-difference]
+knowledge_units: [newton-divided-difference]
+use_when:
+  - 节点递增式添加的插值
+avoid_when:
+  - 高阶振荡
+summary: 差商表构造的插值多项式，便于增量计算。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-newton-interp, upstream_commit: 33cb0440 }

@@ -5,6 +5,9 @@ category: { task: [evaluation] }
 family: [statistics]
 learning_type: [multi-criteria]
 difficulty: beginner
+execution_supported: czy
+provider: czy
+execution: { provider: czy, method_id: czy-entropy-weight }
 summary: 用信息熵客观赋权，常与 TOPSIS 组合。
 demo_priority: 23
 use_when: [需要客观权重]

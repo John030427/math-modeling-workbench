@@ -1,0 +1,18 @@
+id: czy-nlp
+name: Nonlinear Programming
+name_zh: 非线性规划
+category: { task: [optimization] }
+family: [programming]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [nlp, slsqp]
+knowledge_units: [nlp, slsqp, local-optimum]
+use_when:
+  - 目标或约束非线性且光滑
+avoid_when:
+  - 目标不连续/不可导（用元启发式）
+summary: SLSQP 等方法求解带约束非线性规划，注意局部最优。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-nlp, upstream_commit: 33cb0440 }

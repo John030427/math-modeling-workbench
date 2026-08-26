@@ -1,0 +1,18 @@
+id: czy-cubic-spline
+name: Cubic Spline
+name_zh: 三次样条插值
+category: { task: [interpolation] }
+family: [interpolation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [cubic-spline, smoothness]
+knowledge_units: [cubic-spline, smoothness]
+use_when:
+  - 需要光滑曲线（大量节点也稳定）
+avoid_when:
+  - 只需要端点外推
+summary: 分段三次多项式保证二阶光滑，是数据补全的默认选择。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-cubic-spline, upstream_commit: 33cb0440 }

@@ -1,0 +1,18 @@
+id: czy-combined-weight
+name: Combined Weighting
+name_zh: 主客观组合赋权
+category: { task: [evaluation] }
+family: [evaluation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [combined-weighting, subjective-objective]
+knowledge_units: [combined-weighting, subjective-objective]
+use_when:
+  - 已有两套权重希望融合
+avoid_when:
+  - 两套权重严重冲突且无法解释
+summary: 乘法/加法合成主观与客观权重，alpha 控制倾向。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-combined-weight, upstream_commit: 33cb0440 }

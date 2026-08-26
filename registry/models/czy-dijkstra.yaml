@@ -1,0 +1,18 @@
+id: czy-dijkstra
+name: Dijkstra
+name_zh: Dijkstra 最短路
+category: { task: [graph] }
+family: [graph]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [dijkstra, shortest-path]
+knowledge_units: [dijkstra, shortest-path, greedy]
+use_when:
+  - 非负权单源最短路（配送、管网）
+avoid_when:
+  - 存在负权边
+summary: 贪心扩展的单源最短路算法，给出源点到各点最短距离与路径。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-dijkstra, upstream_commit: 33cb0440 }

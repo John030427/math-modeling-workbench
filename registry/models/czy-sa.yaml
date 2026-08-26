@@ -1,0 +1,18 @@
+id: czy-sa
+name: Simulated Annealing
+name_zh: 模拟退火
+category: { task: [metaheuristic] }
+family: [metaheuristic]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [sa, temperature]
+knowledge_units: [sa, temperature, acceptance]
+use_when:
+  - 避免局部最优的组合/连续优化
+avoid_when:
+  - 时间预算极低
+summary: 以温度调度控制接受劣解概率，逐步收敛。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-sa, upstream_commit: 33cb0440 }

@@ -1,0 +1,18 @@
+id: czy-sma
+name: Simple Moving Average
+name_zh: 简单移动平均
+category: { task: [time-series] }
+family: [time-series]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [moving-average, smoothing]
+knowledge_units: [moving-average, smoothing]
+use_when:
+  - 去噪与短期平滑
+avoid_when:
+  - 强趋势/季节序列单独使用
+summary: 窗口均值平滑，是最朴素的预测 baseline。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-sma, upstream_commit: 33cb0440 }

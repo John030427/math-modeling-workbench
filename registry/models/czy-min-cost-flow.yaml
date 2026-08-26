@@ -1,0 +1,18 @@
+id: czy-min-cost-flow
+name: Min-Cost Flow
+name_zh: 最小费用流
+category: { task: [graph] }
+family: [graph]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [min-cost-flow, successive-shortest-path]
+knowledge_units: [min-cost-flow, successive-shortest-path]
+use_when:
+  - 满足流量需求同时最小化费用
+avoid_when:
+  - 只关心容量不关心成本
+summary: 在容量与费用网络中求最小费用最大流。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-min-cost-flow, upstream_commit: 33cb0440 }

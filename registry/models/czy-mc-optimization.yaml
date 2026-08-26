@@ -1,0 +1,18 @@
+id: czy-mc-optimization
+name: Monte Carlo Optimization
+name_zh: 蒙特卡洛优化
+category: { task: [simulation] }
+family: [simulation]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [random-search, sampling]
+knowledge_units: [random-search, sampling]
+use_when:
+  - 可行域内随机搜索粗定位
+avoid_when:
+  - 需要精确最优
+summary: 随机采样目标函数取最优，常作为启发式初值。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-mc-optimization, upstream_commit: 33cb0440 }

@@ -1,0 +1,18 @@
+id: czy-fuzzy-cmeans
+name: Fuzzy C-Means
+name_zh: 模糊 C 均值聚类
+category: { task: [clustering] }
+family: [fuzzy]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [fuzzy-cmeans, membership-matrix]
+knowledge_units: [fuzzy-cmeans, membership-matrix, fuzzifier]
+use_when:
+  - 样本边界模糊、需要隶属度而非硬归属
+avoid_when:
+  - 需要硬划分或簇形状强非凸
+summary: 软聚类：每个样本以隶属度属于各簇，迭代最小化加权误差。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-fuzzy-cmeans, upstream_commit: 33cb0440 }

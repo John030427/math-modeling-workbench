@@ -1,0 +1,18 @@
+id: czy-max-flow
+name: Max Flow
+name_zh: 最大流
+category: { task: [graph] }
+family: [graph]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [max-flow, capacity-network]
+knowledge_units: [max-flow, capacity-network, augmenting-path]
+use_when:
+  - 网络容量上限问题（运输/调度瓶颈）
+avoid_when:
+  - 无容量约束的网络
+summary: 在容量网络中求源到汇的最大流量。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-max-flow, upstream_commit: 33cb0440 }

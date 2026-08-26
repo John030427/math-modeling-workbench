@@ -1,0 +1,18 @@
+id: czy-ses
+name: Single Exponential Smoothing
+name_zh: 一次指数平滑
+category: { task: [time-series] }
+family: [time-series]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [exponential-smoothing, alpha]
+knowledge_units: [exponential-smoothing, alpha]
+use_when:
+  - 无趋势无季节的平稳序列
+avoid_when:
+  - 有明显趋势（用二次/三次）
+summary: 加权平均历史值，alpha 控制记忆长度。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-ses, upstream_commit: 33cb0440 }

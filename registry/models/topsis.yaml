@@ -22,5 +22,8 @@ limitations: [对权重敏感, 秩逆转风险]
 common_mistakes: [wrong_benefit_cost_direction, unnormalized]
 validation: [sensitivity, rank-stability]
 alternatives: [ahp, entropy-weight, pca]
+execution_supported: czy
+provider: czy
+execution: { provider: czy, method_id: czy-topsis }
 summary: 计算方案到正负理想解的距离，用相对贴近度排序。
 demo_priority: 4

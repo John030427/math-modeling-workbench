@@ -23,5 +23,8 @@ limitations: [主观性强, 需一致性检验]
 common_mistakes: [skipping_consistency_check, inconsistent_hierarchy]
 validation: [consistency-ratio]
 alternatives: [entropy-weight, critic, topsis]
+execution_supported: czy
+provider: czy
+execution: { provider: czy, method_id: czy-ahp-weight }
 summary: 通过两两比较构建判断矩阵，求权重并做一致性检验。
 demo_priority: 3

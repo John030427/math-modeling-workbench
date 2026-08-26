@@ -1,0 +1,18 @@
+id: czy-aco-tsp
+name: Ant Colony TSP
+name_zh: 蚁群算法 TSP
+category: { task: [metaheuristic] }
+family: [metaheuristic]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [aco, pheromone]
+knowledge_units: [aco, pheromone, tsp]
+use_when:
+  - 路径类组合优化（TSP/VRP 原型）
+avoid_when:
+  - 节点数极大且时间受限
+summary: 信息素+启发式构造路径，正反馈收敛于较优回路。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-aco-tsp, upstream_commit: 33cb0440 }

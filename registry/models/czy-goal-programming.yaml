@@ -1,0 +1,18 @@
+id: czy-goal-programming
+name: Goal Programming
+name_zh: 目标规划
+category: { task: [optimization] }
+family: [programming]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [goal-programming, priority]
+knowledge_units: [goal-programming, priority, deviation-variables]
+use_when:
+  - 多个目标无法同时满足需按优先级折中
+avoid_when:
+  - 单一目标清晰
+summary: 引入偏差变量与优先级，软约束逐级满足。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-goal-programming, upstream_commit: 33cb0440 }

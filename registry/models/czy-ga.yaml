@@ -1,0 +1,18 @@
+id: czy-ga
+name: Genetic Algorithm
+name_zh: 遗传算法
+category: { task: [metaheuristic] }
+family: [metaheuristic]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [ga, crossover]
+knowledge_units: [ga, crossover, mutation, selection]
+use_when:
+  - 复杂/离散/黑盒优化
+avoid_when:
+  - 问题可精确求解（LP）时
+summary: 种群选择-交叉-变异迭代搜索，参数敏感需多跑。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-ga, upstream_commit: 33cb0440 }

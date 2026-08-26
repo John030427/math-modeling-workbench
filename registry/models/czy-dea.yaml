@@ -1,0 +1,19 @@
+id: czy-dea
+name: DEA (CCR)
+name_zh: 数据包络分析 CCR
+category: { task: [evaluation] }
+family: [evaluation]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [dea, efficiency-frontier]
+knowledge_units: [dea, efficiency-frontier, decision-making-unit]
+use_when:
+  - 多投入多产出的相对效率评价（学校/医院/城市）
+avoid_when:
+  - 投入产出边界不清晰
+  - 决策单元过少（<投入产出数两倍）
+summary: 以线性规划构造生产前沿，评价同类型决策单元的相对有效性与规模报酬。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-dea, upstream_commit: 33cb0440 }

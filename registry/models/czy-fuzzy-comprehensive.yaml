@@ -1,0 +1,18 @@
+id: czy-fuzzy-comprehensive
+name: Fuzzy Comprehensive Evaluation
+name_zh: 模糊综合评价
+category: { task: [evaluation] }
+family: [fuzzy]
+difficulty: intermediate
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [fuzzy-evaluation, membership-degree]
+knowledge_units: [fuzzy-evaluation, membership-degree, comment-set]
+use_when:
+  - 评语有模糊边界（好/中/差）的综合评价
+avoid_when:
+  - 指标可精确量化且评语清晰
+summary: 隶属度矩阵 + 权重合成，得到对各评语等级的隶属分布。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-fuzzy-comprehensive, upstream_commit: 33cb0440 }

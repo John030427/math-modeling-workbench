@@ -1,0 +1,18 @@
+id: czy-floyd
+name: Floyd
+name_zh: Floyd 全源最短路
+category: { task: [graph] }
+family: [graph]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [floyd, dynamic-programming]
+knowledge_units: [floyd, dynamic-programming, all-pairs]
+use_when:
+  - 需要所有点对最短路（选址、可达性）
+avoid_when:
+  - 大规模稀疏图（用 Dijkstra 多源）
+summary: 动态规划三重循环求全源最短路，可回溯路径。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-floyd, upstream_commit: 33cb0440 }

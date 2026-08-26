@@ -1,0 +1,18 @@
+id: czy-verhulst
+name: Verhulst Prediction
+name_zh: Verhulst 饱和预测
+category: { task: [grey] }
+family: [grey]
+difficulty: beginner
+maturity: production
+execution_supported: czy
+provider: czy
+prerequisites: [verhulst, s-curve]
+knowledge_units: [verhulst, s-curve, saturation]
+use_when:
+  - 具有饱和/S 形态的小样本序列（生长、普及率）
+avoid_when:
+  - 持续指数增长无饱和迹象
+summary: 灰色 Verhulst 模型拟合 S 形饱和过程并外推。
+demo_priority: 50
+execution: { provider: czy, method_id: czy-verhulst, upstream_commit: 33cb0440 }
